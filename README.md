@@ -10,6 +10,7 @@
 - Joshua
 - Jack
 - Justin
+- Kiel (n11409851@qut.edu.au)
 
 [Instructions for Adding Names]
 - Make a new Branch with your Name (git branch "ActualName")
