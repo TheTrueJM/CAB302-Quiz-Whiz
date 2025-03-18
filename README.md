@@ -8,6 +8,7 @@
 
 ## \<Exceptional Handlers/> Team Members
 - Joshua
+- Jack
 
 [Instructions for Adding Names]
 - Make a new Branch with your Name (git branch "ActualName")
