@@ -4,7 +4,7 @@
 [Instructions for Project Connection]
 - Create new IntelliJ Project
 - Connect to this Git Repo (git remote add origin https://github.com/TheTrueJM/CAB302-Exceptional-Handlers.git)
-- Download all Files (git pull origin master)
+- Download all Files (git pull origin main)
 
 ## \<Exceptional Handlers/> Team Members
 - Joshua
@@ -16,5 +16,6 @@
 - Stage you change (git add .)
 - Commit your change (git commit -m "Added my Name")
 - Push your change (git push --set-upstream origin "ActualName")
-- Go to the Master Branch (git checkout master)
-- Merge your Branch to the Master Branch (git merge "Name")
+- Go to the Main Branch (git checkout main)
+- Merge your Branch to the Main Branch (git merge "Name")
+- Push the Merge (git push)
