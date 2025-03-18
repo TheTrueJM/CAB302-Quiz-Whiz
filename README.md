@@ -7,7 +7,7 @@
 - Download all Files (git pull origin master)
 
 ## \<Exceptional Handlers/> Team Members
-
+- Joshua
 
 [Instructions for Adding Names]
 - Make a new Branch with your Name (git branch "ActualName")
