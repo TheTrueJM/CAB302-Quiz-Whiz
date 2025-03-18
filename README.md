@@ -10,6 +10,7 @@
 - Joshua
 - Jack
 - Justin
+- Mason
 - Kiel (n11409851@qut.edu.au)
 
 [Instructions for Adding Names]
