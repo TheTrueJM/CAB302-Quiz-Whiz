@@ -28,44 +28,44 @@
 Before making any changes make sure you're in the right branch
 ```bash
 $ git branch
-* Justin 
+* MyNameBranch 
 main
 ```
-so like wherever the `*` is at, thats the current selected branch.
+Wherever the `*` is at, thats the current selected branch.
 
 If it isn't at the branch you want, you do this
 ```bash
-git switch <branch name>
+$ git switch <branch name>
 ```
 
-Now before you make any changes MAKE SURE YOUR BRANCH IS UP TO DATE TO THE MAIN BRANCH
+Now, before you make any changes MAKE SURE YOUR BRANCH IS UP TO DATE TO THE MAIN BRANCH
 ```
-git fetch origin
-git pull origin main
+$ git fetch origin
+$ git pull origin main
 ```
 
-Next do the changes you need, stage them, commit:
+Next, do the changes you need, stage them, then commit:
 ```bash
-# do your changes here blah blah blah
+# Do your changes here...
 
-# then add the relevant files into staging
-git add <file 1> <file 2> <file 3> <file n>
-git add . # If you want to stage ALL changes
+# Add the relevant files into staging
+$ git add <file 1> <file 2> <file 3> <file n>
+$ git add . # If you want to stage ALL changes
 
 # If you want to unstage files
-git restore --staged <file>
+$ git restore --staged <file>
 
-# Next, commit those changes
-git status # IF you want to see whats staged and unstaged, untracked files
-git commit -m "blah blah blah i messed up"
+# Commit those changes
+$ git status # IF you want to see what's staged and unstaged, untracked files
+$ git commit -m "my new commit"
 
 # Now push to your branch
-git push origin <your-branch-name>
+$ git push origin <your-branch-name>
 ```
 
-Then on github make a pull request using your branch: https://github.com/TheTrueJM/CAB302-Exceptional-Handlers/pulls
+Finally, on github, make a Pull Request (**PR**) using your branch: https://github.com/TheTrueJM/CAB302-Exceptional-Handlers/pulls
 
-Notes:
+**Notes:**
 - You can keep working making edits after you open a PR, just keep committing and pushing your code. No need to make a new branch or anything like that
 - Make sure the team gives the green flag on your changes before we merge them into then main branch
 - If you stage a file then make changes, you have to stage them again with `git add`
@@ -76,15 +76,13 @@ Ping us on discord
 ### Reverting commits (If you haven't pushed yet)
 You can revert your commit by doing this
 ```bash
-# say you commit accidentally
-git commit -m "crappy code"
+# If you commit accidentally, or forgot to add something
+$ git commit -m "my bad & broken commit"
 
-# crap you forgot to add something!
-# just do this
-git reset --soft HEAD~1
+# Simply do this
+$ git reset --soft HEAD~1
 
-# now modify the changes you wanted to do originally
-# then commit
-git commit -m "happy code"
-git push origin <your branch>
+# Now, modify the changes you wanted to do originally, and then commit
+$ git commit -m "my happy code"
+$ git push origin <your branch>
 ```
