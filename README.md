@@ -18,7 +18,7 @@
 
 ## Git Command Information and Instructions
 ### Project Connection
-- Create new IntelliJ Project
+- Create new IntelliJ Project (JavaFx, Maven build)
 - Connect to this Git Repo (git remote add origin https://github.com/TheTrueJM/CAB302-Exceptional-Handlers.git)
 - Download all Files (git pull origin main)
 
