@@ -14,7 +14,7 @@
 - Jack
 - Justin
 - Mason
-- Kiel (n11409851@qut.edu.au)
+- Kiel
 
 ## Git Command Information and Instructions
 ### Project Connection
