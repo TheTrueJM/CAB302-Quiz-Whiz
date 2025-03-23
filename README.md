@@ -15,6 +15,7 @@
 - Justin
 - Mason
 - Kiel
+- Alex
 
 ## Git Command Information and Instructions
 ### Project Connection
