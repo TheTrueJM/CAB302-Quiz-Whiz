@@ -105,3 +105,21 @@ $ git reset --soft HEAD~1
 $ git commit -m "my happy code"
 $ git push origin <your branch>
 ```
+
+## Setting up intelij for unit tests, compile, running
+### Unit tests in intelij**
+1. Run -> Edit Configurations
+2. Add new configuration -> JUnit
+3. In the dropdown that says `Class`, pick `All in Package` instead
+4. Run the unit test (this will save as well)
+
+### Compile-only & Run using Maven**
+1. Run -> Edit configurations -> Add New Configuration -> Maven
+2. On the `Run` textbox type `clean compile` then click **Apply**
+3. Name this configuration `Compile`
+4. Repeat step 1
+5. Type `clean javafx:run`
+6. Name the configuration `Run`
+7. Click apply
+
+On the top right, you can now choose between unit test, compile, or run
