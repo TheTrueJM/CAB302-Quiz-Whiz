@@ -13,6 +13,7 @@ public class SQLiteConnection {
             instance = DriverManager.getConnection(url);
         } catch (SQLException e) {
             System.err.println(e.getMessage() + " - " + e.toString());
+            throw new RuntimeException("Failed to connect to the database", e);
         }
     }
 
