@@ -1,4 +1,4 @@
-package ai.tutor.cab302exceptionalhandlers;
+package ai.tutor.cab302exceptionalhandlers.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
