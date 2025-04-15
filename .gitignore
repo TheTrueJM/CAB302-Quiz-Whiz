@@ -36,3 +36,12 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Syncthing ###
+.stfolder
+
+### trash generated my maven ###
+dependency-reduced-pom.xml
+
+### sqlite ###
+*.db
