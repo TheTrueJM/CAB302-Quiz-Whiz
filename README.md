@@ -124,7 +124,14 @@ $ git push origin <your branch>
 
 On the top right, you can now choose between unit test, compile, or run
 
+## Running spotless
+Before committing, you can lint your java files
+```
+mvn spotless:apply
+```
+
 ## Running pre-commit hooks (Advanced)
+This will automatically run spotless every time you make a new commit
 ```sh
 # Install pre-commit via pip
 pip install pre-commit
@@ -134,6 +141,4 @@ pre-commit install
 
 # Run pre-commit to run spotless linter
 pre-commit run --all-files
-
-# After it runs, stage and commit your changes before pushing
 ```
