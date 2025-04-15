@@ -123,3 +123,17 @@ $ git push origin <your branch>
 7. Click apply
 
 On the top right, you can now choose between unit test, compile, or run
+
+## Running pre-commit hooks (Advanced)
+```sh
+# Install pre-commit via pip
+pip install pre-commit
+
+# Install pre-commit
+pre-commit install
+
+# Run pre-commit to run spotless linter
+pre-commit run --all-files
+
+# After it runs, stage and commit your changes before pushing
+```
