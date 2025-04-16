@@ -48,9 +48,13 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
     @Override
     public QuizQuestion getQuizQuestion(int messageId, int number) {
         try {
+<<<<<<< HEAD
             PreparedStatement readQuizQuestion = connection.prepareStatement(
                     "SELECT * FROM quizQuestions WHERE messageId = ? AND number = ?"
             );
+=======
+            PreparedStatement readQuizQuestion = connection.prepareStatement("SELECT * FROM quizQuestions WHERE messageId = ? AND number = ?");
+>>>>>>> 3146db9 (Added Data Access Objects relating to Quizzes)
             readQuizQuestion.setInt(1, messageId);
             readQuizQuestion.setInt(2, number);
             ResultSet resultSet = readQuizQuestion.executeQuery();
