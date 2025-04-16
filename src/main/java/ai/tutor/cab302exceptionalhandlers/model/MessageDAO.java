@@ -20,7 +20,7 @@ public class MessageDAO implements IMessageDAO {
                     "CREATE TABLE IF NOT EXISTS messages ("
                             + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                             + "chatId INTEGER NOT NULL"
-                            + "text VARCHAR NOT NULL,"
+                            + "content VARCHAR NOT NULL,"
                             + "fromUser INTEGER NOT NULL,"
                             + "isQuiz INTEGER NOT NULL,"
                             + "FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE"
@@ -36,10 +36,10 @@ public class MessageDAO implements IMessageDAO {
     public void createMessage(Message message) {
         try {
             PreparedStatement createMessage = connection.prepareStatement(
-                    "INSERT INTO messages (chatId, text, fromUser, isQuiz) VALUES (?, ?, ?, ?)"
+                    "INSERT INTO messages (chatId, content, fromUser, isQuiz) VALUES (?, ?, ?, ?)"
             );
             createMessage.setInt(1, message.getChatId());
-            createMessage.setString(2, message.getText());
+            createMessage.setString(2, message.getContent());
             createMessage.setInt(3, message.getFromUser() ? 1 : 0);
             createMessage.setInt(4, message.getIsQuiz() ? 1 : 0);
             createMessage.executeUpdate();
@@ -64,10 +64,10 @@ public class MessageDAO implements IMessageDAO {
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String text = resultSet.getString("text");
+                String content = resultSet.getString("content");
                 int fromUser = resultSet.getInt("fromUser");
                 int isQuiz = resultSet.getInt("isQuiz");
-                Message message = new Message(chatId, text, fromUser == 1, isQuiz == 1);
+                Message message = new Message(chatId, content, fromUser == 1, isQuiz == 1);
                 message.setId(id);
                 chatMessages.add(message);
             }
