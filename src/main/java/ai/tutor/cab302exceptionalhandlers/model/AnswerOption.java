@@ -21,5 +21,6 @@ public class AnswerOption {
     public int getQuestionNumber() { return questionNumber; }
 
     public String getOption() { return option; }
+
     public String getValue() { return value; }
 }

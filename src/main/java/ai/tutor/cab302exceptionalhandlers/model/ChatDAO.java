@@ -94,7 +94,9 @@ public class ChatDAO implements IChatDAO {
     @Override
     public Chat getChat(int id) {
         try {
-            PreparedStatement readChat = connection.prepareStatement("SELECT * FROM chats WHERE id = ?");
+            PreparedStatement readChat = connection.prepareStatement(
+                    "SELECT * FROM chats WHERE id = ?"
+            );
             readChat.setInt(1, id);
             ResultSet resultSet = readChat.executeQuery();
             if (resultSet.next()) {
@@ -118,7 +120,9 @@ public class ChatDAO implements IChatDAO {
     public List<Chat> getAllUserChats(int userId) {
         List<Chat> userChats = new ArrayList<>();
         try {
-            PreparedStatement readUserChats = connection.prepareStatement("SELECT * FROM chats WHERE userId = ?");
+            PreparedStatement readUserChats = connection.prepareStatement(
+                    "SELECT * FROM chats WHERE userId = ?"
+            );
             readUserChats.setInt(1, userId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {

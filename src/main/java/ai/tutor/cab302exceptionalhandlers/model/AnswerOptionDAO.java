@@ -34,14 +34,14 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     @Override
     public void createAnswerOption(AnswerOption answerOption) {
         try {
-            PreparedStatement createQuiz = connection.prepareStatement(
+            PreparedStatement createAnswerOption = connection.prepareStatement(
                     "INSERT INTO answerOptions (messageId, questionNumber, option, value) VALUES (?, ?, ?, ?)"
             );
-            createQuiz.setInt(1, answerOption.getMessageId());
-            createQuiz.setInt(2, answerOption.getQuestionNumber());
-            createQuiz.setString(3, answerOption.getOption());
-            createQuiz.setString(4, answerOption.getValue());
-            createQuiz.executeUpdate();
+            createAnswerOption.setInt(1, answerOption.getMessageId());
+            createAnswerOption.setInt(2, answerOption.getQuestionNumber());
+            createAnswerOption.setString(3, answerOption.getOption());
+            createAnswerOption.setString(4, answerOption.getValue());
+            createAnswerOption.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,7 +50,9 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     @Override
     public AnswerOption getQuestionAnswerOption(int messageId, int questionNumber, String option) {
         try {
-            PreparedStatement readQuestionAnswerOption = connection.prepareStatement("SELECT * FROM answerOptions WHERE messageId = ? AND questionNumber = ? AND option = ?");
+            PreparedStatement readQuestionAnswerOption = connection.prepareStatement(
+                    "SELECT * FROM answerOptions WHERE messageId = ? AND questionNumber = ? AND option = ?"
+            );
             readQuestionAnswerOption.setInt(1, messageId);
             readQuestionAnswerOption.setInt(2, questionNumber);
             readQuestionAnswerOption.setString(3, option);
@@ -69,7 +71,9 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     public List<AnswerOption> getAllQuestionAnswerOptions(int messageId, int questionNumber) {
         List<AnswerOption> questionAnswerOptions = new ArrayList<>();
         try {
-            PreparedStatement readQuestionAnswerOptions = connection.prepareStatement("SELECT * FROM quizQuestions WHERE messageId = ? AND questionNumber = ?");
+            PreparedStatement readQuestionAnswerOptions = connection.prepareStatement(
+                    "SELECT * FROM quizQuestions WHERE messageId = ? AND questionNumber = ?"
+            );
             readQuestionAnswerOptions.setInt(1, messageId);
             readQuestionAnswerOptions.setInt(2, questionNumber);
             ResultSet resultSet = readQuestionAnswerOptions.executeQuery();

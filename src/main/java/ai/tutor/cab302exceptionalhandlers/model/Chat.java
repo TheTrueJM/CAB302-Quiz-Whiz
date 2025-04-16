@@ -45,5 +45,5 @@ public class Chat {
 
     public String getStudyArea() { return studyArea; }
 
-    public void setStudyArea(String studyArea) { this.educationLevel = studyArea; }
+    public void setStudyArea(String studyArea) { this.studyArea = studyArea; }
 }

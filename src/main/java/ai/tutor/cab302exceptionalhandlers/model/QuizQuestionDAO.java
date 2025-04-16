@@ -48,7 +48,9 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
     @Override
     public QuizQuestion getQuizQuestion(int messageId, int number) {
         try {
-            PreparedStatement readQuizQuestion = connection.prepareStatement("SELECT * FROM quizQuestions WHERE messageId = ? AND number = ?");
+            PreparedStatement readQuizQuestion = connection.prepareStatement(
+                    "SELECT * FROM quizQuestions WHERE messageId = ? AND number = ?"
+            );
             readQuizQuestion.setInt(1, messageId);
             readQuizQuestion.setInt(2, number);
             ResultSet resultSet = readQuizQuestion.executeQuery();
@@ -66,7 +68,9 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
     public List<QuizQuestion> getAllQuizQuestions(int messageId) {
         List<QuizQuestion> quizQuestions = new ArrayList<>();
         try {
-            PreparedStatement readQuizQuestions = connection.prepareStatement("SELECT * FROM quizQuestions WHERE messageId = ?");
+            PreparedStatement readQuizQuestions = connection.prepareStatement(
+                    "SELECT * FROM quizQuestions WHERE messageId = ?"
+            );
             readQuizQuestions.setInt(1, messageId);
             ResultSet resultSet = readQuizQuestions.executeQuery();
             while (resultSet.next()) {

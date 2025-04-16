@@ -48,7 +48,9 @@ public class QuizDAO implements IQuizDAO {
     @Override
     public Quiz getQuiz(int messageId) {
         try {
-            PreparedStatement readQuiz = connection.prepareStatement("SELECT * FROM quizzes WHERE id = ?");
+            PreparedStatement readQuiz = connection.prepareStatement(
+                    "SELECT * FROM quizzes WHERE id = ?"
+            );
             readQuiz.setInt(1, messageId);
             ResultSet resultSet = readQuiz.executeQuery();
             if (resultSet.next()) {
@@ -66,7 +68,9 @@ public class QuizDAO implements IQuizDAO {
     public List<Quiz> getAllChatQuizzes(int chatId) {
         List<Quiz> chatQuizzes = new ArrayList<>();
         try {
-            PreparedStatement readChatQuizzes = connection.prepareStatement("SELECT id FROM messages WHERE chatId = ? AND isQuiz = ?");
+            PreparedStatement readChatQuizzes = connection.prepareStatement(
+                    "SELECT id FROM messages WHERE chatId = ? AND isQuiz = ?"
+            );
             readChatQuizzes.setInt(1, chatId);
             readChatQuizzes.setInt(2, true ? 1 : 0);
             ResultSet resultSet = readChatQuizzes.executeQuery();
@@ -85,7 +89,9 @@ public class QuizDAO implements IQuizDAO {
     public List<Quiz> getAllUserQuizzes(int userId) {
         List<Quiz> userQuizzes = new ArrayList<>();
         try {
-            PreparedStatement readUserChats = connection.prepareStatement("SELECT id FROM chats WHERE userId = ?");
+            PreparedStatement readUserChats = connection.prepareStatement(
+                    "SELECT id FROM chats WHERE userId = ?"
+            );
             readUserChats.setInt(1, userId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {

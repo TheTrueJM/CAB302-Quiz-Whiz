@@ -59,7 +59,9 @@ public class MessageDAO implements IMessageDAO {
     public List<Message> getAllChatMessages(int chatId) {
         List<Message> chatMessages = new ArrayList<>();
         try {
-            PreparedStatement readUserChats = connection.prepareStatement("SELECT * FROM messages WHERE chatId = ?");
+            PreparedStatement readUserChats = connection.prepareStatement(
+                    "SELECT * FROM messages WHERE chatId = ?"
+            );
             readUserChats.setInt(1, chatId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
