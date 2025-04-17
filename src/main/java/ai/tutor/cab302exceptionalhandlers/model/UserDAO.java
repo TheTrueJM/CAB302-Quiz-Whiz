@@ -19,7 +19,7 @@ public class UserDAO implements IUserDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS users ("
                             + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "username VARCHAR NOT NULL,"
+                            + "username VARCHAR UNIQUE NOT NULL,"
                             + "password VARCHAR NOT NULL"
                             + ")"
             );
@@ -81,7 +81,9 @@ public class UserDAO implements IUserDAO {
     @Override
     public User getUser(int id) {
         try {
-            PreparedStatement readUser = connection.prepareStatement("SELECT * FROM users WHERE id = ?");
+            PreparedStatement readUser = connection.prepareStatement(
+                    "SELECT * FROM users WHERE id = ?"
+            );
             readUser.setInt(1, id);
             ResultSet resultSet = readUser.executeQuery();
             if (resultSet.next()) {
@@ -98,11 +100,34 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
+    public User getUser(String username) {
+        try {
+            PreparedStatement readUser = connection.prepareStatement(
+                    "SELECT * FROM users WHERE username = ?"
+            );
+            readUser.setString(1, username);
+            ResultSet resultSet = readUser.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String password = resultSet.getString("lastName");
+                User user = new User(username, password);
+                user.setId(id);
+                return user;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try {
             Statement readUsers = connection.createStatement();
-            ResultSet resultSet = readUsers.executeQuery("SELECT * FROM users");
+            ResultSet resultSet = readUsers.executeQuery(
+                    "SELECT * FROM users"
+            );
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String username = resultSet.getString("username");
