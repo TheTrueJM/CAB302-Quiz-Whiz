@@ -3,14 +3,14 @@ package ai.tutor.cab302exceptionalhandlers.model;
 public class Message {
     private int id;
     private final int chatId;
-    private final String text;
+    private final String content;
     private final boolean fromUser;
     private final boolean isQuiz;
 
 
-    public Message(int chatId, String text, boolean fromUser, boolean isQuiz) {
+    public Message(int chatId, String content, boolean fromUser, boolean isQuiz) {
         this.chatId = chatId;
-        this.text = text;
+        this.content = content;
         this.fromUser = fromUser;
         this.isQuiz = isQuiz;
     }
@@ -22,7 +22,7 @@ public class Message {
 
     public int getChatId() { return chatId; }
 
-    public String getText() { return text; }
+    public String getContent() { return content; }
 
     public boolean getFromUser() { return fromUser; }
 

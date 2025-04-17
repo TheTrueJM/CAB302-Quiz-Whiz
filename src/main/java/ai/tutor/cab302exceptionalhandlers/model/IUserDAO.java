@@ -11,5 +11,7 @@ public interface IUserDAO {
 
     public User getUser(int id);
 
+    public User getUser(String username);
+
     public List<User> getAllUsers();
 }

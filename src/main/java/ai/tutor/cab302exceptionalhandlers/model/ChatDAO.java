@@ -21,7 +21,10 @@ public class ChatDAO implements IChatDAO {
                             + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                             + "userId INTEGER NOT NULL"
                             + "name VARCHAR NOT NULL,"
-                            + "educationLevel VARCHAR NOT NULL,"
+                            + "responseAttitude VARCHAR NOT NULL,"
+                            + "quizDifficulty VARCHAR NOT NULL,"
+                            + "educationLevel VARCHAR,"
+                            + "studyArea VARCHAR,"
                             + "FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE"
                             + ")"
             );
@@ -35,11 +38,14 @@ public class ChatDAO implements IChatDAO {
     public void createChat(Chat chat) {
         try {
             PreparedStatement createChat = connection.prepareStatement(
-                    "INSERT INTO users (userId, name, educationLevel) VALUES (?, ?, ?)"
+                    "INSERT INTO users (userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?)"
             );
             createChat.setInt(1, chat.getUserId());
             createChat.setString(2, chat.getName());
-            createChat.setString(3, chat.getEducationLevel());
+            createChat.setString(3, chat.getResponseAttitude());
+            createChat.setString(4, chat.getQuizDifficulty());
+            createChat.setString(5, chat.getEducationLevel());
+            createChat.setString(6, chat.getStudyArea());
             createChat.executeUpdate();
 
             // Set the id of the new Chat
@@ -57,12 +63,15 @@ public class ChatDAO implements IChatDAO {
     public void updateChat(Chat chat) {
         try {
             PreparedStatement updateChat = connection.prepareStatement(
-                    "UPDATE chats SET userId = ?, name = ?, educationLevel = ? WHERE id = ?"
+                    "UPDATE chats SET userId = ?, name = ?, responseAttitude = ?, quizDifficulty = ?, educationLevel = ?, studyArea = ? WHERE id = ?"
             );
             updateChat.setInt(1, chat.getUserId());
             updateChat.setString(2, chat.getName());
-            updateChat.setString(3, chat.getEducationLevel());
-            updateChat.setInt(3, chat.getId());
+            updateChat.setString(3, chat.getResponseAttitude());
+            updateChat.setString(4, chat.getQuizDifficulty());
+            updateChat.setString(5, chat.getEducationLevel());
+            updateChat.setString(6, chat.getStudyArea());
+            updateChat.setInt(7, chat.getId());
             updateChat.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,14 +94,19 @@ public class ChatDAO implements IChatDAO {
     @Override
     public Chat getChat(int id) {
         try {
-            PreparedStatement readChat = connection.prepareStatement("SELECT * FROM chats WHERE id = ?");
+            PreparedStatement readChat = connection.prepareStatement(
+                    "SELECT * FROM chats WHERE id = ?"
+            );
             readChat.setInt(1, id);
             ResultSet resultSet = readChat.executeQuery();
             if (resultSet.next()) {
                 int userId = resultSet.getInt("userId");
                 String name = resultSet.getString("name");
+                String responseAttitude = resultSet.getString("responseAttitude");
+                String quizDifficulty = resultSet.getString("quizDifficulty");
                 String educationLevel = resultSet.getString("educationLevel");
-                Chat chat = new Chat(userId, name, educationLevel);
+                String studyArea = resultSet.getString("studyArea");
+                Chat chat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
                 chat.setId(id);
                 return chat;
             }
@@ -106,14 +120,19 @@ public class ChatDAO implements IChatDAO {
     public List<Chat> getAllUserChats(int userId) {
         List<Chat> userChats = new ArrayList<>();
         try {
-            PreparedStatement readUserChats = connection.prepareStatement("SELECT * FROM chats WHERE userId = ?");
+            PreparedStatement readUserChats = connection.prepareStatement(
+                    "SELECT * FROM chats WHERE userId = ?"
+            );
             readUserChats.setInt(1, userId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
+                String responseAttitude = resultSet.getString("responseAttitude");
+                String quizDifficulty = resultSet.getString("quizDifficulty");
                 String educationLevel = resultSet.getString("educationLevel");
-                Chat chat = new Chat(userId, name, educationLevel);
+                String studyArea = resultSet.getString("studyArea");
+                Chat chat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
                 chat.setId(id);
                 userChats.add(chat);
             }
