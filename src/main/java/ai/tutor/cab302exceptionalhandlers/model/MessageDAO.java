@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageDAO implements IMessageDAO {
-    private Connection connection;
+    private final Connection connection;
 
 
-    public MessageDAO() {
-        connection = SQLiteConnection.getInstance();
+    public MessageDAO(SQLiteConnection sqliteConnection) {
+        connection = sqliteConnection.getInstance();
         createTable();
     }
 

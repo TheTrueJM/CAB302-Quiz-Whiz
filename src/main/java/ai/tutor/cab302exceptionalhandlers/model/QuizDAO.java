@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuizDAO implements IQuizDAO {
-    private Connection connection;
+    private final Connection connection;
 
 
-    public QuizDAO() {
-        connection = SQLiteConnection.getInstance();
+    public QuizDAO(SQLiteConnection sqliteConnection) {
+        connection = sqliteConnection.getInstance();
         createTable();
     }
 
@@ -31,7 +31,7 @@ public class QuizDAO implements IQuizDAO {
 
 
     @Override
-    public void createChat(Quiz quiz) {
+    public void createQuiz(Quiz quiz) {
         try {
             PreparedStatement createQuiz = connection.prepareStatement(
                     "INSERT INTO quizzes (messageId, name, difficulty) VALUES (?, ?, ?)"
