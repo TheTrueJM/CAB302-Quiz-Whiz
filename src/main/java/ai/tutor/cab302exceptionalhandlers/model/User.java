@@ -23,8 +23,14 @@ public class User {
 
     public String getPassword() { return password; }
 
-    public void setPassword(String Password) {
-        // Encrypt Password here or Prior
+    public void setPassword(String password) {
+        // Encrypt Password Here or Prior
         this.password = password;
+    }
+
+
+    public boolean checkPassword(String password) {
+        // Implement for Encrypted Here or Prior
+        return false;
     }
 }
