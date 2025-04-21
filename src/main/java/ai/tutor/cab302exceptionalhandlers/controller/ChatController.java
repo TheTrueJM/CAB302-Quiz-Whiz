@@ -65,30 +65,26 @@ public class ChatController {
         if (chatId <= 0) {
             System.err.println("Invalid chat ID");
             return false;
-
-        if (newName == null || newName.trim().isEmpty()) {
-            System.err.println("Chat name cannot be empty");
-            return false;
         }
-
-        try {
-            Chat currentChat = chatDAO.getChat(chatId);
-            if (currentChat == null) {
-                System.err.println("Chat not found with ID: " + chatId);
+            if (newName == null || newName.trim().isEmpty()) {
+                System.err.println("Chat name cannot be empty");
                 return false;
             }
+            try {
+                Chat currentChat = chatDAO.getChat(chatId);
+                if (currentChat == null) {
+                    System.err.println("Chat not found with ID: " + chatId);
+                    return false;
+                }
+                Chat updatedChat = new Chat(currentChat.getUserId(), newName, currentChat.getResponseAttitude(),
+                        currentChat.getQuizDifficulty(), currentChat.getEducationLevel(),
+                        currentChat.getStudyArea());
 
-            Chat updatedChat = new Chat(currentChat.getUserId(), newName, currentChat.getResponseAttitude(),
-                    currentChat.getQuizDifficulty(), currentChat.getEducationLevel(),
-                    currentChat.getStudyArea());
-
-            chatDAO.updateChat(updatedChat);
-            return true;
-
-        } catch (SQLException e) {
-            System.err.println("Failed to update chat name: " + e.getMessage());
-            return false;
+                chatDAO.updateChat(updatedChat);
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Failed to update chat name: " + e.getMessage());
+                return false;
+            }
         }
-
     }
-}
