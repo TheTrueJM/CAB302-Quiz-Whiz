@@ -33,11 +33,10 @@ public class MessageDAO implements IMessageDAO {
 
 
     @Override
-    public void createMessage(Message message) {
-        try {
-            PreparedStatement createMessage = connection.prepareStatement(
-                    "INSERT INTO messages (chatId, content, fromUser, isQuiz) VALUES (?, ?, ?, ?)"
-            );
+    public void createMessage(Message message) throws SQLException{
+
+        String sql = "INSERT INTO messages (chatId, content, fromUser, isQuiz) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement createMessage = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createMessage.setInt(1, message.getChatId());
             createMessage.setString(2, message.getContent());
             createMessage.setInt(3, message.getFromUser() ? 1 : 0);
@@ -45,13 +44,11 @@ public class MessageDAO implements IMessageDAO {
             createMessage.executeUpdate();
 
             // Set the id of the new Chat
-            Statement getKey = connection.createStatement();
-            ResultSet generatedKeys = getKey.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                message.setId(generatedKeys.getInt(1));
+            try (ResultSet generatedKeys = createMessage.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    message.setId(generatedKeys.getInt(1));
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
