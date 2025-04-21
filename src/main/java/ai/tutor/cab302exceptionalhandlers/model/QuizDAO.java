@@ -31,11 +31,7 @@ public class QuizDAO implements IQuizDAO {
 
 
     @Override
-<<<<<<< HEAD
     public void createQuiz(Quiz quiz) {
-=======
-    public void createChat(Quiz quiz) {
->>>>>>> 3146db9 (Added Data Access Objects relating to Quizzes)
         try {
             PreparedStatement createQuiz = connection.prepareStatement(
                     "INSERT INTO quizzes (messageId, name, difficulty) VALUES (?, ?, ?)"
@@ -72,13 +68,9 @@ public class QuizDAO implements IQuizDAO {
     public List<Quiz> getAllChatQuizzes(int chatId) {
         List<Quiz> chatQuizzes = new ArrayList<>();
         try {
-<<<<<<< HEAD
             PreparedStatement readChatQuizzes = connection.prepareStatement(
                     "SELECT id FROM messages WHERE chatId = ? AND isQuiz = ?"
             );
-=======
-            PreparedStatement readChatQuizzes = connection.prepareStatement("SELECT id FROM messages WHERE chatId = ? AND isQuiz = ?");
->>>>>>> 3146db9 (Added Data Access Objects relating to Quizzes)
             readChatQuizzes.setInt(1, chatId);
             readChatQuizzes.setInt(2, true ? 1 : 0);
             ResultSet resultSet = readChatQuizzes.executeQuery();
