@@ -33,7 +33,7 @@ public class UserDAO implements IUserDAO {
     public void createUser(User user) {
         try {
             PreparedStatement createUser = connection.prepareStatement(
-                    "INSERT INTO users (firstName, lastName) VALUES (?, ?)"
+                    "INSERT INTO users (username, password) VALUES (?, ?)"
             );
             createUser.setString(1, user.getUsername());
             createUser.setString(2, user.getPassword());
@@ -87,8 +87,8 @@ public class UserDAO implements IUserDAO {
             readUser.setInt(1, id);
             ResultSet resultSet = readUser.executeQuery();
             if (resultSet.next()) {
-                String username = resultSet.getString("firstName");
-                String password = resultSet.getString("lastName");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
                 User user = new User(username, password);
                 user.setId(id);
                 return user;
@@ -109,7 +109,7 @@ public class UserDAO implements IUserDAO {
             ResultSet resultSet = readUser.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String password = resultSet.getString("lastName");
+                String password = resultSet.getString("password");
                 User user = new User(username, password);
                 user.setId(id);
                 return user;

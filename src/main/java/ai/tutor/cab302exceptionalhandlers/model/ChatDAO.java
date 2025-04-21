@@ -63,15 +63,14 @@ public class ChatDAO implements IChatDAO {
     public void updateChat(Chat chat) {
         try {
             PreparedStatement updateChat = connection.prepareStatement(
-                    "UPDATE chats SET userId = ?, name = ?, responseAttitude = ?, quizDifficulty = ?, educationLevel = ?, studyArea = ? WHERE id = ?"
+                    "UPDATE chats SET name = ?, responseAttitude = ?, quizDifficulty = ?, educationLevel = ?, studyArea = ? WHERE id = ?"
             );
-            updateChat.setInt(1, chat.getUserId());
-            updateChat.setString(2, chat.getName());
-            updateChat.setString(3, chat.getResponseAttitude());
-            updateChat.setString(4, chat.getQuizDifficulty());
-            updateChat.setString(5, chat.getEducationLevel());
-            updateChat.setString(6, chat.getStudyArea());
-            updateChat.setInt(7, chat.getId());
+            updateChat.setString(1, chat.getName());
+            updateChat.setString(2, chat.getResponseAttitude());
+            updateChat.setString(3, chat.getQuizDifficulty());
+            updateChat.setString(4, chat.getEducationLevel());
+            updateChat.setString(5, chat.getStudyArea());
+            updateChat.setInt(6, chat.getId());
             updateChat.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

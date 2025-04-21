@@ -31,7 +31,7 @@ public class QuizDAO implements IQuizDAO {
 
 
     @Override
-    public void createChat(Quiz quiz) {
+    public void createQuiz(Quiz quiz) {
         try {
             PreparedStatement createQuiz = connection.prepareStatement(
                     "INSERT INTO quizzes (messageId, name, difficulty) VALUES (?, ?, ?)"
