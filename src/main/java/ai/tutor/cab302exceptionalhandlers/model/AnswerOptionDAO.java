@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnswerOptionDAO implements IAnswerOptionDAO {
-    private Connection connection;
+    private final Connection connection;
 
-    public AnswerOptionDAO() {
-        connection = SQLiteConnection.getInstance();
+    public AnswerOptionDAO(SQLiteConnection sqliteConnection) {
+        connection = sqliteConnection.getInstance();
         createTable();
     }
 
