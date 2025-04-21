@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatDAO implements IChatDAO {
-    private Connection connection;
+    private final Connection connection;
 
 
-    public ChatDAO() {
-        connection = SQLiteConnection.getInstance();
+    public ChatDAO(SQLiteConnection sqliteConnection) {
+        connection = sqliteConnection.getInstance();
         createTable();
     }
 

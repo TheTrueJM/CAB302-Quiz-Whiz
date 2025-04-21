@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserAnswerDAO implements IUserAnswerDAO {
-    private Connection connection;
+    private final Connection connection;
 
 
-    public UserAnswerDAO() {
-        connection = SQLiteConnection.getInstance();
+    public UserAnswerDAO(SQLiteConnection sqliteConnection) {
+        connection = sqliteConnection.getInstance();
         createTable();
     }
 

@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuizDAO implements IQuizDAO {
-    private Connection connection;
+    private final Connection connection;
 
 
-    public QuizDAO() {
-        connection = SQLiteConnection.getInstance();
+    public QuizDAO(SQLiteConnection sqliteConnection) {
+        connection = sqliteConnection.getInstance();
         createTable();
     }
 
