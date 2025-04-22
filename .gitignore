@@ -45,3 +45,5 @@ dependency-reduced-pom.xml
 
 ### sqlite ###
 *.db
+
+how_to_run_linux.md
