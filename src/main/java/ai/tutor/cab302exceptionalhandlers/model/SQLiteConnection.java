@@ -18,6 +18,11 @@ public class SQLiteConnection {
         instance = DriverManager.getConnection(url);
     }
 
+    public SQLiteConnection(boolean inMemory) throws SQLException {
+        String url = "jdbc:sqlite:" + (inMemory ? ":memory:" : "tutor.db");
+        instance = DriverManager.getConnection(url);
+    }
+
 
     public Connection getInstance() throws RuntimeException {
         if (instance == null) {
