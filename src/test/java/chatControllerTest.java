@@ -1,25 +1,21 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestClassOrder;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Connection;
 import java.util.List;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 
-import ai.tutor.cab302exceptionalhandlers.model.ChatDAO;
-import ai.tutor.cab302exceptionalhandlers.model.MessageDAO;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
-import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.Chat;
+import ai.tutor.cab302exceptionalhandlers.model.ChatDAO;
 import ai.tutor.cab302exceptionalhandlers.model.Message;
+import ai.tutor.cab302exceptionalhandlers.model.MessageDAO;
+import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 
 public class chatControllerTest {
     private Connection connection;
@@ -40,7 +36,6 @@ public class chatControllerTest {
     @AfterEach
     public void tearDown() {
         try {
-            // Remote database file
             String dbFilePath = "testing.db";
             connection.close();
             java.nio.file.Files.deleteIfExists(java.nio.file.Paths.get(dbFilePath));
