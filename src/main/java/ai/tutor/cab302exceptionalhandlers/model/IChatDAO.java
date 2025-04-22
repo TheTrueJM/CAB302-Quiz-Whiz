@@ -14,5 +14,5 @@ public interface IChatDAO {
 
     public Chat getChat(int id);
 
-    public List<Chat> getAllUserChats(int userId);
+    public List<Chat> getAllUserChats(int userId) throws SQLException;
 }

@@ -53,12 +53,10 @@ public class MessageDAO implements IMessageDAO {
     }
 
     @Override
-    public List<Message> getAllChatMessages(int chatId) {
+    public List<Message> getAllChatMessages(int chatId) throws SQLException{
         List<Message> chatMessages = new ArrayList<>();
-        try {
-            PreparedStatement readUserChats = connection.prepareStatement(
-                    "SELECT * FROM messages WHERE chatId = ?"
-            );
+        String sql = "SELECT * FROM messages WHERE chatId = ?";
+        try (PreparedStatement readUserChats = connection.prepareStatement(sql)) {
             readUserChats.setInt(1, chatId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
@@ -70,8 +68,6 @@ public class MessageDAO implements IMessageDAO {
                 message.setId(id);
                 chatMessages.add(message);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return chatMessages;
     }

@@ -122,12 +122,9 @@ public class ChatDAO implements IChatDAO {
     }
 
     @Override
-    public List<Chat> getAllUserChats(int userId) {
+    public List<Chat> getAllUserChats(int userId) throws SQLException{
         List<Chat> userChats = new ArrayList<>();
-        try {
-            PreparedStatement readUserChats = connection.prepareStatement(
-                    "SELECT * FROM chats WHERE userId = ?"
-            );
+        try (PreparedStatement readUserChats = connection.prepareStatement("SELECT * FROM chats WHERE userId = ?", Statement.RETURN_GENERATED_KEYS)){
             readUserChats.setInt(1, userId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
@@ -141,9 +138,9 @@ public class ChatDAO implements IChatDAO {
                 chat.setId(id);
                 userChats.add(chat);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+
         return userChats;
     }
 }

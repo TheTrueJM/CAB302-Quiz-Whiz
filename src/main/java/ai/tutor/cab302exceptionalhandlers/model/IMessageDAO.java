@@ -6,5 +6,5 @@ import java.util.List;
 public interface IMessageDAO {
     public void createMessage(Message message) throws SQLException;
 
-    public List<Message> getAllChatMessages(int chatId);
+    public List<Message> getAllChatMessages(int chatId) throws SQLException;
 }
