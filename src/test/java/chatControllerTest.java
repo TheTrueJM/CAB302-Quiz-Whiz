@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.List;
 
@@ -37,10 +38,10 @@ public class chatControllerTest {
     @AfterEach
     public void tearDown() {
         try {
-            // Remote database file
-            String dbFilePath = "testing.db";
-            connection.close();
-            java.nio.file.Files.deleteIfExists(java.nio.file.Paths.get(dbFilePath));
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+            Files.deleteIfExists(Paths.get("testing.db"));
         } catch (Exception e) {
             e.printStackTrace();
         }
