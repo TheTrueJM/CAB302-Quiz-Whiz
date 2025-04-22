@@ -73,6 +73,17 @@ public class ChatDAO implements IChatDAO {
     }
 
     @Override
+    public void updateChatName(Chat chat) throws SQLException {
+
+        String sql = "UPDATE chats SET name = ? WHERE id = ?";
+        try(PreparedStatement updateChat = connection.prepareStatement(sql)){
+            updateChat.setString(1, chat.getName());
+
+            updateChat.executeUpdate();
+        }
+    }
+
+    @Override
     public void deleteChat(Chat chat) {
         try {
             PreparedStatement deleteChat = connection.prepareStatement(

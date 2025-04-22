@@ -7,8 +7,11 @@ import ai.tutor.cab302exceptionalhandlers.model.MessageDAO;
 
 import java.sql.SQLException;
 import java.util.List;
+import javafx.fxml.FXML;
 
 public class ChatController {
+    @FXML
+    private
     private ChatDAO chatDAO;
     private MessageDAO messageDAO;
 
@@ -35,13 +38,6 @@ public class ChatController {
             // Add new chat to database
             chatDAO.createChat(newChat);
 
-            // Create the first messageDAO object
-            String content = "Whatever the initial welcome messageDAO may be";
-            Message firstMessage = new Message(newChat.getId(), content, false, false);
-
-            // Add first messageDAO to database
-            messageDAO.createMessage(firstMessage);
-
             return newChat;
 
         } catch (SQLException e) {
@@ -59,6 +55,9 @@ public class ChatController {
     public List<Message> loadChatMessages(int chatId) {
         return messageDAO.getAllChatMessages(chatId);
     }
+
+    // Get specific chat with id
+    public Chat getChatById(int chatId) {return chatDAO.getChat(chatId);}
 
     // Update a chat's name
     public boolean updateChatName(int chatId, String newName) {
