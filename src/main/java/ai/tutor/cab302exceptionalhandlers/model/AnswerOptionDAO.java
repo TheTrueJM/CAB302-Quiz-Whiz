@@ -21,6 +21,7 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
                     + "questionNumber INTEGER PRIMARY KEY,"
                     + "option VARCHAR PRIMARY KEY,"
                     + "value VARCHAR NOT NULL,"
+                    + "isAnswer INTEGER NOT NULL,"
                     + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE"
                     + ")"
             );
@@ -30,12 +31,13 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
 
     @Override
     public void createAnswerOption(AnswerOption answerOption) throws SQLException {
-        String sql = "INSERT INTO answerOptions (messageId, questionNumber, option, value) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO answerOptions (messageId, questionNumber, option, value, isAnswer) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement createAnswerOption = connection.prepareStatement(sql)) {
             createAnswerOption.setInt(1, answerOption.getMessageId());
             createAnswerOption.setInt(2, answerOption.getQuestionNumber());
             createAnswerOption.setString(3, answerOption.getOption());
             createAnswerOption.setString(4, answerOption.getValue());
+            createAnswerOption.setInt(5, answerOption.getIsAnswer() ? 1 : 0);
             createAnswerOption.executeUpdate();
         }
     }
@@ -51,7 +53,8 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
 
             if (resultSet.next()) {
                 String value = resultSet.getString("value");
-                return new AnswerOption(messageId, questionNumber, option, value);
+                int isAnswer = resultSet.getInt("isAnswer");
+                return new AnswerOption(messageId, questionNumber, option, value, isAnswer == 1);
             }
         }
         return null;
@@ -69,7 +72,8 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
             while (resultSet.next()) {
                 String option = resultSet.getString("option");
                 String value = resultSet.getString("value");
-                AnswerOption answerOption = new AnswerOption(messageId, questionNumber, option, value);
+                int isAnswer = resultSet.getInt("isAnswer");
+                AnswerOption answerOption = new AnswerOption(messageId, questionNumber, option, value, isAnswer == 1);
                 questionAnswerOptions.add(answerOption);
             }
         }
