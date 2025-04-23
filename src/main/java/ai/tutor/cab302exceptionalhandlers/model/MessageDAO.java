@@ -13,17 +13,17 @@ public class MessageDAO implements IMessageDAO {
         createTable();
     }
 
-    private void createTable() throws SQLException {
-        try (Statement createTable = connection.createStatement()) {
+    private void createTable() {
+        try(Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS messages ("
-                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "chatId INTEGER NOT NULL"
-                    + "content VARCHAR NOT NULL,"
-                    + "fromUser INTEGER NOT NULL,"
-                    + "isQuiz INTEGER NOT NULL,"
-                    + "FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE"
-                    + ")"
+                            + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                            + "chatId INTEGER NOT NULL,"
+                            + "content VARCHAR NOT NULL,"
+                            + "fromUser INTEGER NOT NULL,"
+                            + "isQuiz INTEGER NOT NULL,"
+                            + "FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE"
+                            + ")"
             );
         }
     }
