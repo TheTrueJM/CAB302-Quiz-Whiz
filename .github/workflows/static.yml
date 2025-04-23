@@ -17,11 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Amazon Correto 21DK 21
+      - name: Set up Amazon Corretto 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'correto'
+          distribution: 'corretto'
 
       - name: Generate site
         run: mvn site
