@@ -1,9 +1,8 @@
-package ai.tutor.cab302exceptionalhandlers;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,21 +10,28 @@ import org.junit.jupiter.api.Test;
 
 import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
 import ai.tutor.cab302exceptionalhandlers.model.User;
-import ai.tutor.cab302exceptionalhandlers.model.UserDAO;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 
 public class AuthControllerTest {
-    private Connection connection;
     private SQLiteConnection db;
-    private UserDAO userDAO;
+    private Connection connection;
     private AuthController authController;
+
+    private static final User[] Users = {
+            new User("TestUser1", "password"),
+            new User("TestUser2", "password")
+    };
+
 
     @BeforeEach
     public void setUp() {
-        db = new SQLiteConnection("testing");
-        connection = db.getInstance();
-        userDAO = new UserDAO(db);
-        authController = new AuthController(userDAO);
+        try {
+            db = new SQLiteConnection("testing");
+            connection = db.getInstance();
+            authController = new AuthController();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterEach
@@ -34,95 +40,177 @@ public class AuthControllerTest {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
-        } catch (SQLException e) {
+            Files.deleteIfExists(Paths.get("testing.db"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
     public void testValidSignUp() {
-        User newUser = authController.signUp("testuser", "password123");
-        assertNotNull(newUser, "User should be created successfully.");
-        assertEquals("testuser", newUser.getUsername(), "Username should match.");
-        assertNotNull(userDAO.getUser("testuser"), "User should exist in the database.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+
+        assertNotNull(newUser);
+        assertEquals(1, newUser.getId()); // 0 or 1 for first autoIncrement ID?
     }
 
     @Test
     public void testSignUpExistingUsername() {
-        authController.signUp("existinguser", "password123");
-        User newUser = authController.signUp("existinguser", "anotherpassword");
-        assertNull(newUser, "Sign up should fail for existing username.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User existingUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+
+        assertNull(existingUser);
     }
 
     @Test
     public void testSignUpEmptyUsername() {
-        User newUser = authController.signUp("", "password123");
-        assertNull(newUser, "Sign up should fail for empty username.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                "", user.getPassword()
+        );
+
+        assertNull(newUser);
     }
 
     @Test
     public void testSignUpNullUsername() {
-        User newUser = authController.signUp(null, "password123");
-        assertNull(newUser, "Sign up should fail for null username.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                null, user.getPassword()
+        );
+
+        assertNull(newUser);
     }
 
     @Test
     public void testSignUpEmptyPassword() {
-        User newUser = authController.signUp("newuser", "");
-        assertNull(newUser, "Sign up should fail for empty password.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), ""
+        );
+
+        assertNull(newUser);
     }
 
     @Test
     public void testSignUpNullPassword() {
-        User newUser = authController.signUp("newuser", null);
-        assertNull(newUser, "Sign up should fail for null password.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), null
+        );
+
+        assertNull(newUser);
     }
 
     @Test
     public void testValidLogin() {
-        authController.signUp("loginuser", "correctpassword");
-        User loggedInUser = authController.login("loginuser", "correctpassword");
-        assertNotNull(loggedInUser, "Login should be successful.");
-        assertEquals("loginuser", loggedInUser.getUsername(), "Logged in username should match.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                user.getUsername(), user.getPassword()
+        );
+
+        assertNotNull(loggedInUser);
+        assertEquals(newUser.getId(), loggedInUser.getId());
     }
 
     @Test
     public void testLoginInvalidUsername() {
-        User loggedInUser = authController.login("nonexistentuser", "password123");
-        assertNull(loggedInUser, "Login should fail for non-existent username.");
+        User user = Users[0];
+        User loggedInUser = authController.login(
+                user.getUsername(), user.getPassword()
+        );
+
+        assertNull(loggedInUser);
     }
 
     @Test
     public void testLoginIncorrectPassword() {
-        authController.signUp("loginuser", "correctpassword");
-        User loggedInUser = authController.login("loginuser", "wrongpassword");
-        assertNull(loggedInUser, "Login should fail for incorrect password.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                user.getUsername(), "WrongPassword"
+        );
+
+        assertNull(loggedInUser);
     }
 
     @Test
     public void testLoginEmptyUsername() {
-        User loggedInUser = authController.login("", "password123");
-        assertNull(loggedInUser, "Login should fail for empty username.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                "", user.getPassword()
+        );
+
+        assertNull(loggedInUser);
     }
 
     @Test
     public void testLoginNullUsername() {
-        User loggedInUser = authController.login(null, "password123");
-        assertNull(loggedInUser, "Login should fail for null username.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                null, user.getPassword()
+        );
+
+        assertNull(loggedInUser);
     }
 
     @Test
     public void testLoginEmptyPassword() {
-        authController.signUp("loginuser", "correctpassword");
-        User loggedInUser = authController.login("loginuser", "");
-        assertNull(loggedInUser, "Login should fail for empty password.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                user.getUsername(), ""
+        );
+
+        assertNull(loggedInUser);
     }
 
     @Test
     public void testLoginNullPassword() {
-        authController.signUp("loginuser", "correctpassword");
-        User loggedInUser = authController.login("loginuser", null);
-        assertNull(loggedInUser, "Login should fail for null password.");
+        User user = Users[0];
+        User newUser = authController.signUp(
+                user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                user.getUsername(), null
+        );
+
+        assertNull(loggedInUser);
     }
 
     // TODO: do case sensitivity tests???

@@ -4,7 +4,6 @@ public class QuizQuestion {
     private final int messageId;
     private final int number;
     private final String question;
-    // NOTE: Question Answer Here?
 
 
     public QuizQuestion(int messageId, int number, String question) {
