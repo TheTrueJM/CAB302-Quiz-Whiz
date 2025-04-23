@@ -8,38 +8,33 @@ public class ChatDAO implements IChatDAO {
     private final Connection connection;
 
 
-    public ChatDAO(SQLiteConnection sqliteConnection) {
+    public ChatDAO(SQLiteConnection sqliteConnection) throws SQLException, RuntimeException {
         connection = sqliteConnection.getInstance();
         createTable();
     }
 
-    private void createTable() {
-        try {
-            Statement createTable = connection.createStatement();
+    private void createTable() throws SQLException {
+        try (Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS chats ("
-                            + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "userId INTEGER NOT NULL"
-                            + "name VARCHAR NOT NULL,"
-                            + "responseAttitude VARCHAR NOT NULL,"
-                            + "quizDifficulty VARCHAR NOT NULL,"
-                            + "educationLevel VARCHAR,"
-                            + "studyArea VARCHAR,"
-                            + "FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE"
-                            + ")"
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "userId INTEGER NOT NULL"
+                    + "name VARCHAR NOT NULL,"
+                    + "responseAttitude VARCHAR NOT NULL,"
+                    + "quizDifficulty VARCHAR NOT NULL,"
+                    + "educationLevel VARCHAR,"
+                    + "studyArea VARCHAR,"
+                    + "FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE"
+                    + ")"
             );
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
 
     @Override
-    public void createChat(Chat chat) {
-        try {
-            PreparedStatement createChat = connection.prepareStatement(
-                    "INSERT INTO users (userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?)"
-            );
+    public void createChat(Chat chat) throws SQLException {
+        String sql = "INSERT INTO users (userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement createChat = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createChat.setInt(1, chat.getUserId());
             createChat.setString(2, chat.getName());
             createChat.setString(3, chat.getResponseAttitude());
@@ -48,23 +43,18 @@ public class ChatDAO implements IChatDAO {
             createChat.setString(6, chat.getStudyArea());
             createChat.executeUpdate();
 
-            // Set the id of the new Chat
-            Statement getKey = connection.createStatement();
-            ResultSet generatedKeys = getKey.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                chat.setId(generatedKeys.getInt(1));
+            try (ResultSet generatedKeys = createChat.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    chat.setId(generatedKeys.getInt(1));
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     @Override
-    public void updateChat(Chat chat) {
-        try {
-            PreparedStatement updateChat = connection.prepareStatement(
-                    "UPDATE chats SET name = ?, responseAttitude = ?, quizDifficulty = ?, educationLevel = ?, studyArea = ? WHERE id = ?"
-            );
+    public void updateChat(Chat chat) throws SQLException {
+        String sql = "UPDATE chats SET name = ?, responseAttitude = ?, quizDifficulty = ?, educationLevel = ?, studyArea = ? WHERE id = ?";
+        try (PreparedStatement updateChat = connection.prepareStatement(sql)) {
             updateChat.setString(1, chat.getName());
             updateChat.setString(2, chat.getResponseAttitude());
             updateChat.setString(3, chat.getQuizDifficulty());
@@ -72,32 +62,25 @@ public class ChatDAO implements IChatDAO {
             updateChat.setString(5, chat.getStudyArea());
             updateChat.setInt(6, chat.getId());
             updateChat.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     @Override
-    public void deleteChat(Chat chat) {
-        try {
-            PreparedStatement deleteChat = connection.prepareStatement(
-                    "DELETE FROM chats WHERE id = ?"
-            );
+    public void deleteChat(Chat chat) throws SQLException {
+        String sql = "DELETE FROM chats WHERE id = ?";
+        try (PreparedStatement deleteChat = connection.prepareStatement(sql)) {
             deleteChat.setInt(1, chat.getId());
             deleteChat.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     @Override
-    public Chat getChat(int id) {
-        try {
-            PreparedStatement readChat = connection.prepareStatement(
-                    "SELECT * FROM chats WHERE id = ?"
-            );
+    public Chat getChat(int id) throws SQLException {
+        String sql = "SELECT * FROM chats WHERE id = ?";
+        try (PreparedStatement readChat = connection.prepareStatement(sql)) {
             readChat.setInt(1, id);
             ResultSet resultSet = readChat.executeQuery();
+
             if (resultSet.next()) {
                 int userId = resultSet.getInt("userId");
                 String name = resultSet.getString("name");
@@ -109,19 +92,15 @@ public class ChatDAO implements IChatDAO {
                 chat.setId(id);
                 return chat;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public List<Chat> getAllUserChats(int userId) {
+    public List<Chat> getAllUserChats(int userId) throws SQLException {
         List<Chat> userChats = new ArrayList<>();
-        try {
-            PreparedStatement readUserChats = connection.prepareStatement(
-                    "SELECT * FROM chats WHERE userId = ?"
-            );
+        String sql = "SELECT * FROM chats WHERE userId = ?";
+        try (PreparedStatement readUserChats = connection.prepareStatement(sql)) {
             readUserChats.setInt(1, userId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
@@ -135,8 +114,6 @@ public class ChatDAO implements IChatDAO {
                 chat.setId(id);
                 userChats.add(chat);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return userChats;
     }
