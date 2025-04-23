@@ -1,16 +1,12 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 
 import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
 import ai.tutor.cab302exceptionalhandlers.model.User;
