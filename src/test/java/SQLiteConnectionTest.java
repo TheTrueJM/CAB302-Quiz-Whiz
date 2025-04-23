@@ -1,5 +1,3 @@
-package ai.tutor.cab302exceptionalhandlers.model;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,8 +19,12 @@ public class SQLiteConnectionTest {
 
     @BeforeEach
     public void setUp() {
-        db = new SQLiteConnection("testing");
-        connection = db.getInstance();
+        try {
+            db = new SQLiteConnection("testing");
+            connection = db.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
