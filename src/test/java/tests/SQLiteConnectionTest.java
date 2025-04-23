@@ -31,14 +31,14 @@ public class SQLiteConnectionTest {
         }
     }
 
-    // SQLiteConnection("testing")
+    // SQLiteConnection(":memory:")
     @Test
     public void testDatabaseConnectionParameterized() throws SQLException {
         assertNotNull(connection);
         assertFalse(connection.isClosed());
     }
 
-    // default constructor
+    // default constructor (tutor.db)
     @Test
     public void testDatabaseConnectionDefault() throws SQLException {
         SQLiteConnection defaultDb = new SQLiteConnection();
