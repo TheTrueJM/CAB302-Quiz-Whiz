@@ -30,7 +30,7 @@ public class ChatControllerTest {
     };
 
     private static final Message[] Messages = {
-            new Message(1, "Chat Message 1", true, false),
+            new Message(1, "Chat Message 1", true, true),
             new Message(1, "Chat Message 2", false, true),
             new Message(1, "Chat Message 3", true, false),
             new Message(1, "Chat Message 4", false, false),
