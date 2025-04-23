@@ -131,8 +131,13 @@ public class AuthControllerTest {
     @Test
     public void testLoginInvalidUsername() {
         User user = Users[0];
-        User loggedInUser = authController.login(
+        User newUser = authController.signUp(
                 user.getUsername(), user.getPassword()
+        );
+        assertNotNull(newUser);
+
+        User loggedInUser = authController.login(
+                "WrongUsername", user.getPassword()
         );
 
         assertNull(loggedInUser);
