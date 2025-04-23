@@ -19,6 +19,7 @@
     <sqlite.version>3.49.1.0</sqlite.version>
     <maven.surefire.version>3.2.5</maven.surefire.version>
     <spotless.version>2.44.4</spotless.version>
+    <javadoc.version>3.11.2</javadoc.version>
   </properties>
 
   <dependencies>
@@ -130,7 +131,7 @@
               <version>1.8</version>
               <style>AOSP</style>
               <reflowLongStrings>true</reflowLongStrings>
-              <formatJavadoc>false</formatJavadoc>
+              <formatJavadoc>true</formatJavadoc>
             </googleJavaFormat>
             <removeUnusedImports/>
             <formatAnnotations/>
@@ -138,6 +139,28 @@
           </java>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${javadoc.version}</version>
+      </plugin>
     </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${javadoc.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
