@@ -1,6 +1,7 @@
-import java.nio.file.Files;
-import java.nio.file.Paths;
+package tests;
+
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,14 +35,10 @@ public class ChatControllerTest {
 
 
     @BeforeEach
-    public void setUp() {
-        try {
-            db = new SQLiteConnection("testing");
-            connection = db.getInstance();
-            chatController = new ChatController();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setUp() throws SQLException {
+        db = new SQLiteConnection(true);
+        connection = db.getInstance();
+        chatController = new ChatController();
     }
 
 
@@ -51,8 +48,7 @@ public class ChatControllerTest {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
-            Files.deleteIfExists(Paths.get("testing.db"));
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

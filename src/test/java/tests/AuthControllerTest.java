@@ -1,8 +1,9 @@
+package tests;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,28 +23,18 @@ public class AuthControllerTest {
             new User("TestUser2", "password")
     };
 
-
     @BeforeEach
-    public void setUp() {
-        try {
-            db = new SQLiteConnection("testing");
-            connection = db.getInstance();
-            authController = new AuthController();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setUp() throws SQLException {
+        db = new SQLiteConnection(true);
+        connection = db.getInstance();
+        authController = new AuthController();
     }
 
     @AfterEach
-    public void tearDown() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-            Files.deleteIfExists(Paths.get("testing.db"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void tearDown() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+    }
     }
 
     @Test
