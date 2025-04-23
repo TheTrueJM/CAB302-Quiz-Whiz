@@ -21,6 +21,9 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
+      - name: "Compile Project"
+        run: mvn compile
+
       - name: Generate site
         run: mvn site
 
