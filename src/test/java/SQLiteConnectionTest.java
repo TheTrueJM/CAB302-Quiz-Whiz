@@ -15,14 +15,16 @@ import java.nio.file.Paths;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 
 public class SQLiteConnectionTest {
-    private Connection connection;
     private SQLiteConnection db;
+    private Connection connection;
+
 
     @BeforeEach
     public void setUp() {
         db = new SQLiteConnection("testing");
         connection = db.getInstance();
     }
+
 
     @AfterEach
     public void tearDown() {
@@ -35,6 +37,7 @@ public class SQLiteConnectionTest {
             e.printStackTrace();
         }
     }
+
 
     // SQLiteConnection("testing")
     @Test
