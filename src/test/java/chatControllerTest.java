@@ -1,23 +1,19 @@
 package ai.tutor.cab302exceptionalhandlers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
+import ai.tutor.cab302exceptionalhandlers.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
-import ai.tutor.cab302exceptionalhandlers.model.Chat;
-import ai.tutor.cab302exceptionalhandlers.model.ChatDAO;
-import ai.tutor.cab302exceptionalhandlers.model.Message;
-import ai.tutor.cab302exceptionalhandlers.model.MessageDAO;
-import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class chatControllerTest {
     private Connection connection;
@@ -32,7 +28,7 @@ public class chatControllerTest {
         connection = db.getInstance();
         chatDAO = new ChatDAO(db);
         messageDAO = new MessageDAO(db);
-        chatController = new ChatController(chatDAO, messageDAO);
+        chatController = new ChatController(db);
     }
 
     @AfterEach
@@ -48,17 +44,17 @@ public class chatControllerTest {
     }
 
     @Test
-    public void testCreateNewChat() {
-        Chat newChat = chatController.createNewChat(1, "Test Chat", "helpful", "Easy", "High School", "Math");
+    public void testCreateNewChat() throws SQLException {
+        Chat newChat = chatController.createNewChat( "Test Chat", "helpful", "Easy", "High School", "Math");
 
         assertNotNull(newChat);
         assertEquals("Test Chat", newChat.getName());
     }
 
     @Test
-    public void testGetUserChats() {
-        chatController.createNewChat(1, "Test Chat 1", "helpful", "Easy", "High School", "Math");
-        chatController.createNewChat(1, "Test Chat 2", "helpful", "Medium", "College", "Science");
+    public void testGetUserChats() throws SQLException{
+        chatController.createNewChat( "Test Chat 1", "helpful", "Easy", "High School", "Math");
+        chatController.createNewChat( "Test Chat 2", "helpful", "Medium", "College", "Science");
 
         List<Chat> userChats = chatController.getUserChats(1);
 
@@ -67,8 +63,8 @@ public class chatControllerTest {
     }
 
     @Test
-    public void testLoadChatMessages() {
-        Chat newChat = chatController.createNewChat(1, "Test Chat", "helpful", "Easy", "High School", "Math");
+    public void testLoadChatMessages() throws SQLException{
+        Chat newChat = chatController.createNewChat( "Test Chat", "helpful", "Easy", "High School", "Math");
         assertNotNull(newChat);
 
         List<Message> messages = chatController.loadChatMessages(newChat.getId());
@@ -78,12 +74,12 @@ public class chatControllerTest {
     }
 
     @Test
-    public void testUpdateChatName() {
-        Chat newChat = chatController.createNewChat(1, "Initial Name", "helpful", "Easy", "High School", "Math");
+    public void testUpdateChatName() throws SQLException{
+        Chat newChat = chatController.createNewChat ( "Initial Name", "helpful", "Easy", "High School", "Math");
         assertNotNull(newChat);
 
-        boolean updated = chatController.updateChatName(newChat.getId(), "Updated Name");
-        assertEquals(true, updated);
+        boolean updated = chatController.updateChatName(newChat, "Updated Name");
+        assertTrue(updated);
 
         Chat updatedChat = chatDAO.getChat(newChat.getId());
         assertNotNull(updatedChat);
@@ -91,38 +87,32 @@ public class chatControllerTest {
     }
 
     @Test
-    public void testUpdateChatNameEmpty() {
-        Chat newChat = chatController.createNewChat(1, "Initial Name", "helpful", "Easy", "High School", "Math");
+    public void testUpdateChatNameEmpty() throws SQLException{
+        Chat newChat = chatController.createNewChat( "Initial Name", "helpful", "Easy", "High School", "Math");
         assertNotNull(newChat);
 
-        boolean updated = chatController.updateChatName(newChat.getId(), "");
-        assertEquals(false, updated);
+        boolean updated = chatController.updateChatName(newChat, "");
+        assertFalse(updated);
     }
 
     @Test
-    public void testUpdateChatNameNull() {
-        Chat newChat = chatController.createNewChat(1, "Initial Name", "helpful", "Easy", "High School", "Math");
+    public void testUpdateChatNameNull() throws SQLException{
+        Chat newChat = chatController.createNewChat( "Initial Name", "helpful", "Easy", "High School", "Math");
         assertNotNull(newChat);
 
-        boolean updated = chatController.updateChatName(newChat.getId(), null);
-        assertEquals(false, updated);
+        boolean updated = chatController.updateChatName(newChat, null);
+        assertFalse(updated);
     }
 
     @Test
-    public void testUpdateChatNameInvalidId() {
-        boolean updated = chatController.updateChatName(-1, "New Name");
-        assertEquals(false, updated);
+    public void testCreateNewChatEmptyName() throws SQLException{
+        Chat newChat = chatController.createNewChat( "", "helpful", "Easy", "High School", "Math");
+        assertNull(newChat);
     }
 
     @Test
-    public void testCreateNewChatEmptyName() {
-        Chat newChat = chatController.createNewChat(1, "", "helpful", "Easy", "High School", "Math");
-        assertEquals(null, newChat);
-    }
-
-    @Test
-    public void testCreateNewChatNullName() {
-        Chat newChat = chatController.createNewChat(1, null, "helpful", "Easy", "High School", "Math");
-        assertEquals(null, newChat);
+    public void testCreateNewChatNullName() throws SQLException{
+        Chat newChat = chatController.createNewChat( null, "helpful", "Easy", "High School", "Math");
+        assertNull(newChat);
     }
 }

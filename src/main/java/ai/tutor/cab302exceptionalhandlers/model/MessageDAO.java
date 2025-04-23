@@ -14,20 +14,19 @@ public class MessageDAO implements IMessageDAO {
     }
 
     private void createTable() {
-        try {
-            Statement createTable = connection.createStatement();
+        try(Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS messages ("
                             + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "chatId INTEGER NOT NULL"
+                            + "chatId INTEGER NOT NULL,"
                             + "content VARCHAR NOT NULL,"
                             + "fromUser INTEGER NOT NULL,"
                             + "isQuiz INTEGER NOT NULL,"
                             + "FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE"
                             + ")"
             );
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create chats table", e);
         }
     }
 
@@ -53,12 +52,10 @@ public class MessageDAO implements IMessageDAO {
     }
 
     @Override
-    public List<Message> getAllChatMessages(int chatId) {
+    public List<Message> getAllChatMessages(int chatId) throws SQLException{
         List<Message> chatMessages = new ArrayList<>();
-        try {
-            PreparedStatement readUserChats = connection.prepareStatement(
-                    "SELECT * FROM messages WHERE chatId = ?"
-            );
+        String sql = "SELECT * FROM messages WHERE chatId = ?";
+        try (PreparedStatement readUserChats = connection.prepareStatement(sql)) {
             readUserChats.setInt(1, chatId);
             ResultSet resultSet = readUserChats.executeQuery();
             while (resultSet.next()) {
@@ -70,8 +67,6 @@ public class MessageDAO implements IMessageDAO {
                 message.setId(id);
                 chatMessages.add(message);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return chatMessages;
     }

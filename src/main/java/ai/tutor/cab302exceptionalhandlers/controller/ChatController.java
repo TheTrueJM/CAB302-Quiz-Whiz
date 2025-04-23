@@ -1,90 +1,232 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.model.Chat;
-import ai.tutor.cab302exceptionalhandlers.model.ChatDAO;
-import ai.tutor.cab302exceptionalhandlers.model.Message;
-import ai.tutor.cab302exceptionalhandlers.model.MessageDAO;
+import ai.tutor.cab302exceptionalhandlers.model.*;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class ChatController {
-    private ChatDAO chatDAO;
-    private MessageDAO messageDAO;
+    @FXML
+    private ListView<Chat> chatsListView;
+    @FXML
+    private ListView<Message> messagesListView;
+    @FXML
+    private TextField chatNameField;
+    @FXML
+    private Button updateChatButton;
+    @FXML
+    private TextField messageInputField;
 
-    public ChatController(ChatDAO chatDAO, MessageDAO messageDAO) {
-        this.chatDAO = chatDAO;
-        this.messageDAO = messageDAO;
+    // TODO: Insert Auth object when implemented
+    private final ChatDAO chatDAO;
+    private final MessageDAO messageDAO;
 
+    private final User currentUser;
+
+    public ChatController(SQLiteConnection db) {
+        this.chatDAO = new ChatDAO(db);
+        this.messageDAO = new MessageDAO(db);
+
+        // TODO: User will be extracted from AuthService when implemented
+        this.currentUser = new User("Temp", "1234");
+        currentUser.setId(1);
+        if (currentUser == null) {
+            throw new IllegalStateException("No user is logged in");
+        }
     }
 
-    // Creates a new chat and adds the first messageDAO
-    public Chat createNewChat(int userId, String name, String responseAttitude,
-                              String quizDifficulty, String educationLevel,
-                              String studyArea) {
+    @FXML
+    public void initialize() {
+        populateChatsListView();
+        setupChatSelectionListener();
+        setupMessagesListView();
+        setupUpdateChatNameButton();
+    }
 
+    private void showErrorAlert (String message){
+        // Create error alert object
+        Alert alert = new Alert(Alert.AlertType.ERROR, message);
+        alert.showAndWait();
+    }
+
+    private void populateChatsListView () {
+        try {
+            chatsListView.getItems().clear();
+            chatsListView.getItems().addAll(chatDAO.getAllUserChats(currentUser.getId()));
+        } catch (SQLException e) {
+            showErrorAlert("Failed to load chats: " + e.getMessage());
+        }
+    }
+
+    private void setupChatSelectionListener() {
+        chatsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldChat, newChat) -> {
+            if (newChat != null) {
+                try {
+                    messagesListView.getItems().clear();
+                    messagesListView.getItems().addAll(messageDAO.getAllChatMessages(newChat.getId()));
+                    chatNameField.setText(newChat.getName());
+                } catch (SQLException e) {
+                    showErrorAlert("Failed to load messages: " + e.getMessage());
+                }
+            } else {
+                chatNameField.setText("");
+                messagesListView.getItems().clear();
+            }
+        });
+    }
+
+    private void setupMessagesListView() {
+        messagesListView.setCellFactory(listView -> new ListCell<Message>() {
+            @Override
+            protected void updateItem(Message message, boolean empty) {
+                super.updateItem(message, empty);
+                if (empty || message == null) {
+                    setText(null);
+                    setStyle("");
+                    setGraphic(null);
+                } else {
+                    setText(message.getContent());
+                    //TODO: Remember to Style message cells based on sender in css
+                    if (message.getFromUser()) {
+                        getStyleClass().add("user-message");
+                    } else {
+                        getStyleClass().add("ai-message");
+                    }
+                    // Handle special AI Quiz messages
+                    if (!message.getFromUser() && message.getContent().contains("Here is the quiz you asked for:")) {
+                        Button takeQuizButton = new Button("Take Quiz");
+                        takeQuizButton.setOnAction(event -> {
+                            // TODO: Logic to handle quiz action
+                        });
+                        setGraphic(takeQuizButton);
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            }
+        });
+    }
+
+    public void sendAndReceiveMessage() {
+        Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
+        if (selectedChat == null) {
+            showErrorAlert("No chat selected");
+            return;
+        }
+        String content = messageInputField.getText();
+        if (content == null || content.trim().isEmpty()) {
+            showErrorAlert("Message cannot be empty");
+            return;
+        }
+        try {
+            // Create a new user message
+            Message userMessage = new Message(selectedChat.getId(), content, true, false);
+            messageDAO.createMessage(userMessage);
+
+            // Refresh the messages list
+            messagesListView.getItems().clear();
+            messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
+
+            // Clear the input field
+            messageInputField.clear();
+
+            //TODO: Pass message prompt to AI
+            // Simulate an AI response for placeholder
+            Message aiResponse = new Message(selectedChat.getId(), "I received your message: " + content, false, false);
+            messageDAO.createMessage(aiResponse);
+
+            // Refresh again to show the AI response
+            messagesListView.getItems().clear();
+            messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
+        } catch (SQLException e) {
+            showErrorAlert("Failed to send message: " + e.getMessage());
+        }
+    }
+
+    private void setupUpdateChatNameButton() {
+        updateChatButton.setOnAction(event -> {
+            Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
+            String newName = chatNameField.getText();
+            if (selectedChat == null) {
+                showErrorAlert("No chat selected");
+                return;
+            }
+            updateChatName(selectedChat, newName); // Let updateChatName handle validation
+            chatNameField.setText(selectedChat.getName());
+        });
+    }
+
+    public void handleCreateChatButton() {
+        // TODO: Create chat based on parameters extracted from UI elements and refresh page
+    }
+
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty,
+                              String educationLevel, String studyArea) throws SQLException {
         if (name == null || name.trim().isEmpty()) {
             System.err.println("Chat name cannot be empty");
             return null;
         }
 
-        // Create new chat object
-        Chat newChat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty,
+                educationLevel, studyArea);
+        chatDAO.createChat(newChat);
+        return newChat;
+    }
 
-        try {
-            // Add new chat to database
-            chatDAO.createChat(newChat);
-
-            // Create the first messageDAO object
-            String content = "Whatever the initial welcome messageDAO may be";
-            Message firstMessage = new Message(newChat.getId(), content, false, false);
-
-            // Add first messageDAO to database
-            messageDAO.createMessage(firstMessage);
-
-            return newChat;
-
-        } catch (SQLException e) {
-            System.err.println("Failed to create chat or messageDAO: " + e.getMessage());
+    // Get all chats for a user
+    public List<Chat> getUserChats ( int userId) {
+        try{
+            return chatDAO.getAllUserChats(userId);
+        }catch (SQLException e){
+            System.err.println("Failed to load chats");
             return null;
         }
     }
 
-    // Get all chats for a user
-    public List<Chat> getUserChats(int userId) {
-        return chatDAO.getAllUserChats(userId);
-    }
-
     // Load messages for a specific chat
-    public List<Message> loadChatMessages(int chatId) {
-        return messageDAO.getAllChatMessages(chatId);
+    public List<Message> loadChatMessages ( int chatId){
+        try{
+            return messageDAO.getAllChatMessages(chatId);
+        }catch (SQLException e){
+            System.err.println("Failed to load messages");
+            return null;
+        }
     }
 
     // Update a chat's name
-    public boolean updateChatName(int chatId, String newName) {
-        if (chatId <= 0) {
-            System.err.println("Invalid chat ID");
+    public boolean updateChatName (Chat chat, String newName){
+        if (chat == null) {
+            System.err.println("Chat cannot be null");
             return false;
         }
-            if (newName == null || newName.trim().isEmpty()) {
-                System.err.println("Chat name cannot be empty");
-                return false;
-            }
-            try {
-                Chat currentChat = chatDAO.getChat(chatId);
-                if (currentChat == null) {
-                    System.err.println("Chat not found with ID: " + chatId);
-                    return false;
-                }
-                Chat updatedChat = new Chat(currentChat.getUserId(), newName, currentChat.getResponseAttitude(),
-                        currentChat.getQuizDifficulty(), currentChat.getEducationLevel(),
-                        currentChat.getStudyArea());
+        if (newName == null || newName.trim().isEmpty()) {
+            System.err.println("Chat name cannot be empty");
+            return false;
+        }
+        if (currentUser == null || chat.getUserId() != currentUser.getId()) {
+            System.err.println("Chat does not belong to the current user");
+            return false;
+        }
 
-                chatDAO.updateChat(updatedChat);
-                return true;
-            } catch (SQLException e) {
-                System.err.println("Failed to update chat name: " + e.getMessage());
-                return false;
-            }
+        try {
+            // Create a new Chat object with the updated name
+            Chat updatedChat = new Chat(chat.getUserId(), newName, chat.getResponseAttitude(),
+                    chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea());
+
+            // Ensure the ID is the same
+            updatedChat.setId(chat.getId());
+
+            chatDAO.updateChatName(updatedChat);
+
+            // Update the in-memory chat object
+            chat.setName(newName);
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Failed to update chat name: " + e.getMessage());
+            return false;
         }
     }
+}
