@@ -24,17 +24,39 @@ public class ChatControllerTest {
 
     private static final Map<String, Chat> Chats = new HashMap<>();
     static {
-        Chats.put("Chat1", new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"));
-        Chats.put("Chat2", new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"));
-        Chats.put("Chat3", new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT"));
+        Chats.put("chat1", new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"));
+        Chats.put("chat2", new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"));
+        Chats.put("chat3", new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT"));
     }
 
     private static final Map<String, Message> Messages = new HashMap<>();
     static {
-        Messages.put("MessageUser", new Message(1, "Message from User", true, false));
-        Messages.put("MessageAI", new Message(1, "Message from AI", false, false));
-        Messages.put("MessageUserQuiz", new Message(1, "Quiz Message from User", true, true));
-        Messages.put("MessageAIQuiz", new Message(1, "Quiz Message from AI", false, true));
+        Messages.put("messageUser", new Message(1, "Message from User", true, false));
+        Messages.put("messageAI", new Message(1, "Message from AI", false, false));
+        Messages.put("messageUserQuiz", new Message(1, "Quiz Message from User", true, true));
+        Messages.put("messageAIQuiz", new Message(1, "Quiz Message from AI", false, true));
+    }
+
+    // TODO: Figure out format for AI quiz response
+    private static final Map<String, String> QuizContent = new HashMap<>();
+    static {
+        QuizContent.put("valid", "[Valid Quiz Content Format]");
+        QuizContent.put("invalidQuiz", "[Invalid Quiz Content Format]");
+        QuizContent.put("invalidQuestion", "[Invalid Quiz Question Content Format]");
+        QuizContent.put("invalidAnswer", "[Invalid Quiz Question Answer Content Format]");
+    }
+
+    private static final Map<String, String> QuestionContent = new HashMap<>();
+    static {
+        QuestionContent.put("valid", "[Valid Quiz Question Content Format]");
+        QuestionContent.put("invalidQuestion", "[Invalid Quiz Question Content Format]");
+        QuestionContent.put("invalidAnswer", "[Invalid Quiz Question Answer Content Format]");
+    }
+
+    private static final Map<String, String> AnswerContent = new HashMap<>();
+    static {
+        AnswerContent.put("valid", "[Valid Quiz Question Answer Content Format]");
+        AnswerContent.put("invalid", "[Invalid Quiz Question Answer Content Format]");
     }
 
 
@@ -64,7 +86,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChat() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -74,7 +96,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatEmptyName() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 "", chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -83,7 +105,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatNullName() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 null, chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -92,7 +114,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatEmptyAttitude() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), "", chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -101,7 +123,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatNullAttitude() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), null, chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -110,7 +132,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatEmptyDifficulty() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), "", chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -119,7 +141,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatNullDifficulty() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), null, chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -128,7 +150,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatEmptyEducation() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), "", chat.getStudyArea()
         );
@@ -138,7 +160,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatNullEducation() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), null, chat.getStudyArea()
         );
@@ -148,7 +170,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatEmptyStudyArea() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), ""
         );
@@ -158,7 +180,7 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatNullStudyArea() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), null
         );
@@ -192,7 +214,7 @@ public class ChatControllerTest {
                     chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
             );
         }
-        Chat findChat = Chats.get("Chat2");
+        Chat findChat = Chats.get("chat2");
         Chat userChat = chatController.getChat(findChat.getId());
         assertNotNull(userChat);
         assertEquals(findChat.getId(), userChat.getId());
@@ -206,7 +228,7 @@ public class ChatControllerTest {
 
     @Test
     public void testUpdateChatName() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -223,7 +245,7 @@ public class ChatControllerTest {
 
     @Test
     public void testUpdateChatNameEmpty() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -239,7 +261,7 @@ public class ChatControllerTest {
 
     @Test
     public void testUpdateChatNameNull() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -261,13 +283,13 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessage() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
 
-        Message message = Messages.get("MessageUser");
+        Message message = Messages.get("messageUser");
         Message newMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
         );
@@ -277,13 +299,13 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessageInvalidChatId() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
 
-        Message message = Messages.get("MessageUser");
+        Message message = Messages.get("messageUser");
         Message newMessage = chatController.createNewChatMessage(
                 -1, message.getContent(), message.getFromUser(), message.getIsQuiz()
         );
@@ -293,13 +315,13 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessageEmptyContent() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
 
-        Message message = Messages.get("MessageUser");
+        Message message = Messages.get("messageUser");
         Message newMessage = chatController.createNewChatMessage(
                 message.getChatId(), "", message.getFromUser(), message.getIsQuiz()
         );
@@ -308,13 +330,13 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessageNullContent() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
 
-        Message message = Messages.get("MessageUser");
+        Message message = Messages.get("messageUser");
         Message newMessage = chatController.createNewChatMessage(
                 message.getChatId(), null, message.getFromUser(), message.getIsQuiz()
         );
@@ -323,13 +345,13 @@ public class ChatControllerTest {
 
     @Test
     public void testGenerateChatMessageResponse() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
 
-        Message message = Messages.get("MessageUser");
+        Message message = Messages.get("messageUser");
         Message userMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
         );
@@ -343,26 +365,26 @@ public class ChatControllerTest {
 
     @Test
     public void testGenerateChatMessageResponseInvalidFromAI() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
 
-        Message message = Messages.get("MessageAI");
-        Message AIMessage = chatController.createNewChatMessage(
+        Message message = Messages.get("messageAI");
+        Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
         );
-        assertNotNull(AIMessage);
+        assertNotNull(aiMessage);
 
-        Message responseMessage = chatController.generateChatMessageResponse(AIMessage);
+        Message responseMessage = chatController.generateChatMessageResponse(aiMessage);
         assertNull(responseMessage);
     }
 
 
     @Test
     public void testGetChatMessages() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -382,7 +404,7 @@ public class ChatControllerTest {
 
     @Test
     public void testGetNoneChatMessages() {
-        Chat chat = Chats.get("Chat1");
+        Chat chat = Chats.get("chat1");
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -391,5 +413,310 @@ public class ChatControllerTest {
         List<Message> messages = chatController.getChatMessages(newChat.getId());
         assertNotNull(messages);
         assertEquals(0, messages.size());
+    }
+
+    @Test
+    public void testCreateNewQuiz() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+        assertEquals(aiMessage.getId(), newQuiz.getMessageId());
+    }
+
+    @Test
+    public void testCreateNewQuizInvalidFromUser() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageUserQuiz");
+        Message userMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(userMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), userMessage
+        );
+        assertNull(newQuiz);
+    }
+
+    @Test
+    public void testCreateNewQuizInvalidQuizContent() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("invalidQuiz"), aiMessage
+        );
+        assertNull(newQuiz);
+    }
+
+    @Test
+    public void testCreateNewQuizInvalidQuestionContent() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("invalidQuestion"), aiMessage
+        );
+        assertNull(newQuiz);
+    }
+
+    @Test
+    public void testCreateNewQuizInvalidAnswerContent() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("invalidAnswer"), aiMessage
+        );
+        assertNull(newQuiz);
+    }
+
+    @Test
+    public void testCreateNewQuizQuestionExistingNumber() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("valid"), newQuiz
+        );
+        assertNotNull(newQuizQuestion);
+
+        QuizQuestion existingQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("valid"), newQuiz
+        );
+        assertNull(existingQuizQuestion);
+    }
+
+    @Test
+    public void testCreateNewQuizQuestion() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("valid"), newQuiz
+        );
+        assertNotNull(newQuizQuestion);
+        assertEquals(newQuiz.getMessageId(), newQuizQuestion.getMessageId());
+    }
+
+    @Test
+    public void testCreateNewQuizQuestionInvalidQuestionContent() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("invalidQuestion"), newQuiz
+        );
+        assertNull(newQuizQuestion);
+    }
+
+    @Test
+    public void testCreateNewQuizQuestionInvalidAnswerContent() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("invalidAnswer"), newQuiz
+        );
+        assertNull(newQuizQuestion);
+    }
+
+    @Test
+    public void testCreateNewQuizQuestionAnswer() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("valid"), newQuiz
+        );
+        assertNotNull(newQuizQuestion);
+
+        AnswerOption newAnswerOption = chatController.createNewQuestionAnswerOption(
+                AnswerContent.get("valid"), newQuizQuestion
+        );
+        assertNotNull(newAnswerOption);
+        assertEquals(newQuizQuestion.getMessageId(), newAnswerOption.getMessageId());
+        assertEquals(newQuizQuestion.getNumber(), newAnswerOption.getQuestionNumber());
+    }
+
+    @Test
+    public void testCreateNewQuizQuestionAnswerExistingAnswer() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("valid"), newQuiz
+        );
+        assertNotNull(newQuizQuestion);
+
+        AnswerOption newAnswerOption = chatController.createNewQuestionAnswerOption(
+                AnswerContent.get("valid"), newQuizQuestion
+        );
+        assertNotNull(newAnswerOption);
+
+        AnswerOption existingAnswerOption = chatController.createNewQuestionAnswerOption(
+                AnswerContent.get("valid"), newQuizQuestion
+        );
+        assertNull(existingAnswerOption);
+    }
+
+
+    @Test
+    public void testCreateNewQuizQuestionAnswerInvalidContent() {
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+
+        Message message = Messages.get("messageAIQuiz");
+        Message aiMessage = chatController.createNewChatMessage(
+                message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
+        );
+        assertNotNull(aiMessage);
+
+        Quiz newQuiz = chatController.createNewQuiz(
+                QuizContent.get("valid"), aiMessage
+        );
+        assertNotNull(newQuiz);
+
+        QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
+                QuestionContent.get("valid"), newQuiz
+        );
+        assertNotNull(newQuizQuestion);
+
+        AnswerOption newAnswerOption = chatController.createNewQuestionAnswerOption(
+                AnswerContent.get("invalid"), newQuizQuestion
+        );
+        assertNull(newAnswerOption);
     }
 }
