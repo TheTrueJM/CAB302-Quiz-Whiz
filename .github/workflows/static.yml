@@ -2,8 +2,6 @@ name: Deploy static content to Pages
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,6 +20,9 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
+
+      - name: "Compile Project"
+        run: mvn compile
 
       - name: Generate site
         run: mvn site
