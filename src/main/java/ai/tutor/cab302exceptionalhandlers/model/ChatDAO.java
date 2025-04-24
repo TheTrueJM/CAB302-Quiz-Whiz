@@ -18,7 +18,7 @@ public class ChatDAO implements IChatDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS chats ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "userId INTEGER NOT NULL"
+                    + "userId INTEGER NOT NULL,"
                     + "name VARCHAR NOT NULL,"
                     + "responseAttitude VARCHAR NOT NULL,"
                     + "quizDifficulty VARCHAR NOT NULL,"
@@ -33,7 +33,7 @@ public class ChatDAO implements IChatDAO {
 
     @Override
     public void createChat(Chat chat) throws SQLException {
-        String sql = "INSERT INTO users (userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO chats (userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement createChat = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createChat.setInt(1, chat.getUserId());
             createChat.setString(2, chat.getName());

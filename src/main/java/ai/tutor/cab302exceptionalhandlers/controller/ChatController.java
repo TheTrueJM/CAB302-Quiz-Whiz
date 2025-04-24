@@ -20,25 +20,21 @@ public class ChatController {
     @FXML
     private TextField messageInputField;
 
-    // TODO: Insert Auth object when implemented
-    private SQLiteConnection db;
+    private User currentUser;
+    private UserDAO userDAO;
     private ChatDAO chatDAO;
     private MessageDAO messageDAO;
 
-    private User currentUser;
+    public ChatController(SQLiteConnection db, User authenticatedUser) throws IllegalStateException {
+        if (authenticatedUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
 
-    public ChatController() {
         try {
-            db = new SQLiteConnection();
+            this.currentUser = authenticatedUser;
+            this.userDAO = new UserDAO(db);
             this.chatDAO = new ChatDAO(db);
             this.messageDAO = new MessageDAO(db);
-
-            // TODO: User will be extracted from AuthService when implemented
-            this.currentUser = new User("Temp", "1234");
-            currentUser.setId(1);
-            if (currentUser == null) {
-                throw new IllegalStateException("No user is logged in");
-            }
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
         }

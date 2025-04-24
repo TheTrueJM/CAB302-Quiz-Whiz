@@ -21,7 +21,7 @@ public class UserAnswerDAO implements IUserAnswerDAO {
                     + "attempt INTEGER PRIMARY KEY NOT NULL,"
                     + "questionNumber INTEGER PRIMARY KEY NOT NULL,"
                     + "answerOption VARCHAR NOT NULL,"
-                    + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE"
+                    + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE,"
                     + "FOREIGN KEY(answerOption) REFERENCES answerOptions(option)"
                     + ")"
             );
