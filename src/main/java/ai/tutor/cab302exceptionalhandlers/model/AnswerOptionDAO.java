@@ -17,11 +17,12 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS answerOptions ("
-                    + "messageId INTEGER PRIMARY KEY,"
-                    + "questionNumber INTEGER PRIMARY KEY,"
-                    + "option VARCHAR PRIMARY KEY,"
+                    + "messageId INTEGER,"
+                    + "questionNumber INTEGER,"
+                    + "option VARCHAR,"
                     + "value VARCHAR NOT NULL,"
                     + "isAnswer INTEGER NOT NULL,"
+                    + "PRIMARY KEY (messageId, questionNumber, option),"
                     + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE"
                     + ")"
             );
@@ -63,7 +64,7 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     @Override
     public List<AnswerOption> getAllQuestionAnswerOptions(int messageId, int questionNumber) throws SQLException {
         List<AnswerOption> questionAnswerOptions = new ArrayList<>();
-        String sql = "SELECT * FROM quizQuestions WHERE messageId = ? AND questionNumber = ?";
+        String sql = "SELECT * FROM answerOptions WHERE messageId = ? AND questionNumber = ?";
         try (PreparedStatement readQuestionAnswerOptions = connection.prepareStatement(sql)) {
             readQuestionAnswerOptions.setInt(1, messageId);
             readQuestionAnswerOptions.setInt(2, questionNumber);

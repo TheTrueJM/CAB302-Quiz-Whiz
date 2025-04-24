@@ -18,7 +18,7 @@ public class MessageDAO implements IMessageDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS messages ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "chatId INTEGER NOT NULL"
+                    + "chatId INTEGER NOT NULL,"
                     + "content VARCHAR NOT NULL,"
                     + "fromUser INTEGER NOT NULL,"
                     + "isQuiz INTEGER NOT NULL,"
