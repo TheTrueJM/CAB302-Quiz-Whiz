@@ -8,6 +8,8 @@ public interface IChatDAO {
 
     public void updateChat(Chat chat) throws SQLException;
 
+    public void updateChatName(Chat chat) throws SQLException;
+
     public void deleteChat(Chat chat) throws SQLException;
 
     public Chat getChat(int id) throws SQLException;

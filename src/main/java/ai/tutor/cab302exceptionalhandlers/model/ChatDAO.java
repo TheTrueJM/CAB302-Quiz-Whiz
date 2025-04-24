@@ -66,6 +66,16 @@ public class ChatDAO implements IChatDAO {
     }
 
     @Override
+    public void updateChatName(Chat chat) throws SQLException {
+        String sql = "UPDATE chats SET name = ? WHERE id = ?";
+        try (PreparedStatement updateChatName = connection.prepareStatement(sql)) {
+            updateChatName.setString(1, chat.getName());
+            updateChatName.setInt(2, chat.getId());
+            updateChatName.executeUpdate();
+        }
+    }
+
+    @Override
     public void deleteChat(Chat chat) throws SQLException {
         String sql = "DELETE FROM chats WHERE id = ?";
         try (PreparedStatement deleteChat = connection.prepareStatement(sql)) {
@@ -103,6 +113,7 @@ public class ChatDAO implements IChatDAO {
         try (PreparedStatement readUserChats = connection.prepareStatement(sql)) {
             readUserChats.setInt(1, userId);
             ResultSet resultSet = readUserChats.executeQuery();
+
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
