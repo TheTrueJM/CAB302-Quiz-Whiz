@@ -37,7 +37,7 @@ public class ChatControllerTest {
     public void setUp() throws SQLException {
         db = new SQLiteConnection(true);
         connection = db.getInstance();
-        chatController = new ChatController();
+        chatController = new ChatController(db);
     }
 
 
