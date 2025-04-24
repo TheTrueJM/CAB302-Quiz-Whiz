@@ -160,7 +160,7 @@ public class ChatController {
                 showErrorAlert("No chat selected");
                 return;
             }
-            updateChatName(selectedChat.getId(), newName); // Let updateChatName handle validation
+            updateChatName(selectedChat, newName); // Let updateChatName handle validation
             chatNameField.setText(selectedChat.getName());
         });
     }
