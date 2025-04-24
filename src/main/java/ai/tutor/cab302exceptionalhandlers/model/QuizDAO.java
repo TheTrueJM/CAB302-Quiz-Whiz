@@ -40,7 +40,7 @@ public class QuizDAO implements IQuizDAO {
 
     @Override
     public Quiz getQuiz(int messageId) throws SQLException {
-        String sql = "SELECT * FROM quizzes WHERE id = ?";
+        String sql = "SELECT * FROM quizzes WHERE messageId = ?";
         try (PreparedStatement readQuiz = connection.prepareStatement(sql)) {
             readQuiz.setInt(1, messageId);
             ResultSet resultSet = readQuiz.executeQuery();

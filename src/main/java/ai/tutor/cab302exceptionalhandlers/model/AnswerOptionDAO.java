@@ -64,7 +64,7 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     @Override
     public List<AnswerOption> getAllQuestionAnswerOptions(int messageId, int questionNumber) throws SQLException {
         List<AnswerOption> questionAnswerOptions = new ArrayList<>();
-        String sql = "SELECT * FROM quizQuestions WHERE messageId = ? AND questionNumber = ?";
+        String sql = "SELECT * FROM answerOptions WHERE messageId = ? AND questionNumber = ?";
         try (PreparedStatement readQuestionAnswerOptions = connection.prepareStatement(sql)) {
             readQuestionAnswerOptions.setInt(1, messageId);
             readQuestionAnswerOptions.setInt(2, questionNumber);
