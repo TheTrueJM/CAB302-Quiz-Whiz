@@ -25,6 +25,7 @@ public class AuthControllerTest {
         Users.put("emptyPasswordUser", new User("TestUser3", ""));
     }
 
+
     @BeforeEach
     public void setUp() throws SQLException {
         db = new SQLiteConnection(true);
@@ -38,6 +39,7 @@ public class AuthControllerTest {
             connection.close();
         }
     }
+
 
     @Test
     public void testValidSignUp() {

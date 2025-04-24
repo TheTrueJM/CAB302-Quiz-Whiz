@@ -17,10 +17,11 @@ public class UserAnswerDAO implements IUserAnswerDAO {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS userAnswers ("
-                    + "messageId INTEGER PRIMARY KEY NOT NULL,"
-                    + "attempt INTEGER PRIMARY KEY NOT NULL,"
-                    + "questionNumber INTEGER PRIMARY KEY NOT NULL,"
+                    + "messageId INTEGER,"
+                    + "attempt INTEGER,"
+                    + "questionNumber INTEGER,"
                     + "answerOption VARCHAR NOT NULL,"
+                    + "PRIMARY KEY (messageId, attempt, questionNumber),"
                     + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE,"
                     + "FOREIGN KEY(answerOption) REFERENCES answerOptions(option)"
                     + ")"

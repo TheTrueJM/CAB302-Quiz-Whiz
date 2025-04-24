@@ -17,11 +17,12 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS answerOptions ("
-                    + "messageId INTEGER PRIMARY KEY,"
-                    + "questionNumber INTEGER PRIMARY KEY,"
-                    + "option VARCHAR PRIMARY KEY,"
+                    + "messageId INTEGER,"
+                    + "questionNumber INTEGER,"
+                    + "option VARCHAR,"
                     + "value VARCHAR NOT NULL,"
                     + "isAnswer INTEGER NOT NULL,"
+                    + "PRIMARY KEY (messageId, questionNumber, option),"
                     + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE"
                     + ")"
             );

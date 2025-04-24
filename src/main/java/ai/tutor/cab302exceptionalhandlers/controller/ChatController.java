@@ -24,6 +24,9 @@ public class ChatController {
     private UserDAO userDAO;
     private ChatDAO chatDAO;
     private MessageDAO messageDAO;
+    private QuizDAO quizDAO;
+    private QuizQuestionDAO quizQuestionDAO;
+    private AnswerOptionDAO answerOptionDAO;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws IllegalStateException {
         if (authenticatedUser == null) {
@@ -35,6 +38,9 @@ public class ChatController {
             this.userDAO = new UserDAO(db);
             this.chatDAO = new ChatDAO(db);
             this.messageDAO = new MessageDAO(db);
+            this.quizDAO = new QuizDAO(db);
+            this.quizQuestionDAO = new QuizQuestionDAO(db);
+            this.answerOptionDAO = new AnswerOptionDAO(db);
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
         }
@@ -166,7 +172,7 @@ public class ChatController {
     }
 
     // Create a new Chat record using UI user input
-    public Chat createNewChat(int userId, String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
         if (name == null || name.trim().isEmpty()) {
             System.err.println("Chat name cannot be empty");
             return null;
@@ -174,7 +180,7 @@ public class ChatController {
 
         try {
             // Create new chat object
-            Chat newChat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+            Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
             // Add new chat to database
             chatDAO.createChat(newChat);
             return newChat;
@@ -185,9 +191,9 @@ public class ChatController {
     }
 
     // Retrieve Chat records for a specific User
-    public List<Chat> getUserChats(int userId) {
+    public List<Chat> getUserChats() {
         try {
-            return chatDAO.getAllUserChats(userId);
+            return chatDAO.getAllUserChats(currentUser.getId());
         } catch (SQLException e) {
             System.err.println("Failed to read chats: " + e.getMessage());
             return null;
@@ -197,10 +203,32 @@ public class ChatController {
     // Retrieve a specific Chat record
     public Chat getChat(int chatId) {
         try {
-            return chatDAO.getChat(chatId);
+            Chat chat = chatDAO.getChat(chatId);
+            return currentUser.getId() == chat.getUserId() ? chat : null;
         } catch (SQLException e) {
             System.err.println("Failed to read chat: " + e.getMessage());
             return null;
+        }
+    }
+
+    // Update the details of a specific Chat record
+    public boolean updateChatDetails(int chatId, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
+        try {
+            Chat currentChat = chatDAO.getChat(chatId);
+            if (currentChat == null) {
+                System.err.println("Failed to access chat: " + chatId);
+                return false;
+            }
+
+            currentChat.setResponseAttitude(responseAttitude);
+            currentChat.setQuizDifficulty(quizDifficulty);
+            currentChat.setResponseAttitude(educationLevel);
+            currentChat.setStudyArea(studyArea);
+            chatDAO.updateChat(currentChat);
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Failed to update chat name: " + e.getMessage());
+            return false;
         }
     }
 
@@ -214,11 +242,7 @@ public class ChatController {
         try {
             Chat currentChat = chatDAO.getChat(chatId);
             if (currentChat == null) {
-                System.err.println("Chat not found with ID: " + chatId);
-                return false;
-            }
-            if (currentUser == null || currentChat.getUserId() != currentUser.getId()) {
-                System.err.println("Chat does not belong to the current user");
+                System.err.println("Failed to access chat: " + chatId);
                 return false;
             }
 
