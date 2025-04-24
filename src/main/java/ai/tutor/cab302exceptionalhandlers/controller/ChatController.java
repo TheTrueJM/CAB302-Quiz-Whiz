@@ -20,25 +20,27 @@ public class ChatController {
     @FXML
     private TextField messageInputField;
 
-    // TODO: Insert Auth object when implemented
-    private SQLiteConnection db;
+    private User currentUser;
+    private UserDAO userDAO;
     private ChatDAO chatDAO;
     private MessageDAO messageDAO;
+    private QuizDAO quizDAO;
+    private QuizQuestionDAO quizQuestionDAO;
+    private AnswerOptionDAO answerOptionDAO;
 
-    private User currentUser;
+    public ChatController(SQLiteConnection db, User authenticatedUser) throws IllegalStateException {
+        if (authenticatedUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
 
-    public ChatController() {
         try {
-            db = new SQLiteConnection();
+            this.currentUser = authenticatedUser;
+            this.userDAO = new UserDAO(db);
             this.chatDAO = new ChatDAO(db);
             this.messageDAO = new MessageDAO(db);
-
-            // TODO: User will be extracted from AuthService when implemented
-            this.currentUser = new User("Temp", "1234");
-            currentUser.setId(1);
-            if (currentUser == null) {
-                throw new IllegalStateException("No user is logged in");
-            }
+            this.quizDAO = new QuizDAO(db);
+            this.quizQuestionDAO = new QuizQuestionDAO(db);
+            this.answerOptionDAO = new AnswerOptionDAO(db);
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
         }
@@ -169,8 +171,8 @@ public class ChatController {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
     }
 
-    // Creates a new chat
-    public Chat createNewChat(int userId, String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
+    // Create a new Chat record using UI user input
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
         if (name == null || name.trim().isEmpty()) {
             System.err.println("Chat name cannot be empty");
             return null;
@@ -178,7 +180,7 @@ public class ChatController {
 
         try {
             // Create new chat object
-            Chat newChat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+            Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
             // Add new chat to database
             chatDAO.createChat(newChat);
             return newChat;
@@ -188,27 +190,49 @@ public class ChatController {
         }
     }
 
-    // Get all chats for a user
-    public List<Chat> getUserChats(int userId) {
+    // Retrieve Chat records for a specific User
+    public List<Chat> getUserChats() {
         try {
-            return chatDAO.getAllUserChats(userId);
+            return chatDAO.getAllUserChats(currentUser.getId());
         } catch (SQLException e) {
             System.err.println("Failed to read chats: " + e.getMessage());
             return null;
         }
     }
 
-    // Get a specific chat
+    // Retrieve a specific Chat record
     public Chat getChat(int chatId) {
         try {
-            return chatDAO.getChat(chatId);
+            Chat chat = chatDAO.getChat(chatId);
+            return currentUser.getId() == chat.getUserId() ? chat : null;
         } catch (SQLException e) {
             System.err.println("Failed to read chat: " + e.getMessage());
             return null;
         }
     }
 
-    // Update the name of a specific chat
+    // Update the details of a specific Chat record
+    public boolean updateChatDetails(int chatId, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
+        try {
+            Chat currentChat = chatDAO.getChat(chatId);
+            if (currentChat == null) {
+                System.err.println("Failed to access chat: " + chatId);
+                return false;
+            }
+
+            currentChat.setResponseAttitude(responseAttitude);
+            currentChat.setQuizDifficulty(quizDifficulty);
+            currentChat.setResponseAttitude(educationLevel);
+            currentChat.setStudyArea(studyArea);
+            chatDAO.updateChat(currentChat);
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Failed to update chat name: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Update the name of a specific Chat record
     public boolean updateChatName(int chatId, String newName) {
         if (newName == null || newName.trim().isEmpty()) {
             System.err.println("Chat name cannot be empty");
@@ -218,11 +242,7 @@ public class ChatController {
         try {
             Chat currentChat = chatDAO.getChat(chatId);
             if (currentChat == null) {
-                System.err.println("Chat not found with ID: " + chatId);
-                return false;
-            }
-            if (currentUser == null || currentChat.getUserId() != currentUser.getId()) {
-                System.err.println("Chat does not belong to the current user");
+                System.err.println("Failed to access chat: " + chatId);
                 return false;
             }
 
@@ -235,13 +255,39 @@ public class ChatController {
         }
     }
 
-    // Get all messages for a specific chat
-    public List<Message> loadChatMessages(int chatId) {
+    // Create a Message object using UI user input
+    public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) {
+        return null;
+    }
+
+    // Create a Message object from the AI's response output using a user's Message object as input
+    // If AI generation fails, create the Message object with default feedback content
+    public Message generateChatMessageResponse(Message userMessage) {
+        return null;
+    }
+
+    // Retrieve Message records for a specific Chat
+    public List<Message> getChatMessages(int chatId) {
         try {
             return messageDAO.getAllChatMessages(chatId);
         } catch (SQLException e) {
             System.err.println("Failed to read messages: " + e.getMessage());
             return null;
         }
+    }
+
+    // Create a Quiz object from the AI's response message if it is a quiz message
+    public Quiz createNewQuiz(String quizContent, Message responseMessage) {
+        return null;
+    }
+
+    // Create a QuizQuestion object from the AI's response message if it is a quiz message
+    public QuizQuestion createNewQuizQuestion(String questionContent, Quiz quiz) {
+        return null;
+    }
+
+    // Create an AnswerOption object from the AI's response message if it is a quiz message
+    public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) {
+        return null;
     }
 }
