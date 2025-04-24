@@ -1,15 +1,16 @@
 package ai.tutor.cab302exceptionalhandlers.model;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface IUserAnswerDAO {
-    public void createUserAnswer(UserAnswer userAnswer);
+    public void createUserAnswer(UserAnswer userAnswer) throws SQLException;
 
-    public UserAnswer getUserAnswer(int messageId, int attempt, int questionNumber);
+    public UserAnswer getUserQuestionAnswer(int messageId, int attempt, int questionNumber) throws SQLException;
 
-    public List<UserAnswer> getAllUserAttempts(int messageId, int questionNumber);
+    public List<UserAnswer> getAllUserQuestionAttempts(int messageId, int questionNumber) throws SQLException;
 
-    public List<UserAnswer> getAllUserQuizAnswers(int messageId, int attempt);
+    public List<UserAnswer> getAllUserQuizAnswers(int messageId, int attempt) throws SQLException;
 
-    public List<UserAnswer> getAllUserQuizAttempts(int messageId);
+    public List<UserAnswer> getAllUserQuizAttempts(int messageId) throws SQLException;
 }

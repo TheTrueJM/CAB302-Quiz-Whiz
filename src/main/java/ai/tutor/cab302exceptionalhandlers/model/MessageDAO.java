@@ -8,33 +8,29 @@ public class MessageDAO implements IMessageDAO {
     private final Connection connection;
 
 
-    public MessageDAO(SQLiteConnection sqliteConnection) {
+    public MessageDAO(SQLiteConnection sqliteConnection) throws SQLException, RuntimeException {
         connection = sqliteConnection.getInstance();
         createTable();
     }
 
-    private void createTable() {
-        try {
-            Statement createTable = connection.createStatement();
+    private void createTable() throws SQLException {
+        try (Statement createTable = connection.createStatement()) {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS messages ("
-                            + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "chatId INTEGER NOT NULL"
-                            + "content VARCHAR NOT NULL,"
-                            + "fromUser INTEGER NOT NULL,"
-                            + "isQuiz INTEGER NOT NULL,"
-                            + "FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE"
-                            + ")"
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "chatId INTEGER NOT NULL"
+                    + "content VARCHAR NOT NULL,"
+                    + "fromUser INTEGER NOT NULL,"
+                    + "isQuiz INTEGER NOT NULL,"
+                    + "FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE"
+                    + ")"
             );
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
 
     @Override
-    public void createMessage(Message message) throws SQLException{
-
+    public void createMessage(Message message) throws SQLException {
         String sql = "INSERT INTO messages (chatId, content, fromUser, isQuiz) VALUES (?, ?, ?, ?)";
         try (PreparedStatement createMessage = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createMessage.setInt(1, message.getChatId());
@@ -43,7 +39,6 @@ public class MessageDAO implements IMessageDAO {
             createMessage.setInt(4, message.getIsQuiz() ? 1 : 0);
             createMessage.executeUpdate();
 
-            // Set the id of the new Chat
             try (ResultSet generatedKeys = createMessage.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     message.setId(generatedKeys.getInt(1));
@@ -53,14 +48,13 @@ public class MessageDAO implements IMessageDAO {
     }
 
     @Override
-    public List<Message> getAllChatMessages(int chatId) {
+    public List<Message> getAllChatMessages(int chatId) throws SQLException {
         List<Message> chatMessages = new ArrayList<>();
-        try {
-            PreparedStatement readUserChats = connection.prepareStatement(
-                    "SELECT * FROM messages WHERE chatId = ?"
-            );
-            readUserChats.setInt(1, chatId);
-            ResultSet resultSet = readUserChats.executeQuery();
+        String sql = "SELECT * FROM messages WHERE chatId = ?";
+        try (PreparedStatement readChatMessages = connection.prepareStatement(sql)) {
+            readChatMessages.setInt(1, chatId);
+            ResultSet resultSet = readChatMessages.executeQuery();
+
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String content = resultSet.getString("content");
@@ -70,8 +64,6 @@ public class MessageDAO implements IMessageDAO {
                 message.setId(id);
                 chatMessages.add(message);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return chatMessages;
     }

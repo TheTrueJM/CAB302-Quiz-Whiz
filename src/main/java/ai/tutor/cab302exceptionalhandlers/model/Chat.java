@@ -29,7 +29,7 @@ public class Chat {
 
     public String getName() { return name; }
 
-    public void setName(String username) { this.name = name; }
+    public void setName(String name) { this.name = name; }
 
     public String getResponseAttitude() { return responseAttitude; }
 

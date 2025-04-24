@@ -5,14 +5,15 @@ public class AnswerOption {
     private final int questionNumber;
     private final String option;
     private final String value;
-    // NOTE: Question Answer Here?
+    private final boolean isAnswer;
 
 
-    public AnswerOption(int messageId, int questionNumber, String option, String value) {
+    public AnswerOption(int messageId, int questionNumber, String option, String value, boolean isAnswer) {
         this.messageId = messageId;
         this.questionNumber = questionNumber;
         this.option = option;
         this.value = value;
+        this.isAnswer = isAnswer;
     }
 
 
@@ -23,4 +24,6 @@ public class AnswerOption {
     public String getOption() { return option; }
 
     public String getValue() { return value; }
+
+    public boolean getIsAnswer() { return isAnswer; }
 }
