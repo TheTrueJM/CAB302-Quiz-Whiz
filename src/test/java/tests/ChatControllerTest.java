@@ -210,11 +210,12 @@ public class ChatControllerTest {
     @Test
     public void testGetUserChat() {
         for (Chat chat : Chats.values()) {
-            chatController.createNewChat(
+            Chat newChat = chatController.createNewChat(
                     chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
             );
         }
         Chat findChat = Chats.get("chat2");
+        findChat.setId(2);
         Chat userChat = chatController.getChat(findChat.getId());
         assertNotNull(userChat);
         assertEquals(findChat.getId(), userChat.getId());

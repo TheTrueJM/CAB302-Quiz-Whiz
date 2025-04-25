@@ -54,6 +54,11 @@ public class ChatController {
         setupUpdateChatNameButton();
     }
 
+    /*
+     * =========================================================================
+     *                          FXML UI Controllers
+     * =========================================================================
+     */
     private void showErrorAlert (String message){
         // Create error alert object
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
@@ -104,7 +109,7 @@ public class ChatController {
                         getStyleClass().add("ai-message");
                     }
                     // Handle special AI Quiz messages
-                    if (!message.getFromUser() && message.getContent().contains("Here is the quiz you asked for:")) {
+                    if (!message.getFromUser() && message.getIsQuiz()) {
                         Button takeQuizButton = new Button("Take Quiz");
                         takeQuizButton.setOnAction(event -> {
                             // TODO: Logic to handle quiz action
@@ -130,9 +135,8 @@ public class ChatController {
             return;
         }
         try {
-            // Create a new user message
-            Message userMessage = new Message(selectedChat.getId(), content, true, false);
-            messageDAO.createMessage(userMessage);
+            // Create a new user message and save in database
+            Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
 
             // Refresh the messages list
             messagesListView.getItems().clear();
@@ -142,9 +146,7 @@ public class ChatController {
             messageInputField.clear();
 
             //TODO: Pass message prompt to AI
-            // Simulate an AI response for placeholder
-            Message aiResponse = new Message(selectedChat.getId(), "I received your message: " + content, false, false);
-            messageDAO.createMessage(aiResponse);
+            generateChatMessageResponse(userMessage);
 
             // Refresh again to show the AI response
             messagesListView.getItems().clear();
@@ -162,7 +164,7 @@ public class ChatController {
                 showErrorAlert("No chat selected");
                 return;
             }
-            updateChatName(selectedChat, newName); // Let updateChatName handle validation
+            updateChatName(selectedChat.getId(), newName); // Let updateChatName handle validation
             chatNameField.setText(selectedChat.getName());
         });
     }
@@ -171,11 +173,68 @@ public class ChatController {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
     }
 
+    /*
+     * =========================================================================
+     *                          CRUD Operations
+     * =========================================================================
+     */
+    // Create a Message object using UI user input
+    public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) {
+        try {
+            Message userMessage = new Message(chatId, content, fromUser, isQuiz);
+            messageDAO.createMessage(userMessage);
+            return userMessage;
+        } catch (SQLException e) {
+            showErrorAlert("Failed to create message: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Create a Message object from the AI's response output using a user's Message object as input
+    // If AI generation fails, create the Message object with default feedback content
+    public Message generateChatMessageResponse(Message userMessage) {
+        if (!userMessage.getFromUser()) {
+            System.err.println("Chat message is from user");
+            return null;
+        }
+        try {
+            // TODO: Generate AI message
+            String aiMessageContent = "I received your message";
+            Message aiReponse = new Message(userMessage.getId(), aiMessageContent, false, userMessage.getIsQuiz());
+
+            if (aiMessageContent == null) {
+                aiMessageContent = "Default message";
+            }
+            //TODO: Operation to split the message for quiz if needed
+            if (userMessage.getIsQuiz()) {
+                createNewQuiz(aiMessageContent, aiReponse);
+            }
+            messageDAO.createMessage(aiReponse);
+            return aiReponse;
+        } catch (SQLException e) {
+            return new Message(userMessage.getId(), "Failed to create message: " + e.getMessage(), false, false);
+        }
+    }
+
     // Create a new Chat record using UI user input
     public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
         if (name == null || name.trim().isEmpty()) {
             System.err.println("Chat name cannot be empty");
             return null;
+        }
+        if (responseAttitude == null || responseAttitude.trim().isEmpty()) {
+            System.err.println("responseAttitude name cannot be empty");
+            return null;
+        }
+        if (quizDifficulty == null || quizDifficulty.trim().isEmpty()) {
+            System.err.println("Chat quizDifficulty cannot be empty");
+            return null;
+        }
+        if (educationLevel == null || educationLevel.trim().isEmpty()) {
+            educationLevel = null;
+        }
+        if (studyArea == null || studyArea.trim().isEmpty()) {
+            studyArea = null;
         }
 
         try {
@@ -202,6 +261,10 @@ public class ChatController {
 
     // Retrieve a specific Chat record
     public Chat getChat(int chatId) {
+        if (chatId < 0) {
+            System.err.println("Chat id cannot be negative");
+            return null;
+        }
         try {
             Chat chat = chatDAO.getChat(chatId);
             return currentUser.getId() == chat.getUserId() ? chat : null;
@@ -253,17 +316,6 @@ public class ChatController {
             System.err.println("Failed to update chat name: " + e.getMessage());
             return false;
         }
-    }
-
-    // Create a Message object using UI user input
-    public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) {
-        return null;
-    }
-
-    // Create a Message object from the AI's response output using a user's Message object as input
-    // If AI generation fails, create the Message object with default feedback content
-    public Message generateChatMessageResponse(Message userMessage) {
-        return null;
     }
 
     // Retrieve Message records for a specific Chat
