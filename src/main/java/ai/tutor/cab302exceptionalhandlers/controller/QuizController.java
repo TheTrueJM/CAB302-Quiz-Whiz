@@ -86,8 +86,15 @@ public class QuizController {
 
     // Create a new User Answer record using UI user input
     public UserAnswer createNewUserAnswer(int questionNumber, String option) {
-        // Attempt Calculated Here?
-        return null;
+        try {
+            int currentAttempt = userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
+            UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
+            userAnswerDAO.createUserAnswer(userAnswer);
+            return userAnswer;
+        } catch (SQLException e) {
+            System.err.println("Failed to create user answer: " + e.getMessage());
+            return null;
+        }
     }
 
     // Retrieve a specific User Answer record
