@@ -18,8 +18,8 @@ public class UserAnswerDAO implements IUserAnswerDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS userAnswers ("
                     + "messageId INTEGER,"
-                    + "attempt INTEGER,"
-                    + "questionNumber INTEGER,"
+                    + "attempt INTEGER NOT NULL CHECK (attempt >= 1),"
+                    + "questionNumber INTEGER NOT NULL CHECK (questionNumber >= 1),"
                     + "answerOption VARCHAR NOT NULL,"
                     + "PRIMARY KEY (messageId, attempt, questionNumber),"
                     + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE,"
