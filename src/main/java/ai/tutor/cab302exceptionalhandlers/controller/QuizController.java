@@ -88,6 +88,8 @@ public class QuizController {
     public UserAnswer createNewUserAnswer(int questionNumber, String option) {
         try {
             int currentAttempt = userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
+            AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
+            if (answerOption == null) throw new SQLException("Invalid answer option was given");
             UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
             userAnswerDAO.createUserAnswer(userAnswer);
             return userAnswer;
