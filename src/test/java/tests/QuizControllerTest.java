@@ -15,7 +15,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@Disabled("QuizController not implemented yet")
 public class QuizControllerTest {
     private SQLiteConnection db;
     private Connection connection;
@@ -126,7 +125,7 @@ public class QuizControllerTest {
         assertEquals(Q1AnswerOptions.size(), answerOptions.size());
     }
 
-    // Clarification: Get question answer option 'A'
+    // Clarification: Get question answer option 'a'
     @Test
     public void testGetQuestionAnsweraOption() {
         AnswerOption findAnswerOption = Q1AnswerOptions.get("a");
