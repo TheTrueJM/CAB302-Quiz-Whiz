@@ -4,7 +4,6 @@ import ai.tutor.cab302exceptionalhandlers.controller.QuizController;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled("QuizController not implemented yet")
 public class QuizControllerTest {
     private SQLiteConnection db;
     private Connection connection;
@@ -126,6 +124,7 @@ public class QuizControllerTest {
         assertEquals(Q1AnswerOptions.size(), answerOptions.size());
     }
 
+    // Clarification: Get question answer option 'a'
     @Test
     public void testGetQuestionAnsweraOption() {
         AnswerOption findAnswerOption = Q1AnswerOptions.get("a");
@@ -146,6 +145,18 @@ public class QuizControllerTest {
         assertEquals(userAnswer.getMessageId(), newUserAnswer.getMessageId());
         assertEquals(1, newUserAnswer.getAttempt());
         assertEquals(newUserAnswer.getQuestionNumber(), newUserAnswer.getQuestionNumber());
+    }
+
+    @Test
+    public void testCreateNewUserAnswerMuiltipleAttempts() {
+        UserAnswer userAnswer = UserAnswers.get("question1Answer");
+        UserAnswer firstAttempt = quizController.createNewUserAnswer(userAnswer.getQuestionNumber(), userAnswer.getAnswerOption());
+        UserAnswer secondAttempt = quizController.createNewUserAnswer(userAnswer.getQuestionNumber(), userAnswer.getAnswerOption());
+        assertNotNull(secondAttempt);
+        assertEquals(userAnswer.getMessageId(), secondAttempt.getMessageId());
+        assertEquals(2, secondAttempt.getAttempt());
+        assertEquals(userAnswer.getQuestionNumber(), secondAttempt.getQuestionNumber());
+        assertNotEquals(firstAttempt.getAttempt(), secondAttempt.getAttempt());
     }
 
     @Test
