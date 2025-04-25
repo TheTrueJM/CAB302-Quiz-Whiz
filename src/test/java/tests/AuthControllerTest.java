@@ -19,18 +19,18 @@ public class AuthControllerTest {
     private AuthController authController;
 
     private static final Map<String, User> Users = new HashMap<>();
-
     static {
         Users.put("validUser", new User("TestUser1", "password"));
         Users.put("emptyUsernameUser", new User("", "password"));
         Users.put("emptyPasswordUser", new User("TestUser3", ""));
     }
 
+
     @BeforeEach
     public void setUp() throws SQLException {
         db = new SQLiteConnection(true);
         connection = db.getInstance();
-        authController = new AuthController();
+        authController = new AuthController(db);
     }
 
     @AfterEach
@@ -39,6 +39,7 @@ public class AuthControllerTest {
             connection.close();
         }
     }
+
 
     @Test
     public void testValidSignUp() {

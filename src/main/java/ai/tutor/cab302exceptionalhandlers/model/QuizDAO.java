@@ -40,7 +40,7 @@ public class QuizDAO implements IQuizDAO {
 
     @Override
     public Quiz getQuiz(int messageId) throws SQLException {
-        String sql = "SELECT * FROM quizzes WHERE id = ?";
+        String sql = "SELECT * FROM quizzes WHERE messageId = ?";
         try (PreparedStatement readQuiz = connection.prepareStatement(sql)) {
             readQuiz.setInt(1, messageId);
             ResultSet resultSet = readQuiz.executeQuery();
@@ -57,10 +57,11 @@ public class QuizDAO implements IQuizDAO {
     @Override
     public List<Quiz> getAllChatQuizzes(int chatId) throws SQLException {
         List<Quiz> chatQuizzes = new ArrayList<>();
-        String sql = "SELECT id FROM messages WHERE chatId = ? AND isQuiz = ?";
+        String sql = "SELECT id FROM messages WHERE chatId = ? AND fromUser = ? AND isQuiz = ?";
         try (PreparedStatement readChatQuizzes = connection.prepareStatement(sql)) {
             readChatQuizzes.setInt(1, chatId);
-            readChatQuizzes.setInt(2, true ? 1 : 0);
+            readChatQuizzes.setInt(2, false ? 1 : 0);
+            readChatQuizzes.setInt(3, true ? 1 : 0);
             ResultSet resultSet = readChatQuizzes.executeQuery();
 
             while (resultSet.next()) {
