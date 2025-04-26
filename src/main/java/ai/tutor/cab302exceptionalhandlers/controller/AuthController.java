@@ -22,22 +22,19 @@ public class AuthController {
     private boolean passwordEmpty = true;
     private boolean passwordCEmpty = true;
 
-    public AuthController(SQLiteConnection db) {
-        try {
-            this.db = db;
-            this.userDAO = new UserDAO(db);
-        } catch (SQLException | RuntimeException e) {
-            System.err.println("SQL database connection error: " + e.getMessage());
-        }
+
+    public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
+        this.db = db;
+        this.userDAO = new UserDAO(db);
     }
 
 
-
     /*
-     * =========================================================================
-     *                          FXML UI Controllers
-     * =========================================================================
+     * =========================
+     *    FXML UI Controllers
+     * =========================
      */
+
     @FXML
     public void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField)e.getSource();
@@ -84,19 +81,17 @@ public class AuthController {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (!password.equals(confirmPassword)) {
-            // TODO: SignUp Unsuccessful
-            System.err.println("User Sign Up Failed - Password do not match");
-        } else {
-            User newUser = signUp(username, password);
-
-            if (newUser == null) {
-                // TODO: SignUp Unsuccessful
-                System.err.println("User Sign Up Failed");
-            } else {
-                // TODO: Implement switch to Chat Page
-                System.err.println("User Sign Up Success");
+        try {
+            if (!password.equals(confirmPassword)) {
+                throw new IllegalArgumentException("Passwords do not match");
             }
+
+            User newUser = signUp(username, password);
+            // TODO: Implement switch to Chat Page
+            System.err.println("User Sign Up Success");
+        } catch (Exception e) {
+            // TODO: Display possible Sign Up error messages to FXML
+            System.err.println("User Sign Up Failed: " + e.getMessage());
         }
     }
 
@@ -105,76 +100,65 @@ public class AuthController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        User existingUser = login(username, password);
-
-        if (existingUser == null) {
-            // TODO: Login Unsuccessful
-            System.err.println("User Sign Up Failed");
-        } else {
+        try {
+            User existingUser = login(username, password);
             // TODO: Implement switch to Chat Page
             System.err.println("User Login Success");
+        } catch (Exception e) {
+            // TODO: Display possible Sign Up error messages to FXML
+            System.err.println("User Login Failed: " + e.getMessage());
         }
     }
+
 
     /*
-     * =========================================================================
-     *                          CRUD Operations
-     * =========================================================================
+     * =====================
+     *    CRUD Operations
+     * =====================
      */
-    public User signUp(String username, String password) {
-        // TODO: Display possible error messages to FXML
-        if (!validUsername(username) || !validPassword(password)) {
-            System.out.println("Invalid details were entered");
-        } else {
-            try {
-                User existingUser = userDAO.getUser(username);
-                if (existingUser != null) {
-                    System.out.println("User already exists");
-                } else {
-                    // Get hash of user password
-                    String hashedPassword = User.hashPassword(password);
 
-                    User newUser = new User(username, hashedPassword);
-                    userDAO.createUser(newUser);
-
-                    return newUser;
-                }
-            } catch (SQLException e) {
-                System.err.println("Failed to read users: " + e.getMessage());
-            }
+    public User signUp(String username, String password) throws IllegalStateException, IllegalArgumentException, SQLException {
+        if (!validUsername(username)) {
+            throw new IllegalArgumentException("Username is invalid");
         }
-        return null;
+        if (!validPassword(password)) {
+            throw new IllegalArgumentException("Password is invalid");
+        }
+
+        User existingUser = userDAO.getUser(username);
+        if (existingUser != null) {
+            throw new IllegalStateException("Username is already taken");
+        }
+
+        // Get hash of user password
+        String hashedPassword = User.hashPassword(password);
+
+        // Create and Add User to Database
+        User newUser = new User(username, hashedPassword);
+        userDAO.createUser(newUser);
+
+        return newUser;
     }
 
-    public User login(String username, String password) {
-        // TODO: Display possible error messages to FXML
-        if (!validUsername(username) || !validPassword(password)) {
-            System.out.println("Invalid details were entered");
-        } else {
-            try {
-                User existingUser = userDAO.getUser(username);
-                if (existingUser == null) {
-                    System.out.println("User does not exist");
-                } else {
-                    // Checks if input password will equal user's hashed password
-                    if (!existingUser.verifyPassword(password)) {
-                        System.out.println("Incorrect Password");
-                    } else {
-                        return existingUser;
-                    }
-                }
-            } catch (SQLException e) {
-                System.err.println("Failed to read users: " + e.getMessage());
-            }
+    public User login(String username, String password) throws SecurityException, SQLException {
+        User existingUser = userDAO.getUser(username == null ? "" : username);
+        if (existingUser == null) {
+            throw new SecurityException("User does not exist");
         }
-        return null;
+
+        // Verify input password equals hashed user password
+        if (!existingUser.verifyPassword(password == null ? "" : password)) {
+            throw new SecurityException("Incorrect Password");
+        }
+
+        return existingUser;
     }
 
     private boolean validUsername(String username) {
-        return username.matches("^[a-zA-Z0-9]+$");
+        return username != null && username.matches("^[a-zA-Z0-9]+$");
     }
 
     private boolean validPassword(String password) {
-        return password.matches("^[a-zA-Z0-9]+$");
+        return password != null && password.matches("^[a-zA-Z0-9]+$");
     }
 }
