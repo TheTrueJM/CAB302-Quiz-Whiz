@@ -239,6 +239,13 @@ public class ChatController {
         return chat;
     }
 
+    // Alternative name for getChat() to check if a chat exists for the current user
+    // This method is not necessary as getChat() is the exact same function
+    // but is included for clarity + naming consistency
+    public Chat validateChatExistsForCurrentUser(int chatId) throws NoSuchElementException, SQLException {
+        return getChat(chatId);
+    }
+
     // Update the details of a specific Chat record
     public void updateChatDetails(int chatId, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, NoSuchElementException, SQLException {
         if (validateNullOrEmpty(responseAttitude)) {
@@ -277,8 +284,7 @@ public class ChatController {
             throw new IllegalArgumentException("Message content cannot be empty");
         }
 
-        // Check chat exists
-        getChat(chatId);
+        validateChatExistsForCurrentUser(chatId);
 
         Message newMessage = new Message(chatId, content, fromUser, isQuiz);
         messageDAO.createMessage(newMessage);
@@ -292,8 +298,7 @@ public class ChatController {
             throw new IllegalArgumentException("Message must be from user");
         }
 
-        // Check chat exists
-        getChat(userMessage.getChatId());
+        validateChatExistsForCurrentUser(userMessage.getChatId());
 
         // TODO: Generate AI message
         String aiMessageContent = "I received your message";
@@ -312,8 +317,7 @@ public class ChatController {
 
     // Retrieve Message records for a specific Chat
     public List<Message> getChatMessages(int chatId) throws NoSuchElementException, SQLException {
-        // Check chat exists
-        getChat(chatId);
+        validateChatExistsForCurrentUser(chatId);
         return messageDAO.getAllChatMessages(chatId);
     }
 
@@ -338,7 +342,6 @@ public class ChatController {
         // TODO: Depending on AI response quizContent extract name
         String quizName = "Computer Science Quiz";
         Chat currentChat = getChat(responseMessage.getChatId());
-
         Quiz newQuiz = new Quiz(responseMessage.getId(), quizName, currentChat.getQuizDifficulty());
         quizDAO.createQuiz(newQuiz);
 
