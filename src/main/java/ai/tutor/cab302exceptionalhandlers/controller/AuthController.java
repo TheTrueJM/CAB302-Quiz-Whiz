@@ -37,7 +37,7 @@ public class AuthController {
      */
 
     @FXML
-    public void onFieldChanged(KeyEvent e) {
+    protected void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField)e.getSource();
         String senderID = sender.getId();
         String senderText = sender.getText();
@@ -76,7 +76,7 @@ public class AuthController {
     }
 
     @FXML
-    public void onSignUp() {
+    protected void onSignUp() {
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
@@ -96,7 +96,7 @@ public class AuthController {
     }
 
     @FXML
-    public void onLogin() {
+    protected void onLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
