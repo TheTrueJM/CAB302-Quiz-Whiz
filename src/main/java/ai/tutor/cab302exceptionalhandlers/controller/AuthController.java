@@ -58,8 +58,7 @@ public class AuthController {
     }
 
     private void submitButtonToggle(){
-        // Enable submit button conditionally
-        boolean canSubmit;
+        boolean canSubmit = true;
 
         // Change condition if we are on sign up page
         if (confirmPasswordField == null) {
@@ -131,10 +130,7 @@ public class AuthController {
             throw new IllegalStateException("Username is already taken");
         }
 
-        // Get hash of user password
         String hashedPassword = User.hashPassword(password);
-
-        // Create and Add User to Database
         User newUser = new User(username, hashedPassword);
         userDAO.createUser(newUser);
 
