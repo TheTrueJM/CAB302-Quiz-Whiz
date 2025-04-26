@@ -43,6 +43,7 @@ public class ChatDAO implements IChatDAO {
             createChat.setString(6, chat.getStudyArea());
             createChat.executeUpdate();
 
+            // Set the id of the new Chat
             try (ResultSet generatedKeys = createChat.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     chat.setId(generatedKeys.getInt(1));

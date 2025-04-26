@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class ChatController {
     @FXML
@@ -20,6 +21,7 @@ public class ChatController {
     @FXML
     private TextField messageInputField;
 
+    private SQLiteConnection db;
     private User currentUser;
     private UserDAO userDAO;
     private ChatDAO chatDAO;
@@ -34,6 +36,7 @@ public class ChatController {
         }
 
         try {
+            this.db = db;
             this.currentUser = authenticatedUser;
             this.userDAO = new UserDAO(db);
             this.chatDAO = new ChatDAO(db);
@@ -54,6 +57,11 @@ public class ChatController {
         setupUpdateChatNameButton();
     }
 
+    /*
+     * =========================================================================
+     *                          FXML UI Controllers
+     * =========================================================================
+     */
     private void showErrorAlert (String message){
         // Create error alert object
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
@@ -104,7 +112,7 @@ public class ChatController {
                         getStyleClass().add("ai-message");
                     }
                     // Handle special AI Quiz messages
-                    if (!message.getFromUser() && message.getContent().contains("Here is the quiz you asked for:")) {
+                    if (!message.getFromUser() && message.getIsQuiz()) {
                         Button takeQuizButton = new Button("Take Quiz");
                         takeQuizButton.setOnAction(event -> {
                             // TODO: Logic to handle quiz action
@@ -130,9 +138,8 @@ public class ChatController {
             return;
         }
         try {
-            // Create a new user message
-            Message userMessage = new Message(selectedChat.getId(), content, true, false);
-            messageDAO.createMessage(userMessage);
+            // Create a new user message and save in database
+            Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
 
             // Refresh the messages list
             messagesListView.getItems().clear();
@@ -142,9 +149,7 @@ public class ChatController {
             messageInputField.clear();
 
             //TODO: Pass message prompt to AI
-            // Simulate an AI response for placeholder
-            Message aiResponse = new Message(selectedChat.getId(), "I received your message: " + content, false, false);
-            messageDAO.createMessage(aiResponse);
+            generateChatMessageResponse(userMessage);
 
             // Refresh again to show the AI response
             messagesListView.getItems().clear();
@@ -171,11 +176,31 @@ public class ChatController {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
     }
 
+    /*
+     * =========================================================================
+     *                          CRUD Operations
+     * =========================================================================
+     */
+
     // Create a new Chat record using UI user input
     public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
         if (name == null || name.trim().isEmpty()) {
             System.err.println("Chat name cannot be empty");
             return null;
+        }
+        if (responseAttitude == null || responseAttitude.trim().isEmpty()) {
+            System.err.println("responseAttitude name cannot be empty");
+            return null;
+        }
+        if (quizDifficulty == null || quizDifficulty.trim().isEmpty()) {
+            System.err.println("Chat quizDifficulty cannot be empty");
+            return null;
+        }
+        if (educationLevel == null || educationLevel.trim().isEmpty()) {
+            educationLevel = null;
+        }
+        if (studyArea == null || studyArea.trim().isEmpty()) {
+            studyArea = null;
         }
 
         try {
@@ -202,6 +227,10 @@ public class ChatController {
 
     // Retrieve a specific Chat record
     public Chat getChat(int chatId) {
+        if (chatId < 0) {
+            System.err.println("Chat id cannot be negative");
+            return null;
+        }
         try {
             Chat chat = chatDAO.getChat(chatId);
             return currentUser.getId() == chat.getUserId() ? chat : null;
@@ -255,17 +284,6 @@ public class ChatController {
         }
     }
 
-    // Create a Message object using UI user input
-    public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) {
-        return null;
-    }
-
-    // Create a Message object from the AI's response output using a user's Message object as input
-    // If AI generation fails, create the Message object with default feedback content
-    public Message generateChatMessageResponse(Message userMessage) {
-        return null;
-    }
-
     // Retrieve Message records for a specific Chat
     public List<Message> getChatMessages(int chatId) {
         try {
@@ -276,18 +294,132 @@ public class ChatController {
         }
     }
 
+    // Create a Message object using UI user input
+    public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) {
+        if (chatId < 0) {
+            System.err.println("Invalid chat id");
+            return null;
+        }
+        if (content == null || content.trim().isEmpty()) {
+            System.err.println("content cannot be null or empty");
+            return null;
+        }
+        try {
+            Message userMessage = new Message(chatId, content, fromUser, isQuiz);
+            messageDAO.createMessage(userMessage);
+            return userMessage;
+        } catch (SQLException e) {
+            showErrorAlert("Failed to create message: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Create a Message object from the AI's response output using a user's Message object as input
+    // If AI generation fails, create the Message object with default feedback content
+    public Message generateChatMessageResponse(Message userMessage) {
+        if (!userMessage.getFromUser()) {
+            System.err.println("Chat message is from user");
+            return null;
+        }
+        try {
+            // TODO: Generate AI message
+            String aiMessageContent = "I received your message";
+            Message aiReponse = new Message(userMessage.getId(), aiMessageContent, false, userMessage.getIsQuiz());
+
+            if (aiMessageContent == null) {
+                aiMessageContent = "Default message";
+            }
+            //TODO: Operation to split the message for quiz if needed
+            if (userMessage.getIsQuiz()) {
+                createNewQuiz(aiMessageContent, aiReponse);
+            }
+            messageDAO.createMessage(aiReponse);
+            return aiReponse;
+        } catch (SQLException e) {
+            return new Message(userMessage.getId(), "Failed to create message: " + e.getMessage(), false, false);
+        }
+    }
+
     // Create a Quiz object from the AI's response message if it is a quiz message
     public Quiz createNewQuiz(String quizContent, Message responseMessage) {
-        return null;
+        if (responseMessage == null){
+            System.err.println("Message is null");
+            return null;
+        }
+        if (responseMessage.getFromUser()){
+            System.err.println("Message is not from AI");
+            return null;
+        }
+        if (!responseMessage.getIsQuiz()){
+            System.err.println("Message is not for a quiz");
+            return null;
+        }
+        if (quizContent == null || quizContent.trim().isEmpty() || responseMessage.getContent() == null || responseMessage.getContent().trim().isEmpty()){
+            System.err.println("Null or empty quiz content");
+            return null;
+        }
+        // TODO: Implement proper invalid quiz content format
+        if (!quizContent.equals("[Valid Quiz Content Format]")){
+            System.err.println("Invalid quiz content format");
+            return null;
+        }
+        try {
+            // TODO: Depending on AI response quizContent extract name
+            String name = "Computer Science";
+            Chat selectedChat = chatDAO.getChat(responseMessage.getChatId());
+            Quiz newQuiz = new Quiz(responseMessage.getId(), name, selectedChat.getQuizDifficulty() );
+            quizDAO.createQuiz(newQuiz);
+            return newQuiz;
+        } catch (SQLException e) {
+            System.err.println("Failed to create quiz: " + e.getMessage());
+            return null;
+        }
     }
 
     // Create a QuizQuestion object from the AI's response message if it is a quiz message
     public QuizQuestion createNewQuizQuestion(String questionContent, Quiz quiz) {
-        return null;
+        if (quiz == null){
+            System.err.println("quiz is null");
+            return null;
+        }
+        if (!questionContent.equals("[Valid Quiz Question Content Format]")){
+            System.err.println("Invalid quiz question content format");
+            return null;
+        }
+        try {
+            // TODO: Extract number from questionContent or assign dynamically?
+            int questionsCreated = quizQuestionDAO.getAllQuizQuestions(quiz.getMessageId()).size();
+            int number = questionsCreated + 1;
+            QuizQuestion question = new QuizQuestion(quiz.getMessageId(), number, questionContent);
+            quizQuestionDAO.createQuizQuestion(question);
+            return question;
+        } catch (SQLException e) {
+            System.err.println("Failed to create quiz questions: " + e.getMessage());
+            return null;
+        }
     }
 
     // Create an AnswerOption object from the AI's response message if it is a quiz message
     public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) {
-        return null;
+        if (quizQuestion == null){
+            System.err.println("quiz question is null");
+            return null;
+        }
+        if (!answerOptionContent.equals("[Valid Quiz Question Answer Content Format]")){
+            System.err.println("Invalid quiz question content format");
+            return null;
+        }
+        try {
+            // TODO: Extract option, value and correctness from answerOptionContent?
+            String option = "Temp option";
+            String value = "Temp value";
+            boolean correct = true;
+            AnswerOption answerOption = new AnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option, value, correct);
+            answerOptionDAO.createAnswerOption(answerOption);
+            return answerOption;
+        } catch (SQLException e) {
+            System.err.println("Failed to read create answer option: " + e.getMessage());
+            return null;
+        }
     }
 }

@@ -20,9 +20,9 @@ public class AuthControllerTest {
 
     private static final Map<String, User> Users = new HashMap<>();
     static {
-        Users.put("validUser", new User("TestUser1", "password"));
-        Users.put("emptyUsernameUser", new User("", "password"));
-        Users.put("emptyPasswordUser", new User("TestUser3", ""));
+        Users.put("validUser", new User("TestUser1", User.hashPassword("password")));
+        Users.put("emptyUsernameUser", new User("", User.hashPassword("password")));
+        Users.put("emptyPasswordUser", new User("TestUser3", User.hashPassword("")));
     }
 
 
@@ -44,7 +44,7 @@ public class AuthControllerTest {
     @Test
     public void testValidSignUp() {
         User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNotNull(newUser);
         assertEquals(1, newUser.getId());
     }
@@ -52,32 +52,32 @@ public class AuthControllerTest {
     @Test
     public void testSignUpExistingUsername() {
         User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNotNull(newUser);
-        User existingUser = authController.signUp(user.getUsername(), user.getPassword());
+        User existingUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNull(existingUser);
     }
 
     @Test
     public void testSignUpEmptyUsername() {
         User user = Users.get("emptyUsernameUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNull(newUser);
     }
 
     @Test
     public void testSignUpEmptyPassword() {
         User user = Users.get("emptyPasswordUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNull(newUser);
     }
 
     @Test
     public void testValidLogin() {
         User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNotNull(newUser);
-        User loggedInUser = authController.login(user.getUsername(), user.getPassword());
+        User loggedInUser = authController.login(user.getUsername(), user.getPasswordHash());
         assertNotNull(loggedInUser);
         assertEquals(newUser.getId(), loggedInUser.getId());
     }
@@ -85,7 +85,7 @@ public class AuthControllerTest {
     @Test
     public void testLoginIncorrectPassword() {
         User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNotNull(newUser);
         User loggedInUser = authController.login(user.getUsername(), "WrongPassword");
         assertNull(loggedInUser);
@@ -94,16 +94,16 @@ public class AuthControllerTest {
     @Test
     public void testLoginEmptyUsername() {
         User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNotNull(newUser);
-        User loggedInUser = authController.login("", user.getPassword());
+        User loggedInUser = authController.login("", user.getPasswordHash());
         assertNull(loggedInUser);
     }
 
     @Test
     public void testLoginEmptyPassword() {
         User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPassword());
+        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
         assertNotNull(newUser);
         User loggedInUser = authController.login(user.getUsername(), "");
         assertNull(loggedInUser);
