@@ -36,6 +36,16 @@ public class QuizController {
         }
     }
 
+    // Calculate the current attempt number for a specific question
+    private int calculateCurrentAttempt(int questionNumber) {
+        try {
+            return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
+        } catch (SQLException e) {
+            System.err.println("Failed to calculate current attempt: " + e.getMessage());
+            return -1; // This should trigger an exception when creating a new UserAnswer
+        }
+    }
+
     // Retrieve a specific Quiz record
     public Quiz getQuiz() {
         try {
@@ -89,9 +99,13 @@ public class QuizController {
     // Create a new User Answer record using UI user input
     public UserAnswer createNewUserAnswer(int questionNumber, String option) {
         try {
-            int currentAttempt = userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
+            int currentAttempt = calculateCurrentAttempt(questionNumber)
             AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
-            if (answerOption == null) throw new SQLException("Invalid answer option was given");
+
+            if (answerOption == null) {
+                throw new SQLException("Invalid answer option was given");
+            }
+
             UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
             userAnswerDAO.createUserAnswer(userAnswer);
             return userAnswer;
