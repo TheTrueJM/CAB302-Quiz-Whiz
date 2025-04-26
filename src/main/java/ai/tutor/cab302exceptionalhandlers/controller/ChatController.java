@@ -49,7 +49,7 @@ public class ChatController {
 
     @FXML
     public void initialize() {
-        populateChatsListView();
+        refreshChatListView();
         setupChatSelectionListener();
         setupMessagesListView();
         setupUpdateChatNameButton();
@@ -68,7 +68,7 @@ public class ChatController {
         alert.showAndWait();
     }
 
-    private void populateChatsListView () {
+    private void refreshChatListView () {
         try {
             chatsListView.getItems().clear();
             chatsListView.getItems().addAll(chatDAO.getAllUserChats(currentUser.getId()));
@@ -77,16 +77,21 @@ public class ChatController {
         }
     }
 
+    private void refreshMessageList(Chat selectedChat) {
+        try {
+            messagesListView.getItems().clear();
+            messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
+        } catch (SQLException e) {
+            showErrorAlert("Failed to load messages: " + e.getMessage());
+        }
+    }
+
     private void setupChatSelectionListener() {
         chatsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldChat, newChat) -> {
             if (newChat != null) {
-                try {
-                    messagesListView.getItems().clear();
-                    messagesListView.getItems().addAll(messageDAO.getAllChatMessages(newChat.getId()));
-                    chatNameField.setText(newChat.getName());
-                } catch (SQLException e) {
-                    showErrorAlert("Failed to load messages: " + e.getMessage());
-                }
+                // No try-except here as refreshMessageList() will handle it
+                refreshMessageList(newChat);
+                chatNameField.setText(newChat.getName());
             } else {
                 chatNameField.setText("");
                 messagesListView.getItems().clear();
@@ -155,22 +160,14 @@ public class ChatController {
             return;
         }
         try {
-            // Create a new user message and save in database
             Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
 
-            // Refresh the messages list
-            messagesListView.getItems().clear();
-            messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
-
-            // Clear the input field
+            refreshMessageList(selectedChat);
             messageInputField.clear();
 
             //TODO: Pass message prompt to AI
             generateChatMessageResponse(userMessage);
-
-            // Refresh again to show the AI response
-            messagesListView.getItems().clear();
-            messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
+            refreshMessageList(selectedChat);
         } catch (SQLException e) {
             showErrorAlert("Failed to send message: " + e.getMessage());
         }
@@ -317,7 +314,6 @@ public class ChatController {
     public List<Message> getChatMessages(int chatId) throws NoSuchElementException, SQLException {
         // Check chat exists
         getChat(chatId);
-
         return messageDAO.getAllChatMessages(chatId);
     }
 
