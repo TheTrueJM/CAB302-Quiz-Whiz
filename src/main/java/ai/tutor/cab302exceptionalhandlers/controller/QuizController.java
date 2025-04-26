@@ -99,7 +99,7 @@ public class QuizController {
     // Create a new User Answer record using UI user input
     public UserAnswer createNewUserAnswer(int questionNumber, String option) {
         try {
-            int currentAttempt = calculateCurrentAttempt(questionNumber)
+            int currentAttempt = calculateCurrentAttempt(questionNumber);
             AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
 
             if (answerOption == null) {
