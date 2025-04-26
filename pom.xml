@@ -20,6 +20,7 @@
     <maven.surefire.version>3.2.5</maven.surefire.version>
     <spotless.version>2.44.4</spotless.version>
     <javadoc.version>3.11.2</javadoc.version>
+    <password4j.version>1.8.2</password4j.version>
   </properties>
 
   <dependencies>
@@ -65,7 +66,7 @@
     <dependency>
       <groupId>com.password4j</groupId>
       <artifactId>password4j</artifactId>
-      <version>1.8.2</version>
+      <version>${password4j.version}</version>
     </dependency>
   </dependencies>
 
