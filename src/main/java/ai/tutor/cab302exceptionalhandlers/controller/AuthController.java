@@ -1,6 +1,7 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -9,8 +10,8 @@ import javafx.scene.input.KeyEvent;
 import java.sql.SQLException;
 
 public class AuthController {
-    private SQLiteConnection db;
-    private UserDAO userDAO;
+    private final SQLiteConnection db;
+    private final UserDAO userDAO;
 
     @FXML private Button signupButton;
     @FXML private Button loginButton;
