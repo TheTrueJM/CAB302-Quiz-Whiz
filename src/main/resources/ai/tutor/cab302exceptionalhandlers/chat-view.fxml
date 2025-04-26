@@ -10,8 +10,8 @@
     <!-- Left Sidebar -->
     <left>
         <!-- Other Chat Options -->
-        <VBox fx:id="previousChats" >
-            <ListView style="-fx-background-color: #333333; -fx-padding: 10;">
+        <VBox  >
+            <ListView fx:id="previousChats" style="-fx-background-color: #333333; -fx-padding: 10;">
 
             </ListView>
             <!-- User Details -->
@@ -35,7 +35,6 @@
             <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-padding: 10; -fx-border-color: #000000;">
                 <TextField fx:id="messageField" promptText="Enter Message..." HBox.hgrow="ALWAYS" />
                 <HBox alignment="CENTER_LEFT" spacing="10">
-
                     <Button text="Chat" />
                     <Button text="Quiz" />
                     <Button text="Upload File" />
