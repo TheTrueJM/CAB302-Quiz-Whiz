@@ -13,7 +13,6 @@ import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
 
-@Disabled("ChatController not implemented yet")
 public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
@@ -628,6 +627,7 @@ public class ChatControllerTest {
         assertEquals(newQuiz.getMessageId(), newQuizQuestion.getMessageId());
     }
 
+    @Disabled("Not implemented yet")
     @Test
     public void testCreateNewQuizQuestionExistingNumber() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
@@ -735,6 +735,7 @@ public class ChatControllerTest {
         assertEquals(newQuizQuestion.getNumber(), newAnswerOption.getQuestionNumber());
     }
 
+    @Disabled("Not implemented yet")
     @Test
     public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
@@ -767,7 +768,7 @@ public class ChatControllerTest {
         );
     }
 
-
+    @Disabled("Not implemented yet")
     @Test
     public void testCreateNewQuizQuestionAnswerInvalidContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
