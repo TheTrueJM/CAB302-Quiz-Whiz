@@ -10,7 +10,7 @@
     <!-- Left Sidebar -->
     <left>
         <!-- Other Chat Options -->
-        <VBox id="previousChats">
+        <VBox fx:id="previousChats" >
             <ListView style="-fx-background-color: #333333; -fx-padding: 10;">
 
             </ListView>
