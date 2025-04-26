@@ -21,6 +21,7 @@ public class ChatController {
     @FXML
     private TextField messageInputField;
 
+    private SQLiteConnection db;
     private User currentUser;
     private UserDAO userDAO;
     private ChatDAO chatDAO;
@@ -35,6 +36,7 @@ public class ChatController {
         }
 
         try {
+            this.db = db;
             this.currentUser = authenticatedUser;
             this.userDAO = new UserDAO(db);
             this.chatDAO = new ChatDAO(db);

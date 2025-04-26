@@ -1,15 +1,17 @@
 package ai.tutor.cab302exceptionalhandlers.model;
 
+import com.password4j.Hash;
+import com.password4j.Password;
+
 public class User {
     private int id;
     private String username;
-    private String password;
+    private String passwordHash;
 
 
-    public User(String username, String password) {
+    public User(String username, String passwordHash) {
         this.username = username;
-        // Encrypt Password Here or Prior
-        this.password = password;
+        this.passwordHash = passwordHash;
     }
 
 
@@ -21,16 +23,18 @@ public class User {
 
     public void setUsername(String username) { this.username = username; }
 
-    public String getPassword() { return password; }
+    public String getPasswordHash() { return passwordHash; }
 
-    public void setPassword(String password) {
-        // Encrypt Password Here or Prior
-        this.password = password;
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+
+    public boolean verifyPassword(String passwordPlaintext) {
+        return Password.check(passwordPlaintext, this.passwordHash).withScrypt();
     }
 
 
-    public boolean checkPassword(String password) {
-        // Implement for Encrypted Here or Prior
-        return false;
+    public static String hashPassword(String passwordPlaintext) {
+        Hash passwordHash = Password.hash(passwordPlaintext).addRandomSalt(16).withScrypt();
+        return passwordHash.getResult();
     }
 }

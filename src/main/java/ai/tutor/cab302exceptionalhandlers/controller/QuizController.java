@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class QuizController {
+    private SQLiteConnection db;
     private Quiz currentQuiz;
     private UserDAO userDAO;
     private ChatDAO chatDAO;
@@ -21,6 +22,7 @@ public class QuizController {
         }
 
         try {
+            this.db = db;
             this.currentQuiz = chosenQuiz;
             this.userDAO = new UserDAO(db);
             this.chatDAO = new ChatDAO(db);
