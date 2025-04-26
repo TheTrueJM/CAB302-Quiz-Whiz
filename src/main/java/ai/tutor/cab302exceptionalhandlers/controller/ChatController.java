@@ -148,7 +148,7 @@ public class ChatController {
         // TODO: Implement logic for quiz action
     }
 
-    public void sendAndReceiveMessage() {
+    protected void sendAndReceiveMessage() {
         Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
         if (selectedChat == null) {
             showErrorAlert("No chat selected");
@@ -190,7 +190,7 @@ public class ChatController {
         });
     }
 
-    public void handleCreateChatButton() {
+    protected void handleCreateChatButton() {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
     }
 
