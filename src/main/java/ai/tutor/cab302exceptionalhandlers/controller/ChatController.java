@@ -100,30 +100,47 @@ public class ChatController {
             protected void updateItem(Message message, boolean empty) {
                 super.updateItem(message, empty);
                 if (empty || message == null) {
-                    setText(null);
-                    setStyle("");
-                    setGraphic(null);
+                    clearCell();
                 } else {
-                    setText(message.getContent());
-                    //TODO: Remember to Style message cells based on sender in css
-                    if (message.getFromUser()) {
-                        getStyleClass().add("user-message");
-                    } else {
-                        getStyleClass().add("ai-message");
-                    }
-                    // Handle special AI Quiz messages
-                    if (!message.getFromUser() && message.getIsQuiz()) {
-                        Button takeQuizButton = new Button("Take Quiz");
-                        takeQuizButton.setOnAction(event -> {
-                            // TODO: Logic to handle quiz action
-                        });
-                        setGraphic(takeQuizButton);
-                    } else {
-                        setGraphic(null);
-                    }
+                    configureCell(message);
+                }
+            }
+
+            private void clearCell() {
+                setText(null);
+                setGraphic(null);
+                getStyleClass().removeAll("user-message", "ai-message");
+            }
+
+            private void configureCell(Message message) {
+                setText(message.getContent());
+                applyStyle(message);
+                addQuizButtonIfNeeded(message);
+            }
+
+            private void applyStyle(Message message) {
+                getStyleClass().removeAll("user-message", "ai-message");
+                if (message.getFromUser()) {
+                    getStyleClass().add("user-message");
+                } else {
+                    getStyleClass().add("ai-message");
+                }
+            }
+
+            private void addQuizButtonIfNeeded(Message message) {
+                if (!message.getFromUser() && message.getIsQuiz()) {
+                    Button takeQuizButton = new Button("Take Quiz");
+                    takeQuizButton.setOnAction(event -> handleTakeQuiz(message));
+                    setGraphic(takeQuizButton);
+                } else {
+                    setGraphic(null);
                 }
             }
         });
+    }
+
+    private void handleTakeQuiz(Message message) {
+        // TODO: Implement logic for quiz action
     }
 
     public void sendAndReceiveMessage() {
