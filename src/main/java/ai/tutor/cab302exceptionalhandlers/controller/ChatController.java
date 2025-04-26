@@ -120,7 +120,7 @@ public class ChatController {
             private void configureCell(Message message) {
                 setText(message.getContent());
                 applyStyle(message);
-                addQuizButtonIfNeeded(message);
+                addQuizButton(message);
             }
 
             private void applyStyle(Message message) {
@@ -132,7 +132,7 @@ public class ChatController {
                 }
             }
 
-            private void addQuizButtonIfNeeded(Message message) {
+            private void addQuizButton(Message message) {
                 if (!message.getFromUser() && message.getIsQuiz()) {
                     Button takeQuizButton = new Button("Take Quiz");
                     takeQuizButton.setOnAction(event -> handleTakeQuiz(message));
@@ -148,7 +148,7 @@ public class ChatController {
         // TODO: Implement logic for quiz action
     }
 
-    protected void sendAndReceiveMessage() {
+    public void sendAndReceiveMessage() {
         Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
         if (selectedChat == null) {
             showErrorAlert("No chat selected");
@@ -190,7 +190,7 @@ public class ChatController {
         });
     }
 
-    protected void handleCreateChatButton() {
+    public void handleCreateChatButton() {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
     }
 
