@@ -31,7 +31,7 @@ public class UserDAO implements IUserDAO {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
         try (PreparedStatement createUser = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createUser.setString(1, user.getUsername());
-            createUser.setString(2, user.getPassword());
+            createUser.setString(2, user.getPasswordHash());
             createUser.executeUpdate();
 
             try (ResultSet generatedKeys = createUser.getGeneratedKeys()) {
@@ -47,7 +47,7 @@ public class UserDAO implements IUserDAO {
         String sql = "UPDATE users SET username = ?, password = ? WHERE id = ?";
         try (PreparedStatement updateUser = connection.prepareStatement(sql)) {
             updateUser.setString(1, user.getUsername());
-            updateUser.setString(2, user.getPassword());
+            updateUser.setString(2, user.getPasswordHash());
             updateUser.setInt(3, user.getId());
             updateUser.executeUpdate();
         }
