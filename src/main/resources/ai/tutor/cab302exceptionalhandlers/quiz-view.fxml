@@ -43,27 +43,25 @@
     <center>
         <VBox prefHeight="396.0" prefWidth="445.0" spacing="10" style="-fx-padding: 20;">
             <!-- Quiz Question -->
-            <Label style="-fx-background-color: #d0e0ff;">
+            <Label fx:id = "labelQuestion" style="-fx-background-color: #d0e0ff;" text="Placeholder question">
 
             </Label>
             <!-- Answer Options -->
-            <VBox style="-fx-background-color: #f0f0f0;">
-                <Label id="questionLabel">
-
-                </Label>
+            <VBox style="-fx-background-color: #f0f0f0; -fx-border-color: #000000;">
+                <Label text="Please select one of the options" style="-fx-background-color: #f0f0f0;"> </Label>
                 <HBox>
-                    <Button id="answerA">
+                    <Button fx:id="answerA"  text="A - Placeholder" style="-fx-padding: 10;" alignment="CENTER_LEFT">
 
                     </Button>
-                    <Button id="answerB">
+                    <Button fx:id="answerB"  text="B - Placeholder" style="-fx-padding: 10;" alignment="CENTER_RIGHT">
 
                     </Button>
                 </HBox>
                 <HBox>
-                    <Button id="answerC">
+                    <Button fx:id="answerC"  text="C - Placeholder" style="-fx-padding: 10;" alignment="BOTTOM_LEFT">
 
                     </Button>
-                    <Button id="answerD">
+                    <Button fx:id="answerD"  text="D - Placeholder" style="-fx-padding: 10;" alignment="BOTTOM_RIGHT">
 
                     </Button>
                 </HBox>
