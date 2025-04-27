@@ -98,7 +98,7 @@ public class AuthController {
             authenticate(newUser);
         } catch (Exception e) {
             // TODO: Display possible Sign Up error messages to FXML
-            System.err.println("User Sign Up Failed: " + e.getMessage());
+            System.err.println("User Sign Up Failed: " + e.getMessage() + e.getClass());
         }
     }
 
@@ -120,7 +120,9 @@ public class AuthController {
 
     private void authenticate(User user) throws IOException, SQLException {
         Stage stage = (Stage) signUpButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("chat-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                QuizWhizApplication.class.getResource("chat-view.fxml")
+        );
 
         ChatController controller = new ChatController(db, user);
         fxmlLoader.setController(controller);

@@ -10,16 +10,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ChatController {
-    @FXML
-    private ListView<Chat> chatsListView;
-    @FXML
-    private ListView<Message> messagesListView;
-    @FXML
-    private TextField chatNameField;
-    @FXML
-    private Button updateChatButton;
-    @FXML
-    private TextField messageInputField;
+    @FXML private ListView<Chat> chatsListView;
+    @FXML private ListView<Message> messagesListView;
+    @FXML private TextField chatNameField;
+    @FXML private Button updateChatNameButton;
+    @FXML private TextField messageInputField;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -174,7 +169,7 @@ public class ChatController {
     }
 
     private void setupUpdateChatNameButton() {
-        updateChatButton.setOnAction(event -> {
+        updateChatNameButton.setOnAction(event -> {
             try {
                 Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
                 String newName = chatNameField.getText();

@@ -23,8 +23,8 @@ public class QuizWhizApplication extends Application {
 
         // In-Memory for developing
         SQLiteConnection db = new SQLiteConnection(true);
-         AuthController controller = new AuthController(db);
-         fxmlLoader.setController(controller);
+        AuthController controller = new AuthController(db);
+        fxmlLoader.setController(controller);
 
         Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
         stage.setTitle(TITLE);
