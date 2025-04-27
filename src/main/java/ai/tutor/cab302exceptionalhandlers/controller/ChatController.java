@@ -48,6 +48,7 @@ public class ChatController {
         setupChatSelectionListener();
         setupMessagesListView();
         setupUpdateChatNameButton();
+        setupSendAndReceiveMessage();
     }
 
 
@@ -143,29 +144,30 @@ public class ChatController {
         // TODO: Implement logic for quiz action
     }
 
-    public void sendAndReceiveMessage() {
-        Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
-        if (selectedChat == null) {
-            showErrorAlert("No chat selected");
-            return;
-        }
-        String content = messageInputField.getText();
-        if (content == null || content.trim().isEmpty()) {
-            showErrorAlert("Message cannot be empty");
-            return;
-        }
-        try {
-            Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
+    public void setupSendAndReceiveMessage() {
+        messageInputField.setOnAction(event -> {
+            Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
+            if (selectedChat == null) {
+                showErrorAlert("No chat selected");
+                return;
+            }
+            String content = messageInputField.getText();
+            if (content == null || content.trim().isEmpty()) {
+                showErrorAlert("Message cannot be empty");
+                return;
+            }
+            try {
+                Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
+                refreshMessageList(selectedChat);
+                messageInputField.clear();
 
-            refreshMessageList(selectedChat);
-            messageInputField.clear();
-
-            //TODO: Pass message prompt to AI
-            generateChatMessageResponse(userMessage);
-            refreshMessageList(selectedChat);
-        } catch (SQLException e) {
-            showErrorAlert("Failed to send message: " + e.getMessage());
-        }
+                //TODO: Pass message prompt to AI
+                generateChatMessageResponse(userMessage);
+                refreshMessageList(selectedChat);
+            } catch (SQLException e) {
+                showErrorAlert("Failed to send message: " + e.getMessage());
+            }
+        });
     }
 
     private void setupUpdateChatNameButton() {
@@ -179,8 +181,9 @@ public class ChatController {
                 }
                 updateChatName(selectedChat.getId(), newName); // Let updateChatName handle validation
                 chatNameField.setText(selectedChat.getName());
+                refreshChatListView();
             } catch (Exception e) {
-                showErrorAlert("Failed to send message: " + e.getMessage());
+                showErrorAlert("Failed to update chat name " + e.getMessage());
             }
         });
     }
