@@ -15,6 +15,7 @@
     <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
     <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
     <Button fx:id="signUpButton" text="Sign Up" onAction="#onSignUp" disable="true"/>
+    <Button text="Switch to Login" onAction="#switchToLogin"/>
 </VBox>
 
 <!--

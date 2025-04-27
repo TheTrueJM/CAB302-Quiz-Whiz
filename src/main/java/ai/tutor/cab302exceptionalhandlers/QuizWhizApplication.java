@@ -1,6 +1,7 @@
 package ai.tutor.cab302exceptionalhandlers;
 
 import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
+import ai.tutor.cab302exceptionalhandlers.controller.SignUpController;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +24,7 @@ public class QuizWhizApplication extends Application {
 
         // In-Memory for developing
         SQLiteConnection db = new SQLiteConnection(true);
-        AuthController controller = new AuthController(db);
+        SignUpController controller = new SignUpController(db);
         fxmlLoader.setController(controller);
 
         Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
