@@ -370,7 +370,7 @@ public class ChatController {
     }
 
     // Create an AnswerOption object from the AI's response message if it is a quiz message
-    public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) throws IllegalArgumentException, SQLException{
+    public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
         if (quizQuestion == null) {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
         }
@@ -384,6 +384,10 @@ public class ChatController {
         String option = "Option";
         String value = "Answer option statement";
         boolean isAnswer = true;
+
+        if (answerOptionDAO.getQuestionAnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option) != null) {
+            throw new IllegalStateException("Answer option already exists");
+        }
 
         AnswerOption answerOption = new AnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option, value, isAnswer);
         answerOptionDAO.createAnswerOption(answerOption);

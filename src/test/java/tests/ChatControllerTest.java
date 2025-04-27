@@ -627,7 +627,7 @@ public class ChatControllerTest {
         assertEquals(newQuiz.getMessageId(), newQuizQuestion.getMessageId());
     }
 
-    @Disabled("Not implemented yet")
+    @Disabled("Only implement if question number is extracted from quiz question content\nOtherwise remove test case")
     @Test
     public void testCreateNewQuizQuestionExistingNumber() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
@@ -707,7 +707,7 @@ public class ChatControllerTest {
     }
 
     @Test
-    public void testCreateNewQuizQuestionAnswer() throws IllegalArgumentException, NoSuchElementException, SQLException {
+    public void testCreateNewQuizQuestionAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -735,9 +735,8 @@ public class ChatControllerTest {
         assertEquals(newQuizQuestion.getNumber(), newAnswerOption.getQuestionNumber());
     }
 
-    @Disabled("Not implemented yet")
     @Test
-    public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalArgumentException, NoSuchElementException, SQLException {
+    public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -768,7 +767,6 @@ public class ChatControllerTest {
         );
     }
 
-    @Disabled("Not implemented yet")
     @Test
     public void testCreateNewQuizQuestionAnswerInvalidContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
@@ -792,7 +790,7 @@ public class ChatControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatController.createNewQuestionAnswerOption(
-                        QuestionContent.get("invalid"), newQuizQuestion
+                        AnswerContent.get("invalid"), newQuizQuestion
                 )
         );
     }
