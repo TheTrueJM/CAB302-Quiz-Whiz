@@ -80,4 +80,5 @@ public class LoginController {
     protected void switchToSignUp() throws IOException, SQLException {
         authController.switchLayout("sign-up", getStage());
     }
+
 }
