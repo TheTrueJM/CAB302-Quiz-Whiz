@@ -5,7 +5,6 @@
 <?import javafx.scene.layout.*?>
 
 
-
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
@@ -15,6 +14,7 @@
     <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
     <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
     <Button fx:id="signUpButton" text="Sign Up" onAction="#onSignUp" disable="true"/>
+    <Button text="Switch to Login" onAction="#switchToLogin"/>
 </VBox>
 
 <!--

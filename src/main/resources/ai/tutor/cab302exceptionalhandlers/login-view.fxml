@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged"/>
+    <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
+    <Button fx:id="loginButton" text="Login" onAction="#onLogin" disable="true"/>
+    <Button text="Switch to Sign Up" onAction="#switchToSignUp"/>
+</VBox>
+
+<!--
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="ai.tutor.cab302exceptionalhandlers.controller.AuthController"
@@ -15,3 +29,4 @@
     </center>
 
 </BorderPane>
+-->
