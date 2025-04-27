@@ -1,19 +1,26 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class AuthController {
-    private SQLiteConnection db;
-    private UserDAO userDAO;
+    private final SQLiteConnection db;
+    private final UserDAO userDAO;
 
-    @FXML private Button signupButton;
-    @FXML private Button loginButton;
+    @FXML private Button signUpButton;
+//    @FXML
+//    private Button loginButton;
     @FXML private TextField usernameField;
     @FXML private TextField passwordField;
     @FXML private TextField confirmPasswordField;
@@ -22,24 +29,21 @@ public class AuthController {
     private boolean passwordEmpty = true;
     private boolean passwordCEmpty = true;
 
-    public AuthController(SQLiteConnection db) {
-        try {
-            this.db = db;
-            this.userDAO = new UserDAO(db);
-        } catch (SQLException | RuntimeException e) {
-            System.err.println("SQL database connection error: " + e.getMessage());
-        }
+
+    public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
+        this.db = db;
+        this.userDAO = new UserDAO(db);
     }
 
 
-
     /*
-     * =========================================================================
-     *                          FXML UI Controllers
-     * =========================================================================
+     * =========================
+     *    FXML UI Controllers
+     * =========================
      */
+
     @FXML
-    public void onFieldChanged(KeyEvent e) {
+    protected void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField)e.getSource();
         String senderID = sender.getId();
         String senderText = sender.getText();
@@ -59,122 +63,120 @@ public class AuthController {
         submitButtonToggle();
     }
 
-    private void submitButtonToggle(){
-        // Enable submit button conditionally
-        boolean canSubmit;
+    private void submitButtonToggle() {
+        signUpButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
 
         // Change condition if we are on sign up page
-        if (confirmPasswordField == null) {
-            canSubmit = !usernameEmpty && !passwordEmpty;
-            if (canSubmit) {
-                loginButton.setDisable(false);
-            }
-        }
-        else {
-            canSubmit = !usernameEmpty && !passwordEmpty && !passwordCEmpty;
-            if (passwordField.getText().equals(confirmPasswordField.getText()) && canSubmit) {
-                signupButton.setDisable(false);
-            }
-        }
+//        if (confirmPasswordField == null) {
+//            canSubmit = !usernameEmpty && !passwordEmpty;
+//            if (canSubmit) {
+//                loginButton.setDisable(false);
+//            }
+//        }
+//        else {
+//            canSubmit = !usernameEmpty && !passwordEmpty && !passwordCEmpty;
+//            if (passwordField.getText().equals(confirmPasswordField.getText()) && canSubmit) {
+//                signupButton.setDisable(false);
+//            }
+//        }
     }
 
     @FXML
-    public void onSignUp() {
+    protected void onSignUp() throws IOException, SQLException {
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (!password.equals(confirmPassword)) {
-            // TODO: SignUp Unsuccessful
-            System.err.println("User Sign Up Failed - Password do not match");
-        } else {
-            User newUser = signUp(username, password);
-
-            if (newUser == null) {
-                // TODO: SignUp Unsuccessful
-                System.err.println("User Sign Up Failed");
-            } else {
-                // TODO: Implement switch to Chat Page
-                System.err.println("User Sign Up Success");
+        try {
+            if (!password.equals(confirmPassword)) {
+                throw new IllegalArgumentException("Passwords do not match");
             }
-        }
-    }
 
-    @FXML
-    public void onLogin() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-
-        User existingUser = login(username, password);
-
-        if (existingUser == null) {
-            // TODO: Login Unsuccessful
-            System.err.println("User Sign Up Failed");
-        } else {
+            User newUser = signUp(username, password);
             // TODO: Implement switch to Chat Page
-            System.err.println("User Login Success");
+            System.err.println("User Sign Up Success");
+            authenticate(newUser);
+        } catch (Exception e) {
+            // TODO: Display possible Sign Up error messages to FXML
+            System.err.println("User Sign Up Failed: " + e.getMessage() + e.getClass());
         }
     }
+
+//    @FXML
+//    protected void onLogin() throws IOException, SQLException {
+//        String username = usernameField.getText();
+//        String password = passwordField.getText();
+//
+//        try {
+//            User existingUser = login(username, password);
+//            // TODO: Implement switch to Chat Page
+//            System.err.println("User Login Success");
+//            authenticate(existingUser);
+//        } catch (Exception e) {
+//            // TODO: Display possible Sign Up error messages to FXML
+//            System.err.println("User Login Failed: " + e.getMessage());
+//        }
+//    }
+
+    private void authenticate(User user) throws IOException, SQLException {
+        Stage stage = (Stage) signUpButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                QuizWhizApplication.class.getResource("chat-view.fxml")
+        );
+
+        ChatController controller = new ChatController(db, user);
+        fxmlLoader.setController(controller);
+
+        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+
 
     /*
-     * =========================================================================
-     *                          CRUD Operations
-     * =========================================================================
+     * =====================
+     *    CRUD Operations
+     * =====================
      */
-    public User signUp(String username, String password) {
-        // TODO: Display possible error messages to FXML
-        if (!validUsername(username) || !validPassword(password)) {
-            System.out.println("Invalid details were entered");
-        } else {
-            try {
-                User existingUser = userDAO.getUser(username);
-                if (existingUser != null) {
-                    System.out.println("User already exists");
-                } else {
-                    // Get hash of user password
-                    String hashedPassword = User.hashPassword(password);
 
-                    User newUser = new User(username, hashedPassword);
-                    userDAO.createUser(newUser);
-
-                    return newUser;
-                }
-            } catch (SQLException e) {
-                System.err.println("Failed to read users: " + e.getMessage());
-            }
+    public User signUp(String username, String password) throws IllegalStateException, IllegalArgumentException, SQLException {
+        if (!validUsername(username)) {
+            throw new IllegalArgumentException("Username is invalid");
         }
-        return null;
+        if (!validPassword(password)) {
+            throw new IllegalArgumentException("Password is invalid");
+        }
+
+        User existingUser = userDAO.getUser(username);
+        if (existingUser != null) {
+            throw new IllegalStateException("Username is already taken");
+        }
+
+        String hashedPassword = User.hashPassword(password);
+        User newUser = new User(username, hashedPassword);
+        userDAO.createUser(newUser);
+
+        return newUser;
     }
 
-    public User login(String username, String password) {
-        // TODO: Display possible error messages to FXML
-        if (!validUsername(username) || !validPassword(password)) {
-            System.out.println("Invalid details were entered");
-        } else {
-            try {
-                User existingUser = userDAO.getUser(username);
-                if (existingUser == null) {
-                    System.out.println("User does not exist");
-                } else {
-                    // Checks if input password will equal user's hashed password
-                    if (!existingUser.verifyPassword(password)) {
-                        System.out.println("Incorrect Password");
-                    } else {
-                        return existingUser;
-                    }
-                }
-            } catch (SQLException e) {
-                System.err.println("Failed to read users: " + e.getMessage());
-            }
+    public User login(String username, String password) throws SecurityException, SQLException {
+        User existingUser = userDAO.getUser(username == null ? "" : username);
+        if (existingUser == null) {
+            throw new SecurityException("User does not exist");
         }
-        return null;
+
+        // Verify input password equals hashed user password
+        if (!existingUser.verifyPassword(password == null ? "" : password)) {
+            throw new SecurityException("Incorrect Password");
+        }
+
+        return existingUser;
     }
 
     private boolean validUsername(String username) {
-        return username.matches("^[a-zA-Z0-9]+$");
+        return username != null && username.matches("^[a-zA-Z0-9]+$");
     }
 
     private boolean validPassword(String password) {
-        return password.matches("^[a-zA-Z0-9]+$");
+        return password != null && password.matches("^[a-zA-Z0-9]+$");
     }
 }

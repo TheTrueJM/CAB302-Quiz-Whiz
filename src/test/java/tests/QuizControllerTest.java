@@ -19,10 +19,10 @@ public class QuizControllerTest {
     private Connection connection;
     private QuizController quizController;
 
-    private static final User User = new User("TestUser", "password");
-    private static final Chat Chat = new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT");
-    private static final Message Message = new Message(1, "Quiz Message from AI", false, true);
-    private static final Quiz Quiz = new Quiz(1, "Quiz 1", "normal");
+    private static final User user = new User("TestUser", "password");
+    private static final Chat chat = new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT");
+    private static final Message message = new Message(1, "Quiz Message from AI", false, true);
+    private static final Quiz quiz = new Quiz(1, "Quiz 1", "normal");
 
     private static final Map<String, QuizQuestion> QuizQuestions = new HashMap<>();
     static {
@@ -57,13 +57,13 @@ public class QuizControllerTest {
         connection = db.getInstance();
 
         UserDAO userDAO = new UserDAO(db);
-        userDAO.createUser(User);
+        userDAO.createUser(user);
         ChatDAO chatDAO = new ChatDAO(db);
-        chatDAO.createChat(Chat);
+        chatDAO.createChat(chat);
         MessageDAO messageDAO = new MessageDAO(db);
-        messageDAO.createMessage(Message);
+        messageDAO.createMessage(message);
         QuizDAO quizDAO = new QuizDAO(db);
-        quizDAO.createQuiz(Quiz);
+        quizDAO.createQuiz(quiz);
 
         QuizQuestionDAO quizQuestionDAO = new QuizQuestionDAO(db);
         for (QuizQuestion quizQuestion : QuizQuestions.values()) {
@@ -77,7 +77,7 @@ public class QuizControllerTest {
             answerOptionDAO.createAnswerOption(answerOption);
         }
 
-        quizController = new QuizController(db, Quiz);
+        quizController = new QuizController(db, quiz);
     }
 
 
@@ -97,7 +97,7 @@ public class QuizControllerTest {
     public void testGetQuiz() {
         Quiz quiz = quizController.getQuiz();
         assertNotNull(quiz);
-        assertEquals(Quiz.getMessageId(), quiz.getMessageId());
+        assertEquals(quiz.getMessageId(), quiz.getMessageId());
     }
 
     @Test
