@@ -2,11 +2,13 @@ package ai.tutor.cab302exceptionalhandlers.model;
 
 import com.password4j.Hash;
 import com.password4j.Password;
+import com.password4j.ScryptFunction;
 
 public class User {
     private int id;
     private String username;
     private String passwordHash;
+    private static final ScryptFunction scrypt = ScryptFunction.getInstance(65536, 8, 1, 64);
 
 
     public User(String username, String passwordHash) {
@@ -29,12 +31,12 @@ public class User {
 
 
     public boolean verifyPassword(String passwordPlaintext) {
-        return Password.check(passwordPlaintext, this.passwordHash).withScrypt();
+        return Password.check(passwordPlaintext, this.passwordHash).with(scrypt);
     }
 
 
     public static String hashPassword(String passwordPlaintext) {
-        Hash passwordHash = Password.hash(passwordPlaintext).addRandomSalt(16).withScrypt();
+        Hash passwordHash = Password.hash(passwordPlaintext).addRandomSalt(16).with(scrypt);
         return passwordHash.getResult();
     }
 }
