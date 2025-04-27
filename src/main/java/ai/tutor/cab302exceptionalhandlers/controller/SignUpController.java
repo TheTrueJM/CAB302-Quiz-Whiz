@@ -90,4 +90,5 @@ public class SignUpController {
     protected void switchToLogin() throws IOException, SQLException {
         authController.switchLayout("login", getStage());
     }
+
 }
