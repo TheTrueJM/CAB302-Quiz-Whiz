@@ -31,7 +31,7 @@ public class AuthController {
      * =========================
      */
 
-    private void authenticate(User user, Stage stage) throws IOException, SQLException {
+    public void authenticate(User user, Stage stage) throws IOException, SQLException {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 QuizWhizApplication.class.getResource("chat-view.fxml")
         );
