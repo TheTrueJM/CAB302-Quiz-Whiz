@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ChatController {
-    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
-    // Chat Window
-
     @FXML private ListView<Chat> chatsListView;
     @FXML private ListView<Message> messagesListView;
     @FXML private Button editChatName;
@@ -45,13 +42,13 @@ public class ChatController {
     private final QuizDAO quizDAO;
     private final QuizQuestionDAO quizQuestionDAO;
     private final AnswerOptionDAO answerOptionDAO;
-    AuthController authController;
 
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException {
         if (authenticatedUser == null) {
             throw new IllegalStateException("No user was authenticated");
         }
+
         this.db = db;
         this.currentUser = authenticatedUser;
         this.userDAO = new UserDAO(db);
@@ -60,7 +57,6 @@ public class ChatController {
         this.quizDAO = new QuizDAO(db);
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
-        this.authController = new AuthController(db);
     }
 
 
