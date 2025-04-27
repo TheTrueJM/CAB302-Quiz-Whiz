@@ -14,9 +14,12 @@ import java.sql.SQLException;
 public class LoginController {
     private final AuthController authController;
 
-    @FXML private TextField usernameField;
-    @FXML private TextField passwordField;
-    @FXML private Button loginButton;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private Button loginButton;
 
     private boolean usernameEmpty = true;
     private boolean passwordEmpty = true;
@@ -34,12 +37,12 @@ public class LoginController {
      */
 
     private Stage getStage() {
-        return (Stage)loginButton.getScene().getWindow();
+        return (Stage) loginButton.getScene().getWindow();
     }
 
     @FXML
     protected void onFieldChanged(KeyEvent e) {
-        TextField sender = (TextField)e.getSource();
+        TextField sender = (TextField) e.getSource();
         String senderID = sender.getId();
         String senderText = sender.getText();
 
@@ -80,5 +83,4 @@ public class LoginController {
     protected void switchToSignUp() throws IOException, SQLException {
         authController.switchLayout("sign-up", getStage());
     }
-
 }
