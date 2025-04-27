@@ -1,8 +1,8 @@
 module ai.tutor.cab302exceptionalhandlers {
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
-    requires transitive java.sql;
     requires password4j;
+    requires org.xerial.sqlitejdbc;
 
     opens ai.tutor.cab302exceptionalhandlers to javafx.fxml;
     opens ai.tutor.cab302exceptionalhandlers.controller to javafx.fxml;

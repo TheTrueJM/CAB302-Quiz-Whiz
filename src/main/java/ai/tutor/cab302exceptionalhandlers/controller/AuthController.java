@@ -1,20 +1,26 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class AuthController {
     private final SQLiteConnection db;
     private final UserDAO userDAO;
 
-    @FXML private Button signupButton;
-    @FXML private Button loginButton;
+    @FXML private Button signUpButton;
+//    @FXML
+//    private Button loginButton;
     @FXML private TextField usernameField;
     @FXML private TextField passwordField;
     @FXML private TextField confirmPasswordField;
@@ -57,26 +63,26 @@ public class AuthController {
         submitButtonToggle();
     }
 
-    private void submitButtonToggle(){
-        boolean canSubmit = true;
+    private void submitButtonToggle() {
+        signUpButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
 
         // Change condition if we are on sign up page
-        if (confirmPasswordField == null) {
-            canSubmit = !usernameEmpty && !passwordEmpty;
-            if (canSubmit) {
-                loginButton.setDisable(false);
-            }
-        }
-        else {
-            canSubmit = !usernameEmpty && !passwordEmpty && !passwordCEmpty;
-            if (passwordField.getText().equals(confirmPasswordField.getText()) && canSubmit) {
-                signupButton.setDisable(false);
-            }
-        }
+//        if (confirmPasswordField == null) {
+//            canSubmit = !usernameEmpty && !passwordEmpty;
+//            if (canSubmit) {
+//                loginButton.setDisable(false);
+//            }
+//        }
+//        else {
+//            canSubmit = !usernameEmpty && !passwordEmpty && !passwordCEmpty;
+//            if (passwordField.getText().equals(confirmPasswordField.getText()) && canSubmit) {
+//                signupButton.setDisable(false);
+//            }
+//        }
     }
 
     @FXML
-    protected void onSignUp() {
+    protected void onSignUp() throws IOException, SQLException {
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
@@ -89,25 +95,38 @@ public class AuthController {
             User newUser = signUp(username, password);
             // TODO: Implement switch to Chat Page
             System.err.println("User Sign Up Success");
+            authenticate(newUser);
         } catch (Exception e) {
             // TODO: Display possible Sign Up error messages to FXML
             System.err.println("User Sign Up Failed: " + e.getMessage());
         }
     }
 
-    @FXML
-    protected void onLogin() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
+//    @FXML
+//    protected void onLogin() throws IOException, SQLException {
+//        String username = usernameField.getText();
+//        String password = passwordField.getText();
+//
+//        try {
+//            User existingUser = login(username, password);
+//            // TODO: Implement switch to Chat Page
+//            System.err.println("User Login Success");
+//            authenticate(existingUser);
+//        } catch (Exception e) {
+//            // TODO: Display possible Sign Up error messages to FXML
+//            System.err.println("User Login Failed: " + e.getMessage());
+//        }
+//    }
 
-        try {
-            User existingUser = login(username, password);
-            // TODO: Implement switch to Chat Page
-            System.err.println("User Login Success");
-        } catch (Exception e) {
-            // TODO: Display possible Sign Up error messages to FXML
-            System.err.println("User Login Failed: " + e.getMessage());
-        }
+    private void authenticate(User user) throws IOException, SQLException {
+        Stage stage = (Stage) signUpButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("chat-view.fxml"));
+
+        ChatController controller = new ChatController(db, user);
+        fxmlLoader.setController(controller);
+
+        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+        stage.setScene(scene);
     }
 
 

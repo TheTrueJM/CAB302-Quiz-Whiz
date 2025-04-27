@@ -89,7 +89,7 @@
           <execution>
             <id>default-cli</id>
             <configuration>
-              <mainClass>ai.tutor.cab302exceptionalhandlers/ai.tutor.cab302exceptionalhandlers.HelloApplication</mainClass>
+              <mainClass>ai.tutor.cab302exceptionalhandlers/ai.tutor.cab302exceptionalhandlers.QuizWhizApplication</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
