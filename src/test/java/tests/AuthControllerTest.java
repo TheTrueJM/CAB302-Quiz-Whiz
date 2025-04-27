@@ -1,6 +1,7 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
@@ -8,26 +9,25 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 
-@Disabled("AuthController not implemented yet")
+import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
+
 public class AuthControllerTest {
     private SQLiteConnection db;
     private Connection connection;
     private AuthController authController;
 
-    private static final Map<String, User> Users = new HashMap<>();
+    private static final Map<String, String> User = new HashMap<>();
     static {
-        Users.put("validUser", new User("TestUser1", User.hashPassword("password")));
-        Users.put("emptyUsernameUser", new User("", User.hashPassword("password")));
-        Users.put("emptyPasswordUser", new User("TestUser3", User.hashPassword("")));
+        User.put("username", "TestUser");
+        User.put("password", "password");
     }
 
 
     @BeforeEach
-    public void setUp() throws SQLException {
+    public void setUp() throws RuntimeException, SQLException {
         db = new SQLiteConnection(true);
         connection = db.getInstance();
         authController = new AuthController(db);
@@ -42,70 +42,108 @@ public class AuthControllerTest {
 
 
     @Test
-    public void testValidSignUp() {
-        User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
+    public void testValidSignUp() throws IllegalStateException, IllegalArgumentException, SQLException {
+        User newUser = authController.signUp(User.get("username"), User.get("password"));
         assertNotNull(newUser);
         assertEquals(1, newUser.getId());
+        assertEquals(User.get("username"), newUser.getUsername());
+        assertTrue(newUser.verifyPassword(User.get("password")));
     }
 
     @Test
-    public void testSignUpExistingUsername() {
-        User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNotNull(newUser);
-        User existingUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNull(existingUser);
+    public void testSignUpExistingUsername() throws IllegalStateException, IllegalArgumentException, SQLException {
+        authController.signUp(User.get("username"), User.get("password"));
+        assertThrows(
+                IllegalStateException.class,
+                () -> authController.signUp(User.get("username"), User.get("password"))
+        );
     }
 
     @Test
     public void testSignUpEmptyUsername() {
-        User user = Users.get("emptyUsernameUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNull(newUser);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> authController.signUp("", User.get("password"))
+        );
+    }
+
+    @Test
+    public void testSignUpNullUsername() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> authController.signUp(null, User.get("password"))
+        );
     }
 
     @Test
     public void testSignUpEmptyPassword() {
-        User user = Users.get("emptyPasswordUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNull(newUser);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> authController.signUp(User.get("username"), "")
+        );
     }
 
     @Test
-    public void testValidLogin() {
-        User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
+    public void testSignUpNullPassword() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> authController.signUp(User.get("username"), null)
+        );
+    }
+
+
+    @Test
+    public void testValidLogin() throws IllegalStateException, IllegalArgumentException, SQLException {
+        User newUser = authController.signUp(User.get("username"), User.get("password"));
         assertNotNull(newUser);
-        User loggedInUser = authController.login(user.getUsername(), user.getPasswordHash());
+        User loggedInUser = authController.login(User.get("username"), User.get("password"));
         assertNotNull(loggedInUser);
         assertEquals(newUser.getId(), loggedInUser.getId());
+        assertEquals(newUser.getUsername(), loggedInUser.getUsername());
     }
 
     @Test
-    public void testLoginIncorrectPassword() {
-        User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNotNull(newUser);
-        User loggedInUser = authController.login(user.getUsername(), "WrongPassword");
-        assertNull(loggedInUser);
+    public void testLoginIncorrectPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
+        authController.signUp(User.get("username"), User.get("password"));
+        assertThrows(
+                SecurityException.class,
+                () -> authController.login(User.get("username"), "WrongPassword")
+        );
     }
 
     @Test
-    public void testLoginEmptyUsername() {
-        User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNotNull(newUser);
-        User loggedInUser = authController.login("", user.getPasswordHash());
-        assertNull(loggedInUser);
+    public void testLoginEmptyUsername() throws IllegalStateException, IllegalArgumentException, SQLException {
+        authController.signUp(User.get("username"), User.get("password"));
+        assertThrows(
+                SecurityException.class,
+                () -> authController.login("", User.get("password"))
+        );
     }
 
     @Test
-    public void testLoginEmptyPassword() {
-        User user = Users.get("validUser");
-        User newUser = authController.signUp(user.getUsername(), user.getPasswordHash());
-        assertNotNull(newUser);
-        User loggedInUser = authController.login(user.getUsername(), "");
-        assertNull(loggedInUser);
+    public void testLoginNullUsername() throws IllegalStateException, IllegalArgumentException, SQLException {
+        authController.signUp(User.get("username"), User.get("password"));
+        assertThrows(
+                SecurityException.class,
+                () -> authController.login(null, User.get("password"))
+        );
+    }
+
+    @Test
+    public void testLoginEmptyPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
+        authController.signUp(User.get("username"), User.get("password"));
+        assertThrows(
+                SecurityException.class,
+                () -> authController.login(User.get("username"), "")
+        );
+    }
+
+    @Test
+    public void testLoginNullPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
+        authController.signUp(User.get("username"), User.get("password"));
+        assertThrows(
+                SecurityException.class,
+                () -> authController.login(User.get("username"), null)
+        );
     }
 }
