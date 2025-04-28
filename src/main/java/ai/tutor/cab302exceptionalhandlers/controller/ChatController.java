@@ -672,12 +672,13 @@ public class ChatController {
     private Message generateAIResponse(Message userMessage) throws NoSuchElementException, SQLException {
         /* Preprocess Chat */
         boolean isQuiz = userMessage.getIsQuiz();
+        int chatID = userMessage.getChatId();
         Chat chatConfig = getChat(userMessage.getChatId());
         List<Message> chatHistory = getChatMessages(userMessage.getChatId());
 
         /* Generation */
         String aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
-        Message aiResponse = new Message(userMessage.getChatId(), aiMessageContent, false, isQuiz);
+        Message aiResponse = new Message(chatID, aiMessageContent, false, isQuiz);
         messageDAO.createMessage(aiResponse);
         addMessage(aiResponse);
 
@@ -772,5 +773,9 @@ public class ChatController {
 
     private boolean validateNullOrEmpty(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    public String getOllamaURL() {
+        return ollamaUrl;
     }
 }

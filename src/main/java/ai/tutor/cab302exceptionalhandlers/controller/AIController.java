@@ -28,8 +28,8 @@ public class AIController {
     }
 
     private String loadSystemPrompt() throws IOException {
-        String systemTutorPromptPath = "/ai/tutor/cab302exceptionalhandlers/system_prompt.txt";
-        String systemQuizPromptPath = "/ai/tutor/cab302exceptionalhandlers/quiz_prompt.txt";
+        String systemTutorPromptPath = "system_prompt.txt";
+        String systemQuizPromptPath = "quiz_prompt.txt";
 
         String tutorPrompt = loadPromptFromFile(systemTutorPromptPath);
         String quizPrompt = loadPromptFromFile(systemQuizPromptPath);

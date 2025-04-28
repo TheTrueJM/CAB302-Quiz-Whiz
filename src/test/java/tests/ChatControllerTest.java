@@ -1,21 +1,26 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 import org.junit.jupiter.api.*;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
-import ai.tutor.cab302exceptionalhandlers.model.*;
+import io.github.ollama4j.OllamaAPI;
 
+import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
 public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
     private ChatController chatController;
+    private OllamaAPI ollamaAPI;
+    private boolean isOllamaRunning = false;
 
     private static final User CurrentUser = new User(
             "TestUser", User.hashPassword("password")
@@ -59,7 +64,7 @@ public class ChatControllerTest {
     }
 
     @BeforeEach
-    public void setUp() throws SQLException, IllegalStateException {
+    public void setUp() throws SQLException, IllegalStateException, IOException {
         db = new SQLiteConnection(true);
         connection = db.getInstance();
 
@@ -67,6 +72,15 @@ public class ChatControllerTest {
         userDAO.createUser(CurrentUser);
 
         chatController = new ChatController(db, CurrentUser);
+
+        ollamaAPI = new OllamaAPI(chatController.getOllamaURL());
+
+        try {
+                isOllamaRunning = ollamaAPI.ping();
+        } catch (RuntimeException e) {
+                System.err.println("Error checking if Ollama is running: " + e.getMessage());
+                isOllamaRunning = false;
+        }
     }
 
     @AfterEach
@@ -390,6 +404,8 @@ public class ChatControllerTest {
 
     @Test
     public void testGenerateChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -479,6 +495,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -499,6 +517,8 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidNotQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -519,6 +539,8 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidFromUser() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -539,6 +561,8 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidQuizContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -559,6 +583,8 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidQuestionContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -579,6 +605,8 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -599,6 +627,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestion() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -624,6 +654,8 @@ public class ChatControllerTest {
     @Disabled("Only implement if question number is extracted from quiz question content\nOtherwise remove test case")
     @Test
     public void testCreateNewQuizQuestionExistingNumber() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -653,6 +685,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestionInvalidQuestionContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -677,6 +711,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestionInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -702,6 +738,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestionAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -731,6 +769,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -763,6 +803,8 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestionAnswerInvalidContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
