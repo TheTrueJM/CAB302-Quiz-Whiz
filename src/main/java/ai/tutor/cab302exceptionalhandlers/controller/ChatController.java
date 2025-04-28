@@ -4,7 +4,6 @@ import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 import com.google.gson.JsonSyntaxException;
-import io.github.ollama4j.exceptions.OllamaException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -62,13 +61,14 @@ public class ChatController {
     private final AIController aiController;
     private final String ollamaUrl = "http://localhost:11434";
 
-    public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException {
+    public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException, IOException {
         if (authenticatedUser == null) {
             throw new IllegalStateException("No user was authenticated");
         }
         this.db = db;
         this.currentUser = authenticatedUser;
         this.userDAO = new UserDAO(db);
+        this.chatDAO = new ChatDAO(db);
         this.messageDAO = new MessageDAO(db);
         this.quizDAO = new QuizDAO(db);
         this.quizQuestionDAO = new QuizQuestionDAO(db);
@@ -659,11 +659,14 @@ public class ChatController {
 
         validateChatExistsForCurrentUser(userMessage.getChatId());
 
-        // TODO: Generate AI message
-        String aiMessageContent = "I received your message";
-        aiMessageContent = validateNullOrEmpty(aiMessageContent) ? "Default message" : aiMessageContent;
+        /* Preprocessing Chat */
+        boolean isQuiz = userMessage.getIsQuiz();
+        Chat chatConfig = getChat(userMessage.getChatId());
+        List<Message> chatHistory = getChatMessages(userMessage.getChatId());
 
-        Message aiResponse = new Message(userMessage.getChatId(), aiMessageContent, false, userMessage.getIsQuiz());
+        /* Generation */
+        String aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
+        Message aiResponse = new Message(userMessage.getChatId(), aiMessageContent, false, isQuiz);
         messageDAO.createMessage(aiResponse);
         addMessage(aiResponse);
 
@@ -724,14 +727,14 @@ public class ChatController {
         int questionNumber = questionsCreated + 1;
 
         QuizQuestion question = new QuizQuestion(quiz.getMessageId(), questionNumber, questionContent);
-            quizQuestionDAO.createQuizQuestion(question);
+        quizQuestionDAO.createQuizQuestion(question);
 
         return question;
     }
 
     // Create an AnswerOption object from the AI's response message if it is a quiz message
     public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
-                if (quizQuestion == null) {
+        if (quizQuestion == null) {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
         }
 

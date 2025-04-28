@@ -39,16 +39,25 @@ public class AIController {
         return tutorPrompt;
     }
 
-    private String loadPromptFromFile(String resourcePath) throws IOException {
+    private String loadPromptFromFile(String resourcePath) {
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
             if (is == null) {
                 throw new IOException("Prompt file not found: " + resourcePath);
             }
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
+    private boolean ollamaResultIsNull(OllamaChatRequest ollamaRequest) {
+        return ollamaRequest == null || ollamaRequest.getMessages() == null
+                || ollamaRequest.getMessages().isEmpty();
+    }
+
     public String generateResponse(List<Message> history, Chat chatConfig, boolean requestQuiz) {
+        // TODO: quiz handling
         try {
             String systemPrompt = String.format(
                 currentSystemPrompt,
@@ -70,10 +79,10 @@ public class AIController {
             OllamaChatRequest ollamaRequest = ollamaBuilder.build();
             OllamaChatResult ollamaResult = ollamaAPI.chat(ollamaRequest);
 
-            if (ollamaResult == null || ollamaResult.getResponseModel() == null ||
-                ollamaResult.getResponseModel().getMessage() == null) {
+            if (ollamaResultIsNull(ollamaRequest)) {
                 throw new OllamaBaseException("Received null response from Ollama API.");
             }
+
             return ollamaResult.getResponseModel().getMessage().getContent();
         } catch (OllamaBaseException e) {
             return "Ollama API error: " + e.getMessage();
@@ -85,6 +94,7 @@ public class AIController {
             return "Tool invocation error: " + e.getMessage();
         }
     }
+
 
    // TODO: Quiz
 }
