@@ -28,8 +28,8 @@ public class AIController {
     }
 
     private String loadSystemPrompt() throws IOException {
-        String systemTutorPromptPath = "system_prompt.txt";
-        String systemQuizPromptPath = "quiz_prompt.txt";
+        String systemTutorPromptPath = "/ai/tutor/cab302exceptionalhandlers/prompts/system_prompt.txt";
+        String systemQuizPromptPath = "/ai/tutor/cab302exceptionalhandlers/prompts/quiz_prompt.txt";
 
         String tutorPrompt = loadPromptFromFile(systemTutorPromptPath);
         String quizPrompt = loadPromptFromFile(systemQuizPromptPath);
@@ -39,15 +39,12 @@ public class AIController {
         return tutorPrompt;
     }
 
-    private String loadPromptFromFile(String resourcePath) {
-        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+    private String loadPromptFromFile(String resourcePath) throws IOException {
+        try (InputStream is = AIController.class.getResourceAsStream(resourcePath)) {
             if (is == null) {
-                throw new IOException("Prompt file not found: " + resourcePath);
+                throw new IOException("Prompt file not found in classpath: " + resourcePath);
             }
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
