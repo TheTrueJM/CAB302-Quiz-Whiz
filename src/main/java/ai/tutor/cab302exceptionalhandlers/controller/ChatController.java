@@ -659,7 +659,18 @@ public class ChatController {
 
         validateChatExistsForCurrentUser(userMessage.getChatId());
 
-        /* Preprocessing Chat */
+        Message aiResponse = generateAIResponse(userMessage);
+
+        //TODO: Operation to split the message for quiz if needed
+        if (aiResponse.getIsQuiz()) {
+            createNewQuiz(aiResponse.getContent(), aiResponse);
+        }
+
+        return aiResponse;
+    }
+
+    private Message generateAIResponse(Message userMessage) throws NoSuchElementException, SQLException {
+        /* Preprocess Chat */
         boolean isQuiz = userMessage.getIsQuiz();
         Chat chatConfig = getChat(userMessage.getChatId());
         List<Message> chatHistory = getChatMessages(userMessage.getChatId());
@@ -756,7 +767,7 @@ public class ChatController {
         answerOptionDAO.createAnswerOption(answerOption);
 
         return answerOption;
-        }
+    }
 
 
     private boolean validateNullOrEmpty(String value) {
