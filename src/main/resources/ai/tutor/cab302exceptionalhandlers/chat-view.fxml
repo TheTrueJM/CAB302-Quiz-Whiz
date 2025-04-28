@@ -5,18 +5,20 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ai.tutor.cab302exceptionalhandlers.controller.ChatController">
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Left Sidebar -->
     <left>
         <!-- Other Chat Options -->
-        <VBox  >
-            <ListView fx:id="previousChats" style="-fx-background-color: #333333; -fx-padding: 10;">
+        <VBox>
+            <ListView fx:id="chatsListView" style="-fx-background-color: #333333; -fx-padding: 10;">
 
             </ListView>
+
             <!-- User Details -->
             <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-background-color: #333333; -fx-padding: 10;">
-                <Button maxWidth="-Infinity" onAction="#handleUserDetails" text="User Details" />
+                <Button maxWidth="-Infinity" text="User Details" /> <!-- onAction="#handleUserDetails" -->
             </VBox>
         </VBox>
     </left>
@@ -25,15 +27,13 @@
     <center>
         <VBox prefHeight="396.0" prefWidth="445.0" spacing="10" style="-fx-padding: 20;">
             <!-- Chat Section -->
-                <ListView id="messagesListView">
+            <ListView fx:id="messagesListView">
 
-                </ListView>
-
+            </ListView>
 
             <!-- Chat Input -->
-
             <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-padding: 10; -fx-border-color: #000000;">
-                <TextField fx:id="messageField" promptText="Enter Message..." HBox.hgrow="ALWAYS" />
+                <TextField fx:id="messageInputField" promptText="Enter Message..." HBox.hgrow="ALWAYS" />
                 <HBox alignment="CENTER_LEFT" spacing="10">
                     <Button text="Chat" />
                     <Button text="Quiz" />
@@ -49,6 +49,8 @@
         <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #336699; -fx-padding: 10;">
             <ImageView fitHeight="30" fitWidth="30" />
             <Label style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="Chat Title" textAlignment="CENTER" alignment="TOP_CENTER" />
+            <TextField fx:id="chatNameField" promptText="Change Name" HBox.hgrow="ALWAYS" />
+            <Button fx:id="updateChatNameButton" text="Change Name" />
             <Region HBox.hgrow="ALWAYS">
             <opaqueInsets>
                <Insets />
