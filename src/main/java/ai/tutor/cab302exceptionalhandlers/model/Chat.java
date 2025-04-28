@@ -46,9 +46,4 @@ public class Chat {
     public String getStudyArea() { return studyArea; }
 
     public void setStudyArea(String studyArea) { this.studyArea = studyArea; }
-
-    @Override
-    public String toString() {
-        return name != null ? name : "Unnamed Chat";
-    }
 }
