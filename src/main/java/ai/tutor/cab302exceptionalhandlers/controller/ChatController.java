@@ -725,7 +725,7 @@ public class ChatController {
 
     // Create a QuizQuestion object from the AI's response message if it is a quiz message
     public QuizQuestion createNewQuizQuestion(String questionContent, Quiz quiz) throws IllegalArgumentException, SQLException {
-            if (quiz == null) {
+        if (quiz == null) {
             throw new IllegalArgumentException("Question must be for a quiz");
         }
 
