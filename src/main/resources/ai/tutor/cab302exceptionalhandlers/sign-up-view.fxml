@@ -5,16 +5,23 @@
 <?import javafx.scene.layout.*?>
 
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml">
+<VBox alignment="TOP_CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml" style="-fx-background-color: #CBD6FF;">
+    <!--The Header -->
+    <HBox alignment="TOP_CENTER" spacing="10" style="-fx-background-color: #336699; -fx-padding: 10;">
+        <Label style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="Welcome to Quiz Whiz" textAlignment="CENTER" alignment="TOP_CENTER" />
+    </HBox>
+
+
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
+<!-- The Fields for Sign up page-->
     <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged"/>
     <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
     <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
-    <Button fx:id="signUpButton" text="Sign Up" onAction="#onSignUp" disable="true"/>
-    <Button text="Switch to Login" onAction="#switchToLogin"/>
+    <Button fx:id="signUpButton" text="Sign Up" onAction="#onSignUp" disable="true" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold;"/>
+    <Button text="Switch to Login" onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold;"/>
 </VBox>
 
 <!--
