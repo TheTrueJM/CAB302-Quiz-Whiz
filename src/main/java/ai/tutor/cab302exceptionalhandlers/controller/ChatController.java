@@ -2,6 +2,15 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
+import com.google.gson.JsonSyntaxException;
+import io.github.ollama4j.exceptions.OllamaException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,11 +27,6 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 public class ChatController {
     // Chat Window
@@ -54,6 +58,9 @@ public class ChatController {
     private final QuizQuestionDAO quizQuestionDAO;
     private final AnswerOptionDAO answerOptionDAO;
     private boolean isQuiz;
+    AuthController authController;
+    private final AIController aiController;
+    private final String ollamaUrl = "http://localhost:11434";
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException {
         if (authenticatedUser == null) {
@@ -62,14 +69,14 @@ public class ChatController {
         this.db = db;
         this.currentUser = authenticatedUser;
         this.userDAO = new UserDAO(db);
-        this.chatDAO = new ChatDAO(db);
         this.messageDAO = new MessageDAO(db);
         this.quizDAO = new QuizDAO(db);
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
         this.isQuiz = false;
+        this.authController = new AuthController(db);
+        this.aiController = new AIController(ollamaUrl);
     }
-
 
     @FXML
     public void initialize() {
@@ -377,7 +384,6 @@ public class ChatController {
                 Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
                 messageInputField.clear();
                 addMessage(userMessage);
-
                 generateChatMessageResponse(userMessage);
 
             } catch (SQLException e) {
@@ -704,7 +710,7 @@ public class ChatController {
 
     // Create a QuizQuestion object from the AI's response message if it is a quiz message
     public QuizQuestion createNewQuizQuestion(String questionContent, Quiz quiz) throws IllegalArgumentException, SQLException {
-        if (quiz == null) {
+            if (quiz == null) {
             throw new IllegalArgumentException("Question must be for a quiz");
         }
 
@@ -718,14 +724,14 @@ public class ChatController {
         int questionNumber = questionsCreated + 1;
 
         QuizQuestion question = new QuizQuestion(quiz.getMessageId(), questionNumber, questionContent);
-        quizQuestionDAO.createQuizQuestion(question);
+            quizQuestionDAO.createQuizQuestion(question);
 
         return question;
     }
 
     // Create an AnswerOption object from the AI's response message if it is a quiz message
     public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
-        if (quizQuestion == null) {
+                if (quizQuestion == null) {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
         }
 
@@ -747,7 +753,7 @@ public class ChatController {
         answerOptionDAO.createAnswerOption(answerOption);
 
         return answerOption;
-    }
+        }
 
 
     private boolean validateNullOrEmpty(String value) {
