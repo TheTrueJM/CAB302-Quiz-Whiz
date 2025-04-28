@@ -43,7 +43,7 @@
     <center>
         <VBox prefHeight="396.0" prefWidth="445.0" spacing="10" style="-fx-padding: 20;">
             <!-- Quiz Question -->
-            <Label fx:id = "labelQuestion" style="-fx-background-color: #d0e0ff;" text="Placeholder question">
+            <Label fx:id = "labelQuestion" style="-fx-background-color: #CBD6FF;" text="Placeholder question">
 
             </Label>
             <!-- Answer Options -->
