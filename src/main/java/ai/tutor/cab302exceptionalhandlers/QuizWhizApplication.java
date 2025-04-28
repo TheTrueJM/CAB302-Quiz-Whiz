@@ -2,6 +2,7 @@ package ai.tutor.cab302exceptionalhandlers;
 
 import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
 import ai.tutor.cab302exceptionalhandlers.controller.SignUpController;
+import ai.tutor.cab302exceptionalhandlers.model.Message;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

@@ -3,7 +3,9 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,9 +14,10 @@ import java.util.NoSuchElementException;
 public class ChatController {
     @FXML private ListView<Chat> chatsListView;
     @FXML private ListView<Message> messagesListView;
-    @FXML private TextField chatNameField;
     @FXML private Button updateChatNameButton;
+    @FXML private TextField chatNameField;
     @FXML private TextField messageInputField;
+    @FXML private TextField noChatsField;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -30,7 +33,6 @@ public class ChatController {
         if (authenticatedUser == null) {
             throw new IllegalStateException("No user was authenticated");
         }
-
         this.db = db;
         this.currentUser = authenticatedUser;
         this.userDAO = new UserDAO(db);
@@ -39,13 +41,15 @@ public class ChatController {
         this.quizDAO = new QuizDAO(db);
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
+
     }
 
 
     @FXML
     public void initialize() {
-        refreshChatListView();
         setupChatSelectionListener();
+        setupChatListView();
+        refreshChatListView();
         setupMessagesListView();
         setupUpdateChatNameButton();
         setupSendAndReceiveMessage();
@@ -64,6 +68,47 @@ public class ChatController {
         alert.showAndWait();
     }
 
+    private void setupChatListView(){
+
+        if (chatsListView.getItems().isEmpty()){
+            chatsListView.setVisible(false);
+            noChatsField.setVisible(true);
+        }
+        else {
+            chatsListView.setCellFactory(listView -> new ListCell<Chat>() {
+                private final Button selectChat = new Button();
+                private final HBox container = new HBox(selectChat);
+                {
+                    chatsListView.setVisible(true);
+                    noChatsField.setVisible(false);
+                    selectChat.setOnAction(event -> {
+                        Chat chat = getItem();
+                        if (chat != null) {
+                            chatsListView.getSelectionModel().select(chat);
+                            refreshMessageList(chat);
+                        }
+                    });
+                }
+                @Override
+                protected void updateItem(Chat chat, boolean empty) {
+                    super.updateItem(chat, empty);
+                    if (empty || chat == null) {
+                        setGraphic(null);
+                        container.setStyle("");
+                        setStyle("-fx-background-color: #535353;");
+                    } else {
+                        selectChat.getStyleClass().add("chat-selector");
+                        container.getStyleClass().add("chat-selector-container");
+
+                        selectChat.setText(chat.getName());
+                        selectChat.setAlignment(Pos.CENTER_LEFT);
+                        setGraphic(container);
+                    }
+                }
+            });
+        }
+
+    }
     private void refreshChatListView () {
         try {
             chatsListView.getItems().clear();
@@ -83,11 +128,13 @@ public class ChatController {
     }
 
     private void setupChatSelectionListener() {
+        // Ensure single selection mode
+        chatsListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         chatsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldChat, newChat) -> {
             if (newChat != null) {
+                chatNameField.setText(newChat.getName());
                 // No try-except here as refreshMessageList() will handle it
                 refreshMessageList(newChat);
-                chatNameField.setText(newChat.getName());
             } else {
                 chatNameField.setText("");
                 messagesListView.getItems().clear();
@@ -97,6 +144,7 @@ public class ChatController {
 
     private void setupMessagesListView() {
         messagesListView.setCellFactory(listView -> new ListCell<Message>() {
+
             @Override
             protected void updateItem(Message message, boolean empty) {
                 super.updateItem(message, empty);
@@ -158,7 +206,6 @@ public class ChatController {
             }
             try {
                 Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
-                refreshMessageList(selectedChat);
                 messageInputField.clear();
 
                 //TODO: Pass message prompt to AI
