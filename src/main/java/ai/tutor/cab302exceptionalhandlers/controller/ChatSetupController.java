@@ -1,7 +1,6 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
-import ai.tutor.cab302exceptionalhandlers.model.ChatDAO;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 import javafx.fxml.FXML;
@@ -72,7 +71,7 @@ public class ChatSetupController {
             FXMLLoader fxmlLoader = new FXMLLoader(
                     QuizWhizApplication.class.getResource("chat-view.fxml")
             );
-            ChatController controller = new ChatController(db, currentUser); // Or ChatViewController if split
+            ChatController controller = new ChatController(db, currentUser);
             fxmlLoader.setController(controller);
 
             // Create the scene

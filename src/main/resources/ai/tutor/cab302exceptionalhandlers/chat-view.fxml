@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -55,18 +54,31 @@
             <!-- Pane for the top bar content -->
             <Pane prefHeight="65.0" prefWidth="711.0" style="-fx-background-color: #213355;" HBox.hgrow="NEVER">
                 <children>
-                    <HBox alignment="CENTER_LEFT" layoutX="20.0" prefHeight="62.0" prefWidth="669.0" spacing="10" style="-fx-padding: 0;" HBox.hgrow="NEVER">
-                        <ImageView fitHeight="29.0" fitWidth="40.0" nodeOrientation="INHERIT" HBox.hgrow="NEVER" />
-                        <Button fx:id="updateChatNameButton" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white;" HBox.hgrow="NEVER">
-                     <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@images/edit.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-                        <TextField fx:id="chatNameField" prefHeight="46.0" prefWidth="278.0" promptText="Quiz Whiz" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@styles.css" HBox.hgrow="ALWAYS" />
-                        <Region nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="ALWAYS" />
+                    <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="62.0" prefWidth="690.0" spacing="10" style="-fx-padding: 0;" HBox.hgrow="NEVER">
+                        <ImageView fitHeight="29.0" fitWidth="3.0" nodeOrientation="INHERIT" HBox.hgrow="NEVER" />
+                  <StackPane prefHeight="62.0" prefWidth="31.0">
+                     <children>
+                              <Button fx:id="editChatName" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white;">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@images/edit.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="confirmEditChatName" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white;">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@images/confirm.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </StackPane>
+                        <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" prefWidth="421.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@styles.css" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>
                               <TextField prefHeight="31.0" prefWidth="127.0" promptText="Search..." style="-fx-background-radius: 10 0 0 10; -fx-padding: 7 0 7 8; -fx-background-color: white;" HBox.hgrow="NEVER" />
@@ -101,16 +113,21 @@
 
     <!-- Left Region (Sidebar) -->
     <left>
-        <VBox prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 10;" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 5;" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
             <StackPane fx:id="chatListContainer" prefWidth="230.0">
                 <TextField fx:id="noChatsField" alignment="TOP_CENTER" editable="false" prefHeight="404.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" />
-                <ListView fx:id="chatsListView" prefHeight="429.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS" />
+                <ListView fx:id="chatsListView" prefHeight="380.0" prefWidth="264.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
+               <StackPane.margin>
+                  <Insets bottom="5.0" />
+               </StackPane.margin></ListView>
             </StackPane>
-            <!-- User Details Button -->
-            <VBox prefHeight="46.0" prefWidth="248.0" style="-fx-background-color: #535353; -fx-padding: 10;">
-                <Button maxWidth="Infinity" prefHeight="45.0" prefWidth="228.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18;" text="User Details" />
-            </VBox>
+             <Button prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;" text="User Details" />
+         <Button fx:id="logoutButton" alignment="TOP_CENTER" maxHeight="25.0" prefHeight="15.0" prefWidth="92.0" style="-fx-background-color: D73234; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-radius: 6; -fx-background-radius: 6;" text="Log Out">
+            <VBox.margin>
+               <Insets bottom="7.0" top="12.0" />
+            </VBox.margin>
+         </Button>
         </VBox>
     </left>
 
