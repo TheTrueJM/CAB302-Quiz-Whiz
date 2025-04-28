@@ -1,23 +1,34 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ChatController {
+    // Chat Window
+
     @FXML private ListView<Chat> chatsListView;
     @FXML private ListView<Message> messagesListView;
     @FXML private Button updateChatNameButton;
+    @FXML private Button addNewChat;
     @FXML private TextField chatNameField;
     @FXML private TextField messageInputField;
     @FXML private TextField noChatsField;
+    @FXML private Button configureChat;
+    @FXML private TextField welcomeTitle;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -53,6 +64,7 @@ public class ChatController {
         setupMessagesListView();
         setupUpdateChatNameButton();
         setupSendAndReceiveMessage();
+        handleCreateChatButton();
     }
 
 
@@ -62,57 +74,79 @@ public class ChatController {
      * =========================================================================
      */
 
-    private void showErrorAlert (String message){
+    public void showErrorAlert (String message){
         // Create error alert object
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
         alert.showAndWait();
     }
 
     private void setupChatListView(){
+        chatsListView.setCellFactory(listView -> new ListCell<Chat>() {
+            private final Button selectChat = new Button();
+            private final HBox container = new HBox(selectChat);
+            {
+                setChatListVisibility(true);
+                selectChat.setOnAction(event -> {
+                    Chat chat = getItem();
+                    if (chat != null) {
+                        chatsListView.getSelectionModel().select(chat);
+                        toggleGreetingVisibility();
+                        refreshMessageList(chat);
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Chat chat, boolean empty) {
+                super.updateItem(chat, empty);
+                if (empty || chat == null) {
+                    setGraphic(null);
+                    container.setStyle("");
+                    setStyle("-fx-background-color: #535353;");
+                } else {
+                    selectChat.getStyleClass().add("chat-selector");
+                    container.getStyleClass().add("chat-selector-container");
 
-        if (chatsListView.getItems().isEmpty()){
-            chatsListView.setVisible(false);
-            noChatsField.setVisible(true);
+                    selectChat.setText(chat.getName());
+                    selectChat.setAlignment(Pos.CENTER_LEFT);
+                    setGraphic(container);
+                }
+            }
+        });
+    }
+
+    private void setChatListVisibility (boolean state){
+        if (state){
+            chatsListView.setVisible(true);
+            noChatsField.setVisible(false);
         }
         else {
-            chatsListView.setCellFactory(listView -> new ListCell<Chat>() {
-                private final Button selectChat = new Button();
-                private final HBox container = new HBox(selectChat);
-                {
-                    chatsListView.setVisible(true);
-                    noChatsField.setVisible(false);
-                    selectChat.setOnAction(event -> {
-                        Chat chat = getItem();
-                        if (chat != null) {
-                            chatsListView.getSelectionModel().select(chat);
-                            refreshMessageList(chat);
-                        }
-                    });
-                }
-                @Override
-                protected void updateItem(Chat chat, boolean empty) {
-                    super.updateItem(chat, empty);
-                    if (empty || chat == null) {
-                        setGraphic(null);
-                        container.setStyle("");
-                        setStyle("-fx-background-color: #535353;");
-                    } else {
-                        selectChat.getStyleClass().add("chat-selector");
-                        container.getStyleClass().add("chat-selector-container");
-
-                        selectChat.setText(chat.getName());
-                        selectChat.setAlignment(Pos.CENTER_LEFT);
-                        setGraphic(container);
-                    }
-                }
-            });
+            chatsListView.setVisible(false);
+            noChatsField.setVisible(true);
+            noChatsField.setAlignment(Pos.TOP_CENTER);
         }
-
     }
+
+    private void toggleGreetingVisibility() {
+        Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
+        if (selectedChat == null) {
+            welcomeTitle.setVisible(true);
+            configureChat.setVisible(true);
+        } else {
+            welcomeTitle.setVisible(false);
+            configureChat.setVisible(false);
+        }
+}
+
+
     private void refreshChatListView () {
         try {
+            if (getUserChats() == null){
+                // Display default message
+                setChatListVisibility(false);
+            }
             chatsListView.getItems().clear();
             chatsListView.getItems().addAll(chatDAO.getAllUserChats(currentUser.getId()));
+            toggleGreetingVisibility();
         } catch (SQLException e) {
             showErrorAlert("Failed to load chats: " + e.getMessage());
         }
@@ -237,9 +271,27 @@ public class ChatController {
 
     public void handleCreateChatButton() {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
+        addNewChat.setOnAction(actionEvent -> {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(
+                        QuizWhizApplication.class.getResource("chat-setup-view.fxml")
+                );
+
+                ChatSetupController controller = new ChatSetupController(db, currentUser);
+                fxmlLoader.setController(controller);
+
+                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+                // Get the Stage from the event
+                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                stage.setScene(scene);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
     }
-
-
     /*
      * =========================================================================
      *                          CRUD Operations
@@ -269,8 +321,12 @@ public class ChatController {
     }
 
     // Retrieve Chat records for a specific User
-    public List<Chat> getUserChats() throws SQLException {
-        return chatDAO.getAllUserChats(currentUser.getId());
+    public List<Chat> getUserChats(){
+        try {
+            return chatDAO.getAllUserChats(currentUser.getId());
+        } catch (SQLException e){
+            throw new IllegalArgumentException("Error fetching user chats");
+        }
     }
 
     // Retrieve a specific Chat record

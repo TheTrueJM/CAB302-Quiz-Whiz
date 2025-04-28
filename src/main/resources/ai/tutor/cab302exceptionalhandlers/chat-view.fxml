@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.layout.StackPane?>
 <BorderPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@styles.css" />
@@ -24,7 +24,7 @@
             <!-- Pane to match sidebar width and color -->
             <Pane prefHeight="65.0" prefWidth="241.0" style="-fx-background-color: #535353;" HBox.hgrow="NEVER">
             <children>
-               <Button fx:id="updateChatNameButton1" layoutX="20.0" layoutY="12.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white;">
+               <Button fx:id="returnButton" layoutX="20.0" layoutY="12.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white;">
                   <graphic>
                      <ImageView fitHeight="34.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -33,7 +33,7 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="updateChatNameButton11" layoutX="136.0" layoutY="11.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white;">
+               <Button fx:id="searchButton" layoutX="136.0" layoutY="11.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white;">
                   <graphic>
                      <ImageView fitHeight="34.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -42,7 +42,7 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="updateChatNameButton111" layoutX="189.0" layoutY="11.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white;">
+               <Button fx:id="addNewChat" layoutX="189.0" layoutY="11.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white;">
                   <graphic>
                      <ImageView fitHeight="34.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -104,8 +104,8 @@
         <VBox prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 10;" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
             <StackPane fx:id="chatListContainer" prefWidth="230.0">
-                <ListView styleClass="chat-list" fx:id="chatsListView" prefHeight="429.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-padding: 10;" VBox.vgrow="ALWAYS" />
-                <TextField fx:id="noChatsField" text="You currently have no past chats" style="-fx-background-color: #535353; " editable="false" visible="false" />
+                <TextField fx:id="noChatsField" alignment="TOP_CENTER" editable="false" prefHeight="404.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" />
+                <ListView fx:id="chatsListView" prefHeight="429.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS" />
             </StackPane>
             <!-- User Details Button -->
             <VBox prefHeight="46.0" prefWidth="248.0" style="-fx-background-color: #535353; -fx-padding: 10;">
@@ -117,8 +117,18 @@
     <!-- Center Region (Chat Area) -->
     <center>
         <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
-            <!-- Chat Section -->
-            <ListView fx:id="messagesListView" style="-fx-border-radius: 10; -fx-background-radius: 10;" VBox.vgrow="ALWAYS" />
+         <StackPane fx:id="chatListContainer1" prefWidth="230.0">
+            <children>
+                  <!-- Chat Section -->
+                  <ListView fx:id="messagesListView" style="-fx-border-radius: 10; -fx-background-radius: 10;" />
+               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                  <children>
+                     <TextField fx:id="welcomeTitle" alignment="CENTER" editable="false" maxWidth="650.0" prefHeight="67.0" prefWidth="500.0" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: black; -fx-background-insets: 0; -fx-background-color: white;" text="Welcome, X" visible="false" VBox.vgrow="NEVER" />
+                     <Button fx:id="configureChat" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" style="-fx-font-size: 12; -fx-border-color: black; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1; -fx-padding: 0; -fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold;" text="Configure Chat" visible="false" />
+                  </children>
+               </VBox>
+            </children>
+         </StackPane>
             <!-- Chat Input -->
             <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-padding: 10; -fx-border-color: #757575; -fx-border-radius: 8; -fx-background-color: white; -fx-border-width: 1; -fx-background-radius: 8;">
             <HBox prefHeight="100.0" prefWidth="200.0">
