@@ -20,6 +20,10 @@
     -fx-background-color: #535353;
 }
 
-.user-message {
+.form-slider .thumb{
+    -fx-background-color: black;
+}
 
+.form-slider .track{
+    -fx-background-color: #6C94DF;
 }
