@@ -73,6 +73,7 @@ public class ChatController {
         setupEditChatNameButton();
         setupActivateEdit();
         setupSendAndReceiveMessage();
+        setupLogoutButton();
         handleCreateChatButton();
     }
 
@@ -379,6 +380,24 @@ public class ChatController {
     // TODO: Logout functionality
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    QuizWhizApplication.class.getResource("login-view.fxml")
+            );
+
+            try {
+                LoginController controller = new LoginController(db);
+                fxmlLoader.setController(controller);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                stage.setScene(scene);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
