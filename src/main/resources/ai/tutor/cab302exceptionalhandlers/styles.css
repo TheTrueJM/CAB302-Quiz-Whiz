@@ -1,0 +1,49 @@
+.chat-selector {
+    -fx-background-color: #FFFFFF;
+    -fx-text-alignment: left;
+    -fx-border-radius: 8 0 0 8;
+    -fx-background-radius: 8 0 0 8;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+    -fx-border-color: #D9D9D9;
+    -fx-padding: 12 14;
+    -fx-pref-width: 175;
+    -fx-pref-height: 40;
+}
+
+.chat-selector-container {
+    -fx-background-color: #535353;
+    -fx-padding: 5 4 5 0;
+}
+
+.chat-list {
+    -fx-background-color: #535353;
+}
+
+.form-slider .thumb{
+    -fx-background-color: black;
+}
+
+.form-slider .track{
+    -fx-background-color: #6C94DF;
+}
+
+.delete-button {
+    -fx-background-color: #FFFFFF;
+    -fx-pref-height: 42.2;
+    -fx-pref-width: 20;
+    -fx-border-radius: 0 8 8 0;
+    -fx-background-radius: 0 8 8 0;
+    -fx-padding: 8;
+}
+
+.delete-button:hover {
+    -fx-cursor: hand;
+}
+
+.chat-list .scroll-bar:horizontal .increment-arrow,
+.chat-list .scroll-bar:horizontal .decrement-arrow,
+.chat-list .scroll-bar:horizontal .increment-button,
+.chat-list .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
+}
