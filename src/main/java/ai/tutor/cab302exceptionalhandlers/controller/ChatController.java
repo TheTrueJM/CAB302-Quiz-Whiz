@@ -2,12 +2,8 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
-import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
-import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -57,9 +53,7 @@ public class ChatController {
     private final QuizQuestionDAO quizQuestionDAO;
     private final AnswerOptionDAO answerOptionDAO;
     private boolean isQuiz;
-    AuthController authController;
     private final AIController aiController;
-    private final String ollamaUrl = "http://localhost:11434";
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException, IOException {
         if (authenticatedUser == null) {
@@ -74,8 +68,7 @@ public class ChatController {
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
         this.isQuiz = false;
-        this.authController = new AuthController(db);
-        this.aiController = new AIController(ollamaUrl);
+        this.aiController = new AIController();
     }
 
     @FXML
@@ -94,6 +87,22 @@ public class ChatController {
         setupUserDetailsButton();
     }
 
+    // Problem: ChatController is very dependant on AIController, should that be the case?
+    public boolean isOllamaRunning() {
+        return aiController.isOllamaRunning();
+    }
+
+    public boolean hasModel() {
+        return aiController.hasModel();
+    }
+
+    public String getModelName() {
+        return aiController.getModelName();
+    }
+
+    public void setOllamaVerbose(boolean verbose) {
+        aiController.setVerbose(verbose);
+    }
 
     /*
      * =========================================================================
@@ -105,6 +114,7 @@ public class ChatController {
         // Create error alert object
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
         alert.showAndWait();
+        System.err.println("Error: " + message);
     }
 
     private void setupChatListView(){
@@ -775,7 +785,4 @@ public class ChatController {
         return value == null || value.trim().isEmpty();
     }
 
-    public String getOllamaURL() {
-        return ollamaUrl;
-    }
 }

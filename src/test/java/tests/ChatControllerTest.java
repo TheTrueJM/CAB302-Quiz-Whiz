@@ -10,8 +10,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
-import io.github.ollama4j.OllamaAPI;
-
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
@@ -19,8 +17,8 @@ public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
     private ChatController chatController;
-    private OllamaAPI ollamaAPI;
     private boolean isOllamaRunning = false;
+    private boolean hasCorrectModel = false;
 
     private static final User CurrentUser = new User(
             "TestUser", User.hashPassword("password")
@@ -64,7 +62,8 @@ public class ChatControllerTest {
     }
 
     @BeforeEach
-    public void setUp() throws SQLException, IllegalStateException, IOException {
+    public void setUp(TestInfo testInfo) throws SQLException, IllegalStateException, IOException {
+        System.out.println("Running test: " + testInfo.getDisplayName());
         db = new SQLiteConnection(true);
         connection = db.getInstance();
 
@@ -72,14 +71,14 @@ public class ChatControllerTest {
         userDAO.createUser(CurrentUser);
 
         chatController = new ChatController(db, CurrentUser);
+        isOllamaRunning = chatController.isOllamaRunning();
+        hasCorrectModel = chatController.hasModel();
+        chatController.setOllamaVerbose(true);
 
-        ollamaAPI = new OllamaAPI(chatController.getOllamaURL());
-
-        try {
-                isOllamaRunning = ollamaAPI.ping();
-        } catch (RuntimeException e) {
-                System.err.println("Error checking if Ollama is running: " + e.getMessage());
-                isOllamaRunning = false;
+        if (!hasCorrectModel && isOllamaRunning) {
+                fail(String.format(
+                        "You need to download the correct model by running `ollama pull %s'", chatController.getModelName()
+                ));
         }
     }
 

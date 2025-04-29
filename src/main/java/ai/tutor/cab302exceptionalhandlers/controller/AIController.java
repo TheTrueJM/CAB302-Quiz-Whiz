@@ -5,7 +5,6 @@ import ai.tutor.cab302exceptionalhandlers.model.Message;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.models.chat.*;
 
 import java.io.IOException;
@@ -15,16 +14,43 @@ import java.util.List;
 import java.util.HashMap;
 
 public class AIController {
-    private final OllamaAPI ollamaAPI;
-    private final String modelName = "gemma3:4b-it-qat";
+    private final OllamaAPI ollamaAPI = new OllamaAPI();
+    private final String modelName = "qwen3:4b"; // hardcoded, do we want this???
     private final String currentSystemPrompt;
     private final OllamaChatRequestBuilder ollamaBuilder = OllamaChatRequestBuilder.getInstance(modelName);
-
     private final HashMap<String, String> prompts = new HashMap<>();
+    private boolean verbose = false;
 
-    public AIController(String ollamaUrl) throws IOException {
-        this.ollamaAPI = new OllamaAPI(ollamaUrl);
+    public AIController() throws IOException {
+        this.ollamaAPI.setVerbose(false);
         this.currentSystemPrompt = loadSystemPrompt();
+    }
+
+    public boolean isOllamaRunning() {
+        try {
+            return ollamaAPI.ping();
+        } catch ( RuntimeException e) {
+            System.err.println("Error pinging Ollama API: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean hasModel() {
+        try {
+            ollamaAPI.getModelDetails(modelName);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error checking model: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     private String loadSystemPrompt() throws IOException {
@@ -80,15 +106,15 @@ public class AIController {
                 throw new OllamaBaseException("Received null response from Ollama API.");
             }
 
-            return ollamaResult.getResponseModel().getMessage().getContent();
-        } catch (OllamaBaseException e) {
-            return "Ollama API error: " + e.getMessage();
-        } catch (IOException e) {
-            return "I/O error: " + e.getMessage();
-        } catch (InterruptedException e) {
-            return "Interrupted error: " + e.getMessage();
-        } catch (ToolInvocationException e) {
-            return "Tool invocation error: " + e.getMessage();
+            String response = ollamaResult.getResponseModel().getMessage().getContent();
+            if (verbose) System.out.println(String.format("Response: \n---\n%s\n---", response));
+
+            return response;
+
+        /* Not sure whats the proper way to handle these exceptions */
+        } catch (Exception e) {
+            System.err.println("Error generating response: " + e.getMessage());
+            return "Error generating response: " + e.getMessage();
         }
     }
 
