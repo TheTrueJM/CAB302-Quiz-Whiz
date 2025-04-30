@@ -97,6 +97,12 @@ public class AIController {
             for (Message msg : history) {
                 OllamaChatMessageRole role = msg.getFromUser() ? OllamaChatMessageRole.USER : OllamaChatMessageRole.ASSISTANT;
                 ollamaBuilder.withMessage(role, msg.getContent());
+
+                if (verbose) {
+                    System.out.println(String.format(
+                        "%s: \n---\n%s\n---", role.toString(), msg.getContent()
+                    ));
+                }
             }
 
             OllamaChatRequest ollamaRequest = ollamaBuilder.build();
@@ -107,7 +113,11 @@ public class AIController {
             }
 
             String response = ollamaResult.getResponseModel().getMessage().getContent();
-            if (verbose) System.out.println(String.format("Response: \n---\n%s\n---", response));
+            if (verbose) {
+                System.out.println(String.format(
+                    "AI Response: \n---\n%s\n---", response
+                ));
+            }
 
             return response;
 
