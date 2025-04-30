@@ -329,14 +329,11 @@ public class ChatController {
     private void handleTakeQuiz(ActionEvent actionEvent, Message message) {
         // TODO: Implement logic for quiz action
         try {
-            // TODO: Quiz content probably from ai?
-            String aiQuizContent = "TEMPORARY";
-            Quiz newQuiz = createNewQuiz(aiQuizContent, message);
             FXMLLoader fxmlLoader = new FXMLLoader(
                     QuizWhizApplication.class.getResource("quiz-view.fxml")
             );
 
-            QuizController controller = new QuizController(db, newQuiz);
+            QuizController controller = new QuizController(db, quizDAO.getQuiz(message.getId()));
             fxmlLoader.setController(controller);
 
             Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
