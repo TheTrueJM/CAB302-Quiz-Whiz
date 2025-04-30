@@ -79,7 +79,10 @@
                      </children>
                   </StackPane>
                         <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" prefWidth="421.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@styles.css" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                        <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@images/logo-blue.png" />
+                  </ImageView>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>
                               <TextField prefHeight="31.0" prefWidth="127.0" promptText="Search..." style="-fx-background-radius: 10 0 0 10; -fx-padding: 7 0 7 8; -fx-background-color: white;" HBox.hgrow="NEVER" />
                               <Button alignment="CENTER" prefHeight="30.0" prefWidth="35.0" style="-fx-background-color: white; -fx-border-radius: 0; -fx-background-radius: 0;" HBox.hgrow="NEVER">
