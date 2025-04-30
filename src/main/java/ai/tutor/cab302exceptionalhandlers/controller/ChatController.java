@@ -688,6 +688,8 @@ public class ChatController {
         /* Generation */
         String aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
         Message aiResponse = new Message(chatID, aiMessageContent, false, isQuiz);
+
+        /* Automatically add message to database */
         messageDAO.createMessage(aiResponse);
         addMessage(aiResponse);
 
