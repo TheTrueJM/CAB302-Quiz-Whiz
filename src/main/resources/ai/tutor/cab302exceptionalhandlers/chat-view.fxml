@@ -125,7 +125,7 @@
                   <Insets bottom="5.0" />
                </StackPane.margin></ListView>
             </StackPane>
-             <Button prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;" text="User Details" />
+             <Button fx:id="userDetailsButton" prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;" text="User Details" />
          <Button fx:id="logoutButton" alignment="TOP_CENTER" maxHeight="25.0" prefHeight="15.0" prefWidth="92.0" style="-fx-background-color: D73234; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-radius: 6; -fx-background-radius: 6;" text="Log Out">
             <VBox.margin>
                <Insets bottom="7.0" top="12.0" />
