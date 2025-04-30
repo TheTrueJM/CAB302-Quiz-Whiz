@@ -511,34 +511,28 @@ public class ChatControllerTest {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
         Chat chat = Chats.get("chat1");
-        int chatID = chat.getId();
-        chatController.createNewChat(
+        Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
+        int chatID = newChat.getId();
 
         /* First User Message */
         Message firstUserMessage = chatController.createNewChatMessage(chatID, "My favourite number is 5, remember that.", true, false);
 
         /* First AI Response */
         Message firstResponse = chatController.generateChatMessageResponse(firstUserMessage);
-        chatController.createNewChatMessage(chatID, firstResponse.getContent(), firstResponse.getFromUser(), firstResponse.getIsQuiz());
 
         /* Second User Message */
         Message secondUserMessage = chatController.createNewChatMessage(chatID, "So what is my favourite number?", true, false);
-        chatController.createNewChatMessage(chatID, secondUserMessage.getContent(), secondUserMessage.getFromUser(), secondUserMessage.getIsQuiz());
 
         /* Second AI Response */
         Message secondResponse = chatController.generateChatMessageResponse(secondUserMessage);
-        chatController.createNewChatMessage(chatID, secondResponse.getContent(), secondResponse.getFromUser(), secondResponse.getIsQuiz());
 
-        assertEquals(firstResponse.getChatId(), secondUserMessage.getChatId());
-
-        System.out.println(String.format(
-                "First user message ID: %d\nFirst response ID: %d\nSecond user message ID: %d\nSecond response ID: %d",
-                firstUserMessage.getId(), firstResponse.getId(), secondUserMessage.getId(), secondResponse.getId()
-        ));
+        assertEquals(firstUserMessage.getChatId(), secondResponse.getChatId());
+        assertEquals(firstUserMessage.getId() + 1, firstResponse.getId());
+        assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
         assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
-    }
+}
 
     @Test
     public void testGenerateChatMessageResponseInvalidFromAI() throws IllegalArgumentException, NoSuchElementException, SQLException {
