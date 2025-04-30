@@ -80,7 +80,6 @@ public class ChatController {
         setupToggleChatMode();
         setupToggleQuizMode();
         setupLogoutButton();
-        handleCreateChatButton();
         setupUserDetailsButton();
     }
 
