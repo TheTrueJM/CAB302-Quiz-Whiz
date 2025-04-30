@@ -38,6 +38,7 @@ public class ChatController {
     @FXML private Button quizModeButton;
     @FXML private VBox greetingContainer;
     @FXML private Button chatSettingsButton;
+    @FXML private Button userDetailsButton;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -79,6 +80,8 @@ public class ChatController {
         setupToggleChatMode();
         setupToggleQuizMode();
         setupLogoutButton();
+        handleCreateChatButton();
+        setupUserDetailsButton();
     }
 
 
@@ -494,6 +497,30 @@ public class ChatController {
             chatModeButton.setDisable(false);
             chatModeButton.setOpacity(1);
             isQuiz = true;
+        });
+    }
+  
+    private void setupUserDetailsButton(){
+        userDetailsButton.setOnAction(actionEvent -> {
+            System.out.println("=================User Details================");
+
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(
+                        QuizWhizApplication.class.getResource("user-settings-view.fxml")
+                );
+
+                UserSettingsController controller = new UserSettingsController(db, currentUser);
+                fxmlLoader.setController(controller);
+
+                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+                // Get the Stage from the event
+                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                stage.setScene(scene);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
