@@ -381,6 +381,15 @@ public class ChatController {
     public void setupSendAndReceiveMessage() {
         messageInputField.setOnAction(event -> {
             Chat selectedChat = getSelectedChat();
+            
+	    if (!isOllamaRunning()) {
+                showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
+                return;
+            } else if (!hasModel()) {
+                showErrorAlert("Ollama model is not available. Please run: ollama pull " + getModelName());
+                return;
+            }
+
             if (selectedChat == null) {
                 showErrorAlert("No chat selected");
                 return;

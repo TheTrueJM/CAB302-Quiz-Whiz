@@ -85,11 +85,11 @@ public class AIController {
         try {
             String systemPrompt = String.format(
                 currentSystemPrompt,
+                chatConfig.getName(),
                 chatConfig.getResponseAttitude(),
                 chatConfig.getQuizDifficulty(),
                 chatConfig.getEducationLevel(),
-                chatConfig.getStudyArea(),
-                chatConfig.getName()
+                chatConfig.getStudyArea()
             );
 
             ollamaBuilder.reset();
