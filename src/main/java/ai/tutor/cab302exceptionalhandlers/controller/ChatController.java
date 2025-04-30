@@ -395,7 +395,6 @@ public class ChatController {
                 messageInputField.clear();
                 addMessage(userMessage);
                 generateChatMessageResponse(userMessage);
-
             } catch (SQLException e) {
                 showErrorAlert("Failed to send message: " + e.getMessage());
             }
