@@ -103,11 +103,11 @@ public class AuthController {
         return existingUser;
     }
 
-    private boolean validUsername(String username) {
+    public static boolean validUsername(String username) {
         return username != null && username.matches("^[a-zA-Z0-9]+$");
     }
 
-    private boolean validPassword(String password) {
+    public static boolean validPassword(String password) {
         return password != null && password.matches("^[a-zA-Z0-9]+$");
     }
 }
