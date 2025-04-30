@@ -67,7 +67,7 @@
 .chat-mode-active:hover, .chat-mode-disabled:hover .chat-mode-disabled:hover, .quiz-mode-disabled:hover,
  .return-button:hover, .search-button:hover, .addChatButton:hover, .confirmEdit:hover, .editName:hover,
  .userDetailsButton:hover, .logoutButton:hover, .setting-button:hover, .upload-button:hover, .chat-selector:hover,
-  .delete-button:hover{
+ .button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover {
     -fx-opacity: 0.8;
     -fx-transition: opacity 0.2s ease-in-out;
     -fx-cursor: hand;
