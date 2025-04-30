@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.HashMap;
 
 public class AIController {
-    private final OllamaAPI ollamaAPI = new OllamaAPI();
+    private final OllamaAPI ollamaAPI;
     private final String modelName = "qwen3:4b"; // hardcoded, do we want this???
     private final String currentSystemPrompt;
     private final OllamaChatRequestBuilder ollamaBuilder = OllamaChatRequestBuilder.getInstance(modelName);
@@ -22,6 +22,7 @@ public class AIController {
     private boolean verbose = false;
 
     public AIController() throws IOException {
+        this.ollamaAPI = new OllamaAPI();
         this.ollamaAPI.setVerbose(false);
         this.currentSystemPrompt = loadSystemPrompt();
     }
