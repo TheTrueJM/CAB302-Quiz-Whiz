@@ -498,7 +498,7 @@ public class ChatController {
             isQuiz = true;
         });
     }
-  
+
     private void setupUserDetailsButton() {
         userDetailsButton.setOnAction(actionEvent -> {
             System.out.println("=================User Details================");
