@@ -499,7 +499,7 @@ public class ChatController {
         });
     }
   
-    private void setupUserDetailsButton(){
+    private void setupUserDetailsButton() {
         userDetailsButton.setOnAction(actionEvent -> {
             System.out.println("=================User Details================");
 
