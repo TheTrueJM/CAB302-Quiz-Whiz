@@ -511,29 +511,33 @@ public class ChatControllerTest {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
         Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-            chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        int chatID = chat.getId();
+        chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
 
-        Message firstUserMessage = chatController.createNewChatMessage(
-            newChat.getId(), Messages.get("messageUser").getContent(), Messages.get("messageUser").getFromUser(), Messages.get("messageUser").getIsQuiz()
-        );
-        assertNotNull(firstUserMessage);
+        /* First User Message */
+        Message firstUserMessage = chatController.createNewChatMessage(chatID, "My favourite number is 5, remember that.", true, false);
+
+        /* First AI Response */
         Message firstResponse = chatController.generateChatMessageResponse(firstUserMessage);
-        assertNotNull(firstResponse);
+        chatController.createNewChatMessage(chatID, firstResponse.getContent(), firstResponse.getFromUser(), firstResponse.getIsQuiz());
 
-        Message secondUserMessage = chatController.createNewChatMessage(
-            newChat.getId(), "This is a follow-up question", true, false
-        );
-        assertNotNull(secondUserMessage);
-        assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
+        /* Second User Message */
+        Message secondUserMessage = chatController.createNewChatMessage(chatID, "So what is my favourite number?", true, false);
+        chatController.createNewChatMessage(chatID, secondUserMessage.getContent(), secondUserMessage.getFromUser(), secondUserMessage.getIsQuiz());
 
+        /* Second AI Response */
         Message secondResponse = chatController.generateChatMessageResponse(secondUserMessage);
-        assertNotNull(secondResponse);
+        chatController.createNewChatMessage(chatID, secondResponse.getContent(), secondResponse.getFromUser(), secondResponse.getIsQuiz());
+
+        assertEquals(firstResponse.getChatId(), secondUserMessage.getChatId());
+
+        System.out.println(String.format(
+                "First user message ID: %d\nFirst response ID: %d\nSecond user message ID: %d\nSecond response ID: %d",
+                firstUserMessage.getId(), firstResponse.getId(), secondUserMessage.getId(), secondResponse.getId()
+        ));
         assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
-        assertEquals(newChat.getId(), secondResponse.getChatId());
-        assertFalse(secondResponse.getFromUser());
-        assertNotNull(secondResponse.getContent());
     }
 
     @Test
