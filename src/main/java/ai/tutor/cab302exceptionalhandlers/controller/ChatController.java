@@ -5,16 +5,18 @@ import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ChatController {
+    // Chat Window
     @FXML private ListView<Chat> chatsListView;
     @FXML private ListView<Message> messagesListView;
     @FXML private Button editChatName;
@@ -33,6 +36,9 @@ public class ChatController {
     @FXML private Button configureChat;
     @FXML private TextField welcomeTitle;
     @FXML private Button logoutButton;
+    @FXML private Button chatModeButton;
+    @FXML private Button quizModeButton;
+    @FXML private VBox greetingContainer;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -42,13 +48,12 @@ public class ChatController {
     private final QuizDAO quizDAO;
     private final QuizQuestionDAO quizQuestionDAO;
     private final AnswerOptionDAO answerOptionDAO;
-
+    private boolean isQuiz;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException {
         if (authenticatedUser == null) {
             throw new IllegalStateException("No user was authenticated");
         }
-
         this.db = db;
         this.currentUser = authenticatedUser;
         this.userDAO = new UserDAO(db);
@@ -57,6 +62,7 @@ public class ChatController {
         this.quizDAO = new QuizDAO(db);
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
+        this.isQuiz = false;
     }
 
 
@@ -64,13 +70,14 @@ public class ChatController {
     public void initialize() {
         setupChatSelectionListener();
         setupChatListView();
-        refreshChatListView();
+        refreshChatListView(null);
         setupMessagesListView();
         setupEditChatNameButton();
         setupActivateEdit();
         setupSendAndReceiveMessage();
-        setupLogoutButton();
         handleCreateChatButton();
+        setupToggleChatMode();
+        setupToggleQuizMode();
     }
 
 
@@ -94,7 +101,7 @@ public class ChatController {
 
             private final HBox container = new HBox(selectChat, deleteChatButton);
             {
-                setChatListVisibility(true);
+                setChatListVisibility();
                 selectChat.setOnAction(event -> {
                     Chat chat = getItem();
                     if (chat != null) {
@@ -126,7 +133,7 @@ public class ChatController {
                         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK){
                             try {
                                 chatDAO.deleteChat(chat);
-                                refreshChatListView();
+                                refreshChatListView(null);
                             } catch (SQLException e) {
                                 showErrorAlert("Failed to delete chat" + e.getMessage());
                             }
@@ -154,46 +161,56 @@ public class ChatController {
         });
     }
 
-    private void setChatListVisibility (boolean state){
-        if (state){
-            chatsListView.setVisible(true);
-            noChatsField.setVisible(false);
-        }
-        else {
+    private void setChatListVisibility (){
+        if (getUserChats().isEmpty()){
             chatsListView.setVisible(false);
             noChatsField.setVisible(true);
             noChatsField.setAlignment(Pos.TOP_CENTER);
+        }
+        else {
+            chatsListView.setVisible(true);
+            noChatsField.setVisible(false);
         }
     }
 
     private void toggleGreetingVisibility() {
         Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
         if (selectedChat == null) {
-            editChatName.setVisible(false);
-            confirmEditChatName.setVisible(false);
+            configureChat.setVisible(true);
             welcomeTitle.setVisible(true);
             welcomeTitle.setText("Welcome, " + currentUser.getUsername());
-            configureChat.setVisible(true);
+            greetingContainer.setVisible(true);
+            greetingContainer.setManaged(true);
+            greetingContainer.setMouseTransparent(false);
         } else {
-            editChatName.setVisible(true);
-            welcomeTitle.setVisible(false);
             configureChat.setVisible(false);
+            welcomeTitle.setVisible(false);
+            greetingContainer.setVisible(false);
+            greetingContainer.setManaged(false);
+            greetingContainer.setMouseTransparent(true);
         }
 }
 
 
-    private void refreshChatListView () {
+    private void refreshChatListView (Chat newChatToSelect) {
         try {
             Chat selectedChat = chatsListView.getSelectionModel().getSelectedItem();
             Integer selectedChatId = (selectedChat != null) ? selectedChat.getId() : null;
 
-            if (getUserChats() == null){
-                // Display default message
-                setChatListVisibility(false);
-            }
+            setChatListVisibility();
             chatsListView.getItems().clear();
             chatsListView.getItems().addAll(chatDAO.getAllUserChats(currentUser.getId()));
             List<Chat> updatedChats = chatsListView.getItems();
+
+            if (newChatToSelect != null) {
+                int currentSize = chatsListView.getItems().size() - 1;
+                Chat newAddedChat = updatedChats.get(currentSize);
+                chatsListView.getSelectionModel().select(newAddedChat);
+                int lastIndex = chatsListView.getItems().size() - 1;
+                if (lastIndex >= 0) {
+                    chatsListView.scrollTo(lastIndex);
+                }
+            }
 
             // Reselect the current chat
             if (selectedChatId != null) {
@@ -215,6 +232,11 @@ public class ChatController {
         try {
             messagesListView.getItems().clear();
             messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
+            // Scroll to the last message
+            int lastIndex = messagesListView.getItems().size() - 1;
+            if (lastIndex >= 0) {
+                messagesListView.scrollTo(lastIndex);
+            }
         } catch (SQLException e) {
             showErrorAlert("Failed to load messages: " + e.getMessage());
         }
@@ -237,7 +259,26 @@ public class ChatController {
 
     private void setupMessagesListView() {
         messagesListView.setCellFactory(listView -> new ListCell<Message>() {
+            private final Label messageContent = new Label();
+            private final VBox verticalContainer = new VBox(messageContent);
+            private final HBox horizontalContainer = new HBox(verticalContainer);
+            private final HBox wrapper = new HBox(horizontalContainer);
 
+            {
+                // Settings for message contents
+                messageContent.setWrapText(true);
+
+                // Set all cell background to white
+                setStyle("-fx-background-color: white;");
+
+                verticalContainer.setAlignment(Pos.CENTER);
+                HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
+
+                wrapper.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                wrapper.setMaxWidth(450);
+                wrapper.setFillHeight(false);
+                HBox.setHgrow(wrapper, Priority.NEVER);
+            }
             @Override
             protected void updateItem(Message message, boolean empty) {
                 super.updateItem(message, empty);
@@ -249,33 +290,50 @@ public class ChatController {
             }
 
             private void clearCell() {
-                setText(null);
                 setGraphic(null);
-                getStyleClass().removeAll("user-message", "ai-message");
+                horizontalContainer.getStyleClass().clear();
+                verticalContainer.getStyleClass().clear();
+                verticalContainer.getChildren().setAll(messageContent);
+                wrapper.setAlignment(Pos.CENTER_LEFT);
+                horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+                setAlignment(Pos.CENTER_LEFT);
             }
 
             private void configureCell(Message message) {
-                setText(message.getContent());
+                horizontalContainer.getStyleClass().clear();
+                verticalContainer.getStyleClass().clear();
+
+                messageContent.setText(message.getContent());
                 applyStyle(message);
                 addQuizButton(message);
+                setGraphic(wrapper);
             }
 
             private void applyStyle(Message message) {
-                getStyleClass().removeAll("user-message", "ai-message");
                 if (message.getFromUser()) {
-                    getStyleClass().add("user-message");
+                    horizontalContainer.getStyleClass().setAll("user-message");
+                    wrapper.setAlignment(Pos.CENTER_RIGHT);
+                    horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
+                    setAlignment(Pos.CENTER_RIGHT);
                 } else {
-                    getStyleClass().add("ai-message");
+                    horizontalContainer.getStyleClass().setAll("ai-message");
+                    setAlignment(Pos.CENTER_LEFT);
+                    wrapper.setAlignment(Pos.CENTER_LEFT);
+                    horizontalContainer.setAlignment(Pos.CENTER_LEFT);
                 }
             }
 
             private void addQuizButton(Message message) {
-                if (!message.getFromUser() && message.getIsQuiz()) {
+                verticalContainer.getChildren().setAll(messageContent);
+                verticalContainer.setAlignment(Pos.CENTER);
+
+                if (!message.getFromUser() && message.getIsQuiz() && verticalContainer.getChildren().size() == 1) {
+                    messageContent.setText("Here is the quiz you asked for: ");
                     Button takeQuizButton = new Button("Take Quiz");
+                    takeQuizButton.getStyleClass().add("takeQuizButton");
+                    VBox.setMargin(takeQuizButton, new Insets(6, 0, 0,0));
                     takeQuizButton.setOnAction(event -> handleTakeQuiz(message));
-                    setGraphic(takeQuizButton);
-                } else {
-                    setGraphic(null);
+                    verticalContainer.getChildren().add(takeQuizButton);
                 }
             }
         });
@@ -298,12 +356,13 @@ public class ChatController {
                 return;
             }
             try {
-                Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, false);
+                Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
                 messageInputField.clear();
 
                 //TODO: Pass message prompt to AI
                 generateChatMessageResponse(userMessage);
                 refreshMessageList(selectedChat);
+
             } catch (SQLException e) {
                 showErrorAlert("Failed to send message: " + e.getMessage());
             }
@@ -326,7 +385,7 @@ public class ChatController {
                 editChatName.setVisible(true);
                 chatNameField.setEditable(false);
                 confirmEditChatName.setVisible(false);
-                refreshChatListView();
+                refreshChatListView(null);
             } catch (Exception e) {
                 showErrorAlert("Failed to update chat name " + e.getMessage());
             }
@@ -358,7 +417,7 @@ public class ChatController {
                         QuizWhizApplication.class.getResource("chat-setup-view.fxml")
                 );
 
-                ChatSetupController controller = new ChatSetupController(db, currentUser);
+                ChatSetupController controller = new ChatSetupController(db, currentUser, this);
                 fxmlLoader.setController(controller);
 
                 Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
@@ -376,24 +435,28 @@ public class ChatController {
     // TODO: Logout functionality
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("login-view.fxml")
-            );
+        });
+    }
 
-            try {
-                LoginController controller = new LoginController(db);
-                fxmlLoader.setController(controller);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+    private void setupToggleChatMode() {
+        chatModeButton.setOnAction(event -> {
+            chatModeButton.getStyleClass().setAll("chat-mode-active");
+            chatModeButton.setDisable(true);
+            quizModeButton.getStyleClass().setAll("quiz-mode-disabled");
+            quizModeButton.setDisable(false);
+            quizModeButton.setOpacity(1);
+            isQuiz = false;
+        });
+    }
 
-            try {
-                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    private void setupToggleQuizMode() {
+        quizModeButton.setOnAction(event -> {
+            quizModeButton.getStyleClass().setAll("quiz-mode-active");
+            quizModeButton.setDisable(true);
+            chatModeButton.getStyleClass().setAll("chat-mode-disabled");
+            chatModeButton.setDisable(false);
+            chatModeButton.setOpacity(1);
+            isQuiz = true;
         });
     }
 
@@ -421,6 +484,7 @@ public class ChatController {
         // Create and Add Chat to database
         Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
         chatDAO.createChat(newChat);
+        refreshChatListView(newChat);
 
         return newChat;
     }
@@ -492,7 +556,8 @@ public class ChatController {
 
         validateChatExistsForCurrentUser(chatId);
 
-        Message newMessage = new Message(chatId, content, fromUser, isQuiz);
+        boolean messageIsQuiz = fromUser ? isQuiz : false;
+        Message newMessage = new Message(chatId, content, fromUser, messageIsQuiz);
         messageDAO.createMessage(newMessage);
         return newMessage;
     }
@@ -541,9 +606,9 @@ public class ChatController {
         }
 
         // TODO: Implement proper invalid quiz content format checking
-        if (!quizContent.equals("[Valid Quiz Content Format]")){
-            throw new IllegalArgumentException("Invalid quiz content format");
-        }
+//        if (!quizContent.equals("[Valid Quiz Content Format]")){
+//            throw new IllegalArgumentException("Invalid quiz content format");
+//        }
 
         // TODO: Depending on AI response quizContent extract name
         String quizName = "Computer Science Quiz";

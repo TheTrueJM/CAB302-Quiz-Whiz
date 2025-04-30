@@ -31,13 +31,13 @@ public class ChatSetupController {
 
     private final SQLiteConnection db;
     private final User currentUser;
-    private final ChatController controller;
+    private final ChatController mainController;
     // DAO fields...
 
-    public ChatSetupController(SQLiteConnection db, User authenticatedUser) throws SQLException {
+    public ChatSetupController(SQLiteConnection db, User authenticatedUser, ChatController mainController) throws SQLException {
         this.db = db;
         this.currentUser = authenticatedUser;
-        this.controller = new ChatController(db, currentUser);
+        this.mainController = mainController;
     }
 
     @FXML
@@ -56,10 +56,10 @@ public class ChatSetupController {
         }};
         startChatButton.setOnAction(actionEvent -> {
             try {
-                controller.createNewChat(chatNameInput.getText(), responseAttitude.getValue().toString(), responseLengths.get((int) responseLength.getValue()), educationLevel.getValue().toString(), chatTopic.getText());
+                mainController.createNewChat(chatNameInput.getText(), responseAttitude.getValue().toString(), responseLengths.get((int) responseLength.getValue()), educationLevel.getValue().toString(), chatTopic.getText());
                 cancel();
             } catch (SQLException e ) {
-                controller.showErrorAlert("Error creating chat" + e);
+                mainController.showErrorAlert("Error creating chat" + e);
             }
 
         });
@@ -71,8 +71,7 @@ public class ChatSetupController {
             FXMLLoader fxmlLoader = new FXMLLoader(
                     QuizWhizApplication.class.getResource("chat-view.fxml")
             );
-            ChatController controller = new ChatController(db, currentUser);
-            fxmlLoader.setController(controller);
+            fxmlLoader.setController(mainController);
 
             // Create the scene
             Scene previousScene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
@@ -80,8 +79,9 @@ public class ChatSetupController {
             // Get the current Stage
             Stage stage = (Stage) startChatButton.getScene().getWindow();
             stage.setScene(previousScene);
-        } catch (IOException | SQLException e) {
-            controller.showErrorAlert("Failed to return to chat view:" + e.getMessage());
+
+        } catch (IOException e) {
+            mainController.showErrorAlert("Failed to return to chat view:" + e.getMessage());
         }
     }
 
