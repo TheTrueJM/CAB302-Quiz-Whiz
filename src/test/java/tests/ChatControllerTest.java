@@ -63,6 +63,7 @@ public class ChatControllerTest {
     @BeforeAll
     public static void initToolkit() {
         System.setProperty("java.awt.headless", "true");
+        System.setProperty("prism.order", "sw");
 
         // required to run platform.runLater() in our unit tests
         new JFXPanel();
