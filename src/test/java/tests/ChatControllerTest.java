@@ -12,8 +12,6 @@ import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
-import javafx.embed.swing.JFXPanel;
-
 public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
@@ -58,15 +56,6 @@ public class ChatControllerTest {
     static {
         AnswerContent.put("valid", "[Valid Quiz Question Answer Option Content Format]");
         AnswerContent.put("invalid", "[Invalid Quiz Question Answer Option Content Format]");
-    }
-
-    @BeforeAll
-    public static void initToolkit() {
-        System.setProperty("java.awt.headless", "true");
-        System.setProperty("prism.order", "sw");
-
-        // required to run platform.runLater() in our unit tests
-        new JFXPanel();
     }
 
     @BeforeEach

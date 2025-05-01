@@ -21,6 +21,7 @@
     <spotless.version>2.44.4</spotless.version>
     <javadoc.version>3.11.2</javadoc.version>
     <password4j.version>1.8.2</password4j.version>
+    <monacle.version>21.0.2</monacle.version>
   </properties>
 
   <dependencies>
@@ -54,6 +55,12 @@
       <groupId>org.testfx</groupId>
       <artifactId>testfx-junit5</artifactId>
       <version>${testfx.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testfx</groupId>
+      <artifactId>openjfx-monocle</artifactId>
+      <version>${monacle.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -124,6 +131,12 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
+          <systemPropertyVariables>
+            <glass.platform>Monocle</glass.platform>
+            <monocle.platform>Headless</monocle.platform>
+            <prism.order>sw</prism.order>
+            <java.awt.headless>true</java.awt.headless>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
