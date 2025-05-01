@@ -1,7 +1,7 @@
 module ai.tutor.cab302exceptionalhandlers {
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
-    
+
     requires org.xerial.sqlitejdbc;
     requires org.slf4j;
     requires password4j;
