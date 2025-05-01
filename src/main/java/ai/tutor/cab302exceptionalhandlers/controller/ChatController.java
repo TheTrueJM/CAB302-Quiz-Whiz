@@ -15,6 +15,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -39,6 +42,8 @@ public class ChatController {
     @FXML private VBox greetingContainer;
     @FXML private Button chatSettingsButton;
     @FXML private Button userDetailsButton;
+    @FXML private ScrollPane chatScrollPane;
+    @FXML private VBox chatMessagesVBox;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -71,7 +76,6 @@ public class ChatController {
         setupChatSelectionListener();
         setupChatListView();
         refreshChatListView();
-        setupMessagesListView();
         setupEditChatNameButton();
         setupActivateEdit();
         setupSendAndReceiveMessage();
@@ -226,20 +230,22 @@ public class ChatController {
 
     private void refreshMessageList(Chat selectedChat) {
         try {
-            messagesListView.getItems().clear();
-            messagesListView.getItems().addAll(messageDAO.getAllChatMessages(selectedChat.getId()));
-            // Scroll to the last message
-            int lastIndex = messagesListView.getItems().size() - 1;
-            if (lastIndex >= 0) {
-                messagesListView.scrollTo(lastIndex);
+            List<Message> messages = messageDAO.getAllChatMessages(selectedChat.getId());
+            chatMessagesVBox.getChildren().clear();
+
+            for (Message message : messages) {
+                Node messageNode = createMessageNode(message);
+                chatMessagesVBox.getChildren().add(messageNode);
             }
+
+            // Scroll to bottom after all messages are added
+            Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
         } catch (SQLException e) {
             showErrorAlert("Failed to load messages: " + e.getMessage());
         }
     }
 
     private void setupChatSelectionListener() {
-        // Ensure single selection mode
         chatsListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         chatsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldChat, newChat) -> {
             if (newChat != null) {
@@ -248,84 +254,89 @@ public class ChatController {
                 refreshMessageList(newChat);
             } else {
                 chatNameField.setText("");
-                messagesListView.getItems().clear();
+                chatMessagesVBox.getChildren().clear();
             }
         });
     }
 
-    private void setupMessagesListView() {
-        messagesListView.setCellFactory(listView -> new ListCell<Message>() {
-            private final Label messageContent = new Label();
-            private final VBox verticalContainer = new VBox(messageContent);
-            private final HBox horizontalContainer = new HBox(verticalContainer);
-            private final HBox wrapper = new HBox(horizontalContainer);
+    private Node createMessageNode(Message message) {
+        Label messageLabel = new Label(message.getContent());
+        messageLabel.setWrapText(true);
+        messageLabel.setMaxWidth(450);
+        messageLabel.setTextFill(Color.BLACK);
 
-            {
-                // Settings for message contents
-                messageContent.setWrapText(true);
+        VBox verticalContainer = new VBox(messageLabel);
+        verticalContainer.setAlignment(Pos.CENTER);
 
-                // Set all cell background to white
-                setStyle("-fx-background-color: white;");
+        HBox horizontalContainer = new HBox(verticalContainer);
 
-                verticalContainer.setAlignment(Pos.CENTER);
-                HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
+        HBox wrapper = new HBox(horizontalContainer);
+        wrapper.setFillHeight(false);
 
-                wrapper.setPrefWidth(Region.USE_COMPUTED_SIZE);
-                wrapper.setMaxWidth(450);
-                wrapper.setFillHeight(false);
-                HBox.setHgrow(wrapper, Priority.NEVER);
-            }
+        if (message.getFromUser()) {
+            addUserMessage(wrapper, horizontalContainer);
+        } else if (!message.getFromUser() && message.getIsQuiz()) {
+            addQuizMessage(wrapper, horizontalContainer, messageLabel, message, verticalContainer);
+        } else {
+            addAIMessage(wrapper, horizontalContainer);
+        }
+
+        HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
+        return wrapper;
+    }
+
+    private void addUserMessage(HBox wrapper, HBox horizontalContainer) {
+        wrapper.setAlignment(Pos.CENTER_RIGHT);
+        horizontalContainer.getStyleClass().add("user-message");
+        horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
+    }
+
+    private void addAIMessage(HBox wrapper, HBox horizontalContainer) {
+        wrapper.setAlignment(Pos.CENTER_LEFT);
+        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+    }
+
+    private void addQuizMessage(HBox wrapper, HBox horizontalContainer, Label messageLabel, Message message, VBox verticalContainer) {
+        wrapper.setAlignment(Pos.CENTER_LEFT);
+        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+
+        messageLabel.setText("Here is the quiz you asked for: ");
+        Button takeQuizButton = new Button("Take Quiz");
+        takeQuizButton.getStyleClass().add("takeQuizButton");
+        VBox.setMargin(takeQuizButton, new Insets(6, 0, 0, 0));
+        takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
+        verticalContainer.getChildren().add(takeQuizButton);;
+    }
+
+    private void addMessage(Message message) {
+        if (chatMessagesVBox == null || chatScrollPane == null) {
+            /* This gets covered during unit tests so just skip */
+            return;
+        }
+
+        Node messageNode = createMessageNode(message);
+        chatMessagesVBox.getChildren().add(messageNode);
+
+        // listener so that scrollpae auto-scrolls
+        ChangeListener<Number> heightListener = new ChangeListener<Number>() {
             @Override
-            protected void updateItem(Message message, boolean empty) {
-                super.updateItem(message, empty);
-                if (empty || message == null) {
-                    clearCell();
-                } else {
-                    configureCell(message);
+            public void changed(javafx.beans.value.ObservableValue<? extends Number> obs, Number oldHeight, Number newHeight) {
+                if (newHeight.doubleValue() > oldHeight.doubleValue()) {
+                    chatScrollPane.setVvalue(1.0);
+                    chatMessagesVBox.heightProperty().removeListener(this);
                 }
             }
+        };
 
-            private void clearCell() {
-                setGraphic(null);
-                setAlignment(Pos.CENTER_LEFT);
-            }
+        chatMessagesVBox.heightProperty().addListener(heightListener);
 
-            private void configureCell(Message message) {
-                horizontalContainer.getStyleClass().clear();
-                verticalContainer.getStyleClass().clear();
-                messageContent.setText(message.getContent());
-                applyStyle(message);
-                addQuizButton(message);
-                setGraphic(wrapper);
-            }
-
-            private void applyStyle(Message message) {
-                if (message.getFromUser()) {
-                    horizontalContainer.getStyleClass().setAll("user-message");
-                    wrapper.setAlignment(Pos.CENTER_RIGHT);
-                    horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
-                    setAlignment(Pos.CENTER_RIGHT);
-                } else {
-                    horizontalContainer.getStyleClass().setAll("ai-message");
-                    setAlignment(Pos.CENTER_LEFT);
-                    wrapper.setAlignment(Pos.CENTER_LEFT);
-                    horizontalContainer.setAlignment(Pos.CENTER_LEFT);
-                }
-            }
-
-            private void addQuizButton(Message message) {
-                verticalContainer.getChildren().setAll(messageContent);
-                verticalContainer.setAlignment(Pos.CENTER);
-
-                if (!message.getFromUser() && message.getIsQuiz() && verticalContainer.getChildren().size() == 1) {
-                    messageContent.setText("Here is the quiz you asked for: ");
-                    Button takeQuizButton = new Button("Take Quiz");
-                    takeQuizButton.getStyleClass().add("takeQuizButton");
-                    VBox.setMargin(takeQuizButton, new Insets(6, 0, 0,0));
-                    takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
-                    verticalContainer.getChildren().add(takeQuizButton);
-                }
-            }
+        Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                 chatScrollPane.setVvalue(1.0);
+            });
+            chatMessagesVBox.heightProperty().removeListener(heightListener);
         });
     }
 
@@ -340,8 +351,8 @@ public class ChatController {
             fxmlLoader.setController(controller);
 
             Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-            // Get the Stage from the event
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
             stage.setScene(scene);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -365,10 +376,9 @@ public class ChatController {
             try {
                 Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
                 messageInputField.clear();
+                addMessage(userMessage);
 
-                //TODO: Pass message prompt to AI
                 generateChatMessageResponse(userMessage);
-                refreshMessageList(selectedChat);
 
             } catch (SQLException e) {
                 showErrorAlert("Failed to send message: " + e.getMessage());
@@ -649,6 +659,7 @@ public class ChatController {
 
         Message aiResponse = new Message(userMessage.getChatId(), aiMessageContent, false, userMessage.getIsQuiz());
         messageDAO.createMessage(aiResponse);
+        addMessage(aiResponse);
 
         //TODO: Operation to split the message for quiz if needed
         if (aiResponse.getIsQuiz()) {

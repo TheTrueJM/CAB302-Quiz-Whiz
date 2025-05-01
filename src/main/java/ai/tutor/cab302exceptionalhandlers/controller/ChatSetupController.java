@@ -13,33 +13,27 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class ChatSetupController {
-    @FXML private ComboBox responseAttitude;
+    @FXML private ComboBox<String> responseAttitude;
+    @FXML private ComboBox<String> educationLevel;
+    @FXML private ComboBox<String> quizDifficulty;
+
     @FXML private Slider responseLength;
     @FXML private TextField chatNameInput;
     @FXML private TextField chatTopic;
-    @FXML private ComboBox educationLevel;
     @FXML private Button startChatButton;
-    @FXML private ComboBox quizDifficulty;
     @FXML private Button exitButton;
     @FXML private Pane backgroundOverlay;
     @FXML private Label settingsTitle;
 
-    private final SQLiteConnection db;
-    private final User currentUser;
     private final ChatController mainController;
     private final String operation;
     private Chat selectedChat;
-    // DAO fields...
 
     public ChatSetupController(SQLiteConnection db, User authenticatedUser, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
         this.operation = operation;
-        this.db = db;
-        this.currentUser = authenticatedUser;
         this.mainController = mainController;
         this.selectedChat = selectedChat;
     }
@@ -61,12 +55,11 @@ public class ChatSetupController {
     private void setupStartChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                mainController.createNewChat(chatNameInput.getText(), responseAttitude.getValue().toString(), quizDifficulty.getValue().toString(), educationLevel.getValue().toString(), chatTopic.getText());
+                mainController.createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
                 cancel();
             } catch (SQLException e ) {
                 mainController.showErrorAlert("Error creating chat" + e);
             }
-
         });
     }
 
@@ -84,12 +77,11 @@ public class ChatSetupController {
     private void setupUpdateChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                mainController.updateChatDetails(mainController.getSelectedChat().getId(),chatNameInput.getText(), responseAttitude.getValue().toString(), quizDifficulty.getValue().toString(), educationLevel.getValue().toString(), chatTopic.getText());
+                mainController.updateChatDetails(mainController.getSelectedChat().getId(),chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
                 cancel();
             } catch (SQLException e ) {
-                mainController.showErrorAlert("Error creating chat" + e);
+                mainController.showErrorAlert("Error updating chat" + e);
             }
-
         });
     }
 

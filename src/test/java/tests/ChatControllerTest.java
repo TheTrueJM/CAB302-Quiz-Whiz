@@ -12,7 +12,6 @@ import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
-
 public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
@@ -59,7 +58,6 @@ public class ChatControllerTest {
         AnswerContent.put("invalid", "[Invalid Quiz Question Answer Option Content Format]");
     }
 
-
     @BeforeEach
     public void setUp() throws SQLException, IllegalStateException {
         db = new SQLiteConnection(true);
@@ -71,14 +69,12 @@ public class ChatControllerTest {
         chatController = new ChatController(db, CurrentUser);
     }
 
-
     @AfterEach
     public void tearDown() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
     }
-
 
     @Test
     public void testCreateNewChat() throws IllegalArgumentException, SQLException {
@@ -433,7 +429,6 @@ public class ChatControllerTest {
         );
     }
 
-
     @Test
     public void testGetChatMessages() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
@@ -441,7 +436,6 @@ public class ChatControllerTest {
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
-
 
         for (Message message : Messages.values()) {
             chatController.createNewChatMessage(

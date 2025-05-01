@@ -99,6 +99,10 @@
     -fx-padding: 8 15;
 }
 
+#chatMessagesVBox {
+    -fx-background-color: white;
+}
+
 
 
 
