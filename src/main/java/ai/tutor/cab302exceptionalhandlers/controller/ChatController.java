@@ -276,7 +276,7 @@ public class ChatController {
         if (message.getFromUser()) {
             addUserMessage(wrapper, horizontalContainer);
         } else if (!message.getFromUser() && message.getIsQuiz()) {
-            addQuizMessage(messageLabel, message, verticalContainer);
+            addQuizMessage(wrapper, horizontalContainer, messageLabel, message, verticalContainer);
         } else {
             addAIMessage(wrapper, horizontalContainer);
         }
@@ -297,7 +297,11 @@ public class ChatController {
         horizontalContainer.setAlignment(Pos.CENTER_LEFT);
     }
 
-    private void addQuizMessage(Label messageLabel, Message message, VBox verticalContainer) {
+    private void addQuizMessage(HBox wrapper, HBox horizontalContainer, Label messageLabel, Message message, VBox verticalContainer) {
+        wrapper.setAlignment(Pos.CENTER_LEFT);
+        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+
         messageLabel.setText("Here is the quiz you asked for: ");
         Button takeQuizButton = new Button("Take Quiz");
         takeQuizButton.getStyleClass().add("takeQuizButton");
