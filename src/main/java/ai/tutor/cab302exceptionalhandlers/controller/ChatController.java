@@ -297,6 +297,11 @@ public class ChatController {
     }
 
     private void addMessage(Message message) {
+        if (chatMessagesVBox == null || chatScrollPane == null) {
+            /* This gets covered during unit tests so just skip */
+            return;
+        }
+
         Node messageNode = createMessageNode(message);
         chatMessagesVBox.getChildren().add(messageNode);
 
