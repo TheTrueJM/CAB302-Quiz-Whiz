@@ -6,6 +6,8 @@ import ai.tutor.cab302exceptionalhandlers.model.Message;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.chat.*;
+import io.github.ollama4j.utils.Options;
+import io.github.ollama4j.utils.OptionsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,13 +15,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.HashMap;
 
+import com.google.gson.Gson;
+
 public class AIController {
     private final OllamaAPI ollamaAPI;
     private final String modelName = "qwen3:4b"; // hardcoded, do we want this???
     private final String currentSystemPrompt;
     private final OllamaChatRequestBuilder ollamaBuilder = OllamaChatRequestBuilder.getInstance(modelName);
     private final HashMap<String, String> prompts = new HashMap<>();
+    private final Gson gson = new Gson();
     private boolean verbose = false;
+
+    /* Model Settings (change if you're using a different model) */
+    private final float temperature = 0.9f;
+    private final int numPredict = -2;
+    private final int numCtx = 40960;
 
     public AIController() throws IOException {
         this.ollamaAPI = new OllamaAPI();
@@ -91,6 +101,12 @@ public class AIController {
                 chatConfig.getEducationLevel(),
                 chatConfig.getStudyArea()
             );
+
+            Options options = new OptionsBuilder()
+                .setTemperature(this.temperature)
+                .setNumPredict(this.numPredict)
+                .setNumCtx(this.numCtx)
+                .build();
 
             ollamaBuilder.reset();
             ollamaBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt);
