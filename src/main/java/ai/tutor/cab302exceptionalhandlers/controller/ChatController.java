@@ -274,26 +274,36 @@ public class ChatController {
         wrapper.setFillHeight(false);
 
         if (message.getFromUser()) {
-            wrapper.setAlignment(Pos.CENTER_RIGHT);
-            horizontalContainer.getStyleClass().add("user-message");
-            horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
+            addUserMessage(wrapper, horizontalContainer);
+        } else if (!message.getFromUser() && message.getIsQuiz()) {
+            addQuizMessage(messageLabel, message, verticalContainer);
         } else {
-            wrapper.setAlignment(Pos.CENTER_LEFT);
-            horizontalContainer.getStyleClass().add("ai-message");
-            horizontalContainer.setAlignment(Pos.CENTER_LEFT);
-        }
-
-        if (!message.getFromUser() && message.getIsQuiz()) {
-            messageLabel.setText("Here is the quiz you asked for: ");
-            Button takeQuizButton = new Button("Take Quiz");
-            takeQuizButton.getStyleClass().add("takeQuizButton");
-            VBox.setMargin(takeQuizButton, new Insets(6, 0, 0, 0));
-            takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
-            verticalContainer.getChildren().add(takeQuizButton);
+            addAIMessage(wrapper, horizontalContainer);
         }
 
         HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
         return wrapper;
+    }
+
+    private void addUserMessage(HBox wrapper, HBox horizontalContainer) {
+        wrapper.setAlignment(Pos.CENTER_RIGHT);
+        horizontalContainer.getStyleClass().add("user-message");
+        horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
+    }
+
+    private void addAIMessage(HBox wrapper, HBox horizontalContainer) {
+        wrapper.setAlignment(Pos.CENTER_LEFT);
+        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+    }
+
+    private void addQuizMessage(Label messageLabel, Message message, VBox verticalContainer) {
+        messageLabel.setText("Here is the quiz you asked for: ");
+        Button takeQuizButton = new Button("Take Quiz");
+        takeQuizButton.getStyleClass().add("takeQuizButton");
+        VBox.setMargin(takeQuizButton, new Insets(6, 0, 0, 0));
+        takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
+        verticalContainer.getChildren().add(takeQuizButton);;
     }
 
     private void addMessage(Message message) {
