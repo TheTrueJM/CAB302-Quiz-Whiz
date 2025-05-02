@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class ChatController {
     // Chat Window
@@ -44,7 +47,8 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
-    @FXML private Node tempThinkingMessageNode;
+    private Node tempThinkingMessageNode;
+    private Timeline thinkingAnimation;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -74,6 +78,7 @@ public class ChatController {
         this.isGenerating = false;
         this.aiController = new AIController();
         this.tempThinkingMessageNode = null;
+        this.thinkingAnimation = null;
     }
 
     @FXML
@@ -295,36 +300,49 @@ public class ChatController {
         HBox wrapper = new HBox(horizontalContainer);
         wrapper.setFillHeight(false);
         if (message.getContent().equals("Thinking...")) {
-            addThinkingMessage(wrapper, horizontalContainer);
+            styleThinkingMessage(wrapper, horizontalContainer);
         }
         else if (message.getFromUser()) {
-            addUserMessage(wrapper, horizontalContainer);
+            styleUserMessage(wrapper, horizontalContainer);
         } else if (!message.getFromUser() && message.getIsQuiz()) {
             addQuizMessage(wrapper, horizontalContainer, messageLabel, message, verticalContainer);
         } else {
-            addAIMessage(wrapper, horizontalContainer);
+            styleAIMessage(wrapper, horizontalContainer);
         }
 
         HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
         return wrapper;
     }
 
-    private void addUserMessage(HBox wrapper, HBox horizontalContainer) {
+    private void styleUserMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_RIGHT);
         horizontalContainer.getStyleClass().add("user-message");
         horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
     }
 
-    private void addAIMessage(HBox wrapper, HBox horizontalContainer) {
+    private void styleAIMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_LEFT);
         horizontalContainer.getStyleClass().add("ai-message");
         horizontalContainer.setAlignment(Pos.CENTER_LEFT);
     }
 
-    private void addThinkingMessage(HBox wrapper, HBox horizontalContainer) {
+    private void styleThinkingMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_LEFT);
         horizontalContainer.getStyleClass().add("thinking-message");
         horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+        scrollToBottom();
+
+        Label messageLabel = (Label) ((VBox) horizontalContainer.getChildren().getFirst()).getChildren().getFirst();
+
+        thinkingAnimation = new Timeline(
+                new KeyFrame(Duration.seconds(0.0), e -> messageLabel.setText("Thinking")),
+                new KeyFrame(Duration.seconds(0.5), e -> messageLabel.setText("Thinking.")),
+                new KeyFrame(Duration.seconds(1.0), e -> messageLabel.setText("Thinking..")),
+                new KeyFrame(Duration.seconds(1.5), e -> messageLabel.setText("Thinking..."))
+
+        );
+        thinkingAnimation.setCycleCount(Timeline.INDEFINITE);
+        thinkingAnimation.play();
     }
 
     private void addQuizMessage(HBox wrapper, HBox horizontalContainer, Label messageLabel, Message message, VBox verticalContainer) {
@@ -348,23 +366,14 @@ public class ChatController {
 
         Node messageNode = createMessageNode(message);
         chatMessagesVBox.getChildren().add(messageNode);
+        scrollToBottom();
+    }
 
-        // listener so that scrollpane auto-scrolls
-        ChangeListener<Number> heightListener = new ChangeListener<Number>() {
-            @Override
-            public void changed(javafx.beans.value.ObservableValue<? extends Number> obs, Number oldHeight, Number newHeight) {
-                if (newHeight.doubleValue() > oldHeight.doubleValue()) {
-                    chatScrollPane.setVvalue(1.0);
-                    chatMessagesVBox.heightProperty().removeListener(this);
-                }
-            }
-        };
-
-        chatMessagesVBox.heightProperty().addListener(heightListener);
-
+    private void scrollToBottom() {
         Platform.runLater(() -> {
+            // Force layout to update VBox height
+            chatMessagesVBox.layout();
             chatScrollPane.setVvalue(1.0);
-            chatMessagesVBox.heightProperty().removeListener(heightListener);
         });
     }
 
@@ -419,7 +428,7 @@ public class ChatController {
             } catch (SQLException | NoSuchElementException | IllegalArgumentException e) {
                 Platform.runLater(() -> {
                     showErrorAlert("Failed to send message: " + e.getMessage());
-                    removeThinkingMessage();
+                    removeTempThinkingMessage();
                     messageInputField.setDisable(false);
                 });
             }
@@ -692,7 +701,7 @@ public class ChatController {
         }
 
         isGenerating = true;
-        Platform.runLater(this::addThinkingMessage);
+        Platform.runLater(this::addTempThinkingMessage);
 
         try {
             validateChatExistsForCurrentUser(userMessage.getChatId());
@@ -712,7 +721,7 @@ public class ChatController {
                 });
     }
 
-    private void addThinkingMessage() {
+    private void addTempThinkingMessage() {
         // Create a temporary message (not saved to database)
         Message thinkingMessage = new Message(getSelectedChat().getId(), "Thinking...", false, false);
         tempThinkingMessageNode = createMessageNode(thinkingMessage);
@@ -720,7 +729,7 @@ public class ChatController {
         chatScrollPane.setVvalue(1.0);
     }
 
-    private void removeThinkingMessage() {
+    private void removeTempThinkingMessage() {
         if (tempThinkingMessageNode != null) {
             chatMessagesVBox.getChildren().remove(tempThinkingMessageNode);
             tempThinkingMessageNode = null;
@@ -753,12 +762,12 @@ public class ChatController {
                 createNewQuiz(aiResponse.getContent(), aiResponse);
             }
             isGenerating = false;
-            removeThinkingMessage();
+            removeTempThinkingMessage();
             messageInputField.setDisable(false);
         } catch (SQLException e) {
             showErrorAlert("Failed to save AI response: " + e.getMessage());
             isGenerating = false;
-            removeThinkingMessage();
+            removeTempThinkingMessage();
             messageInputField.setDisable(false);
         }
     }
@@ -767,7 +776,7 @@ public class ChatController {
         Platform.runLater(() -> {
             showErrorAlert("Failed to generate AI response: " + errorMessage);
             isGenerating = false;
-            removeThinkingMessage();
+            removeTempThinkingMessage();
             messageInputField.setDisable(false);
         });
     }

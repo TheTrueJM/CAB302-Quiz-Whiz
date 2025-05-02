@@ -92,12 +92,13 @@
 }
 
 .thinking-message {
-    -fx-background-color: #98E4CF;
+    -fx-background-color: #F5F5F5;;
     -fx-text-alignment: justify;
     -fx-border-radius: 25;
     -fx-background-radius: 25;
     -fx-padding: 10, 15, 10, 15;
-    -fx-font-size: 14;
+    -fx-font-size: 16;
+    -fx-font-style: italic;
 }
 
 .takeQuizButton {
