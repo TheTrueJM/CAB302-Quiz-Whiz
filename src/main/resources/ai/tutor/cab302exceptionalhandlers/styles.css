@@ -91,6 +91,15 @@
     -fx-font-size: 14;
 }
 
+.thinking-message {
+    -fx-background-color: #98E4CF;
+    -fx-text-alignment: justify;
+    -fx-border-radius: 25;
+    -fx-background-radius: 25;
+    -fx-padding: 10, 15, 10, 15;
+    -fx-font-size: 14;
+}
+
 .takeQuizButton {
     -fx-background-color: white;
     -fx-border-radius: 4;

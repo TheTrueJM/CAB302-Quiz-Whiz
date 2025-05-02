@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.Gson;
 
@@ -90,59 +91,62 @@ public class AIController {
                 || ollamaRequest.getMessages().isEmpty();
     }
 
-    public String generateResponse(List<Message> history, Chat chatConfig, boolean requestQuiz) {
-        // TODO: quiz handling
-        try {
-            String systemPrompt = String.format(
-                currentSystemPrompt,
-                chatConfig.getName(),
-                chatConfig.getResponseAttitude(),
-                chatConfig.getQuizDifficulty(),
-                chatConfig.getEducationLevel(),
-                chatConfig.getStudyArea()
-            );
+        public CompletableFuture<String> generateResponse(List<Message> history, Chat chatConfig, boolean requestQuiz) {
+        // Wrap in CompletableFuture to run AI generation on a background thread so it doesn't freeze UI
+        return CompletableFuture.supplyAsync(() -> {
+            // TODO: quiz handling
+            try {
+                String systemPrompt = String.format(
+                        currentSystemPrompt,
+                        chatConfig.getName(),
+                        chatConfig.getResponseAttitude(),
+                        chatConfig.getQuizDifficulty(),
+                        chatConfig.getEducationLevel(),
+                        chatConfig.getStudyArea()
+                );
 
-            Options options = new OptionsBuilder()
-                .setTemperature(this.temperature)
-                .setNumPredict(this.numPredict)
-                .setNumCtx(this.numCtx)
-                .build();
+                Options options = new OptionsBuilder()
+                        .setTemperature(this.temperature)
+                        .setNumPredict(this.numPredict)
+                        .setNumCtx(this.numCtx)
+                        .build();
 
-            ollamaBuilder.reset();
-            ollamaBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt);
+                ollamaBuilder.reset();
+                ollamaBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt);
 
-            for (Message msg : history) {
-                OllamaChatMessageRole role = msg.getFromUser() ? OllamaChatMessageRole.USER : OllamaChatMessageRole.ASSISTANT;
-                ollamaBuilder.withMessage(role, msg.getContent());
+                for (Message msg : history) {
+                    OllamaChatMessageRole role = msg.getFromUser() ? OllamaChatMessageRole.USER : OllamaChatMessageRole.ASSISTANT;
+                    ollamaBuilder.withMessage(role, msg.getContent());
 
+                    if (verbose) {
+                        System.out.println(String.format(
+                                "%s: \n---\n%s\n---", role.toString(), msg.getContent()
+                        ));
+                    }
+                }
+
+                OllamaChatRequest ollamaRequest = ollamaBuilder.build();
+                OllamaChatResult ollamaResult = ollamaAPI.chat(ollamaRequest);
+
+                if (ollamaResultIsNull(ollamaRequest)) {
+                    throw new OllamaBaseException("Received null response from Ollama API.");
+                }
+
+                String response = ollamaResult.getResponseModel().getMessage().getContent();
                 if (verbose) {
                     System.out.println(String.format(
-                        "%s: \n---\n%s\n---", role.toString(), msg.getContent()
+                            "AI Response: \n---\n%s\n---", response
                     ));
                 }
+
+                return response;
+
+                /* Not sure whats the proper way to handle these exceptions */
+            } catch (Exception e) {
+                System.err.println("Error generating response: " + e.getMessage());
+                return "Error generating response: " + e.getMessage();
             }
-
-            OllamaChatRequest ollamaRequest = ollamaBuilder.build();
-            OllamaChatResult ollamaResult = ollamaAPI.chat(ollamaRequest);
-
-            if (ollamaResultIsNull(ollamaRequest)) {
-                throw new OllamaBaseException("Received null response from Ollama API.");
-            }
-
-            String response = ollamaResult.getResponseModel().getMessage().getContent();
-            if (verbose) {
-                System.out.println(String.format(
-                    "AI Response: \n---\n%s\n---", response
-                ));
-            }
-
-            return response;
-
-        /* Not sure whats the proper way to handle these exceptions */
-        } catch (Exception e) {
-            System.err.println("Error generating response: " + e.getMessage());
-            return "Error generating response: " + e.getMessage();
-        }
+        });
     }
 
 
