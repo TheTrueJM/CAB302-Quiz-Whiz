@@ -4,8 +4,10 @@ import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.Chat;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
+import ai.tutor.cab302exceptionalhandlers.model.Utils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -30,12 +32,14 @@ public class ChatSetupController {
 
     private final ChatController mainController;
     private final String operation;
-    private Chat selectedChat;
+    private final Chat selectedChat;
+    private final SQLiteConnection db;
 
-    public ChatSetupController(SQLiteConnection db, User authenticatedUser, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
+    public ChatSetupController(SQLiteConnection db, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
         this.operation = operation;
         this.mainController = mainController;
         this.selectedChat = selectedChat;
+        this.db = db;
     }
 
     @FXML
@@ -77,7 +81,7 @@ public class ChatSetupController {
     private void setupUpdateChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                mainController.updateChatDetails(mainController.getSelectedChat().getId(),chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                mainController.updateChatDetails(selectedChat.getId(),chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
                 cancel();
             } catch (SQLException e ) {
                 mainController.showErrorAlert("Error updating chat" + e);
@@ -86,23 +90,10 @@ public class ChatSetupController {
     }
 
     private void cancel() {
-        try {
-            // Load the previous FXML (chat-view.fxml)
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("chat-view.fxml")
-            );
-            fxmlLoader.setController(mainController);
+        Object[] params = {db, mainController.getCurrentUser()};
 
-            // Create the scene
-            Scene previousScene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-
-            // Get the current Stage
-            Stage stage = (Stage) startChatButton.getScene().getWindow();
-            stage.setScene(previousScene);
-
-        } catch (IOException e) {
-            mainController.showErrorAlert("Failed to return to chat view:" + e.getMessage());
-        }
+        Stage stage = (Stage) startChatButton.getScene().getWindow();
+        Utils.loadPage("chat-view.fxml", ChatController.class, stage, params);
     }
 
     private void setupExitButton() {

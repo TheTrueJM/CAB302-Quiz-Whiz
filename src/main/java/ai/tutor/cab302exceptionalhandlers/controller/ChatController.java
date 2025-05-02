@@ -174,7 +174,6 @@ public class ChatController {
                         }
                     }
                 });
-
             }
             @Override
             protected void updateItem(Chat chat, boolean empty) {
@@ -227,8 +226,6 @@ public class ChatController {
             greetingContainer.setMouseTransparent(true);
         }
 }
-
-
     public void refreshChatListView () {
         try {
             Chat selectedChat = getSelectedChat();
@@ -435,6 +432,22 @@ public class ChatController {
         });
     }
 
+    private void addTempThinkingMessage() {
+        // Create a temporary message (not saved to database)
+        Message thinkingMessage = new Message(getSelectedChat().getId(), "Thinking...", false, false);
+        tempThinkingMessageNode = createMessageNode(thinkingMessage);
+        chatMessagesVBox.getChildren().add(tempThinkingMessageNode);
+        chatScrollPane.setVvalue(1.0);
+    }
+
+
+    private void removeTempThinkingMessage() {
+        if (tempThinkingMessageNode != null) {
+            chatMessagesVBox.getChildren().remove(tempThinkingMessageNode);
+            tempThinkingMessageNode = null;
+        }
+    }
+
     private void editChatNameAction() {
         try {
             Chat selectedChat = getSelectedChat();
@@ -494,45 +507,18 @@ public class ChatController {
     }
 
     private void loadChatSettings(ActionEvent actionEvent, String operation) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("chat-setup-view.fxml")
-            );
+        Object[] params = {db, this, operation, getSelectedChat()};
 
-            ChatSetupController controller = new ChatSetupController(db, currentUser, this, operation, getSelectedChat());
-            fxmlLoader.setController(controller);
-
-            Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-            // Get the Stage from the event
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        Utils.loadPage("chat-setup-view.fxml", ChatSetupController.class, stage, params);
     }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("login-view.fxml")
-            );
+            Object[] params = {db};
 
-            try {
-                LoginController controller = new LoginController(db);
-                fxmlLoader.setController(controller);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Utils.loadPage("login-view.fxml", LoginController.class, stage, params);
         });
     }
 
@@ -562,29 +548,17 @@ public class ChatController {
         userDetailsButton.setOnAction(actionEvent -> {
             System.out.println("=================User Details================");
 
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(
-                        QuizWhizApplication.class.getResource("user-settings-view.fxml")
-                );
+            Object[] params = {db, currentUser};
 
-                UserSettingsController controller = new UserSettingsController(db, currentUser);
-                fxmlLoader.setController(controller);
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Utils.loadPage("user-settings-view.fxml", UserSettingsController.class, stage, params);
 
-                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-                // Get the Stage from the event
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         });
     }
 
     /*
      * =========================================================================
-     *                          CRUD Operations
+     *                          Chat CRUD Operations
      * =========================================================================
      */
 
@@ -679,6 +653,12 @@ public class ChatController {
     }
 
 
+    /*
+     * =========================================================================
+     *                          Message CRUD Operations
+     * =========================================================================
+     */
+
     // Create a Message object using UI user input
     public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) throws NoSuchElementException, SQLException {
         if (validateNullOrEmpty(content)) {
@@ -712,6 +692,8 @@ public class ChatController {
         }
     }
 
+    /* ===================== AI Generation Process  ===================== */
+
     private void handleAIResponseGeneration(Message userMessage, Chat chat){
         generateAIResponse(userMessage, chat)
                 .thenAcceptAsync(this::processAIResponse, Platform::runLater)
@@ -721,37 +703,9 @@ public class ChatController {
                 });
     }
 
-    private void addTempThinkingMessage() {
-        // Create a temporary message (not saved to database)
-        Message thinkingMessage = new Message(getSelectedChat().getId(), "Thinking...", false, false);
-        tempThinkingMessageNode = createMessageNode(thinkingMessage);
-        chatMessagesVBox.getChildren().add(tempThinkingMessageNode);
-        chatScrollPane.setVvalue(1.0);
-    }
-
-    private void removeTempThinkingMessage() {
-        if (tempThinkingMessageNode != null) {
-            chatMessagesVBox.getChildren().remove(tempThinkingMessageNode);
-            tempThinkingMessageNode = null;
-        }
-    }
-
-
     private CompletableFuture<Message> generateAIResponse(Message userMessage, Chat chat) {
         return aiController.generateResponse(getChatMessages(userMessage.getChatId()), chat, userMessage.getIsQuiz())
                 .thenApply(aiMessageContent -> new Message(userMessage.getChatId(), aiMessageContent, false, userMessage.getIsQuiz()));
-    }
-
-    // Retrieve Message records for a specific Chat
-    public List<Message> getChatMessages(int chatId) {
-        try {
-            validateChatExistsForCurrentUser(chatId);
-            return messageDAO.getAllChatMessages(chatId);
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("Chat doesn't exist");
-        } catch (SQLException e) {
-            throw new IllegalArgumentException("Failed to get chat messages");
-        }
     }
 
     private void processAIResponse(Message aiResponse) {
@@ -781,6 +735,23 @@ public class ChatController {
         });
     }
 
+    // Retrieve Message records for a specific Chat
+    public List<Message> getChatMessages(int chatId) {
+        try {
+            validateChatExistsForCurrentUser(chatId);
+            return messageDAO.getAllChatMessages(chatId);
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("Chat doesn't exist");
+        } catch (SQLException e) {
+            throw new IllegalArgumentException("Failed to get chat messages");
+        }
+    }
+
+    /*
+     * =========================================================================
+     *                          Quiz CRUD Operations
+     * =========================================================================
+     */
 
     // Create a Quiz object from the AI's response message if it is a quiz message
     public Quiz createNewQuiz(String quizContent, Message responseMessage) throws IllegalArgumentException, NoSuchElementException, SQLException {
@@ -856,8 +827,18 @@ public class ChatController {
     }
 
 
+    /*
+     * =========================================================================
+     *                          Utility Methods
+     * =========================================================================
+     */
+
     private boolean validateNullOrEmpty(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 
 }
