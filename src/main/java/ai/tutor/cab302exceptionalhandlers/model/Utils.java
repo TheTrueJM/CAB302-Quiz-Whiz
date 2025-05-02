@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 public final class Utils {
@@ -16,16 +17,24 @@ public final class Utils {
         );
 
         try {
-            Class<T>[] paramTypes = Arrays.stream(params)
-                    .map(Object::getClass)
-                    .toArray(Class[]::new);
+            // Get the first constructor
+            Constructor<?> constructor = controllerClass.getDeclaredConstructors()[0];
+            Class<?>[] paramTypes = constructor.getParameterTypes();
 
-            T controller = (T) controllerClass.getDeclaredConstructor(paramTypes).newInstance(params);
+            // Validate parameter count
+            if (paramTypes.length != params.length) {
+                throw new RuntimeException("Parameter count mismatch for " + controllerClass.getName());
+            }
+
+            // Instantiate the controller
+            constructor.setAccessible(true);
+            T controller = (T) constructor.newInstance(params);
             fxmlLoader.setController(controller);
 
+            // Load the FXML and set the scene
             Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-            // Get the Stage from the event
             stage.setScene(scene);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
