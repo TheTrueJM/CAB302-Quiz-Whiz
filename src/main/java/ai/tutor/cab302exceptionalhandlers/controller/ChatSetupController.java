@@ -53,6 +53,10 @@ public class ChatSetupController {
             configureChatSettings();
             setupUpdateChatButton();
         }
+        else {
+            mainController.showErrorAlert("No chat selected for update.");
+            cancel();
+        }
         setupExitButton();
         setupBackgroundExit();
     }
