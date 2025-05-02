@@ -47,8 +47,8 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
-    private Node tempThinkingMessageNode;
-    private Timeline thinkingAnimation;
+    @FXML private Node tempThinkingMessageNode;
+    @FXML private Timeline thinkingAnimation;
 
     private final SQLiteConnection db;
     private final User currentUser;

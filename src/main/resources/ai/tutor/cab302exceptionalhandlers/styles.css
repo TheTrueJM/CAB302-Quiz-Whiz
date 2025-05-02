@@ -109,11 +109,13 @@
     -fx-padding: 8 15;
 }
 
-#chatMessagesVBox {
+.chatScrollPane .viewport {
     -fx-background-color: white;
 }
 
-
+.chatMessagesVBox {
+    -fx-background-color: white;
+}
 
 
 

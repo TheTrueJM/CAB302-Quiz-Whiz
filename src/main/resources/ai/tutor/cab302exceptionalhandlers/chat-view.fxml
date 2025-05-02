@@ -138,9 +138,9 @@
          <StackPane fx:id="chatListContainer1" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
                <children>
                   <!-- Chat Section -->
-                  <ScrollPane fx:id="chatScrollPane" fitToWidth="true" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
+                  <ScrollPane fx:id="chatScrollPane" fitToWidth="true" style="-fx-background-color: white;" styleClass="chatScrollPane" VBox.vgrow="ALWAYS">
                      <content>
-                           <VBox fx:id="chatMessagesVBox" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" styleClass="color" />
+                           <VBox fx:id="chatMessagesVBox" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" styleClass="chatMessagesVBox" />
                      </content>
                   </ScrollPane>
                   <VBox fx:id="greetingContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: white;">
