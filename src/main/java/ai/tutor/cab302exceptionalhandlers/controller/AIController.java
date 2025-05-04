@@ -31,6 +31,47 @@ public class AIController {
     private final int numPredict = -2;
     private final int numCtx = 40960;
 
+    public class ModelResponseFormat {
+        @SuppressWarnings("unused")
+        public final boolean userWantsQuiz;
+
+        @SuppressWarnings("unused")
+        public final String response;
+
+        @SuppressWarnings("unused")
+        public final boolean isError;
+
+        public final QuizFormat[] quizzes;
+
+        public ModelResponseFormat(boolean userWantsQuiz, boolean isError, String response, QuizFormat[] quizzes) {
+            this.userWantsQuiz = userWantsQuiz;
+            this.response = response;
+            this.isError = isError;
+            this.quizzes = quizzes;
+        }
+    }
+
+    public class QuizFormat {
+        @SuppressWarnings("unused")
+        public final String question;
+
+        @SuppressWarnings("unused")
+        public final String answer;
+
+        @SuppressWarnings("unused")
+        public final String[] answerOptions;
+
+        @SuppressWarnings("unused")
+        public final String answerSolutions;
+
+        public QuizFormat(String question, String answer, String[] options, String answerSolutions) {
+            this.question = question;
+            this.answer = answer;
+            this.answerOptions = options;
+            this.answerSolutions = answerSolutions;
+        }
+    }
+
     public AIController() throws IOException {
         this.ollamaAPI = new OllamaAPI();
         this.ollamaAPI.setVerbose(false);
@@ -90,7 +131,7 @@ public class AIController {
                 || ollamaRequest.getMessages().isEmpty();
     }
 
-    public String generateResponse(List<Message> history, Chat chatConfig, boolean requestQuiz) {
+    public ModelResponseFormat generateResponse(List<Message> history, Chat chatConfig, boolean requestQuiz) {
         // TODO: quiz handling
         try {
             String systemPrompt = String.format(
@@ -110,6 +151,7 @@ public class AIController {
 
             ollamaBuilder.reset();
             ollamaBuilder.withMessage(OllamaChatMessageRole.SYSTEM, systemPrompt);
+            ollamaBuilder.withOptions(options);
 
             for (Message msg : history) {
                 OllamaChatMessageRole role = msg.getFromUser() ? OllamaChatMessageRole.USER : OllamaChatMessageRole.ASSISTANT;
@@ -136,12 +178,41 @@ public class AIController {
                 ));
             }
 
-            return response;
+            /* Format out the <thinking> tokens and everything between that */
+            String[] responseParts = response.split("<think>");
+            StringBuilder formattedResponse = new StringBuilder();
+            for (String part : responseParts) {
+                    if (part.contains("</think>")) {
+                    String[] subParts = part.split("</think>");
+                    formattedResponse.append(subParts[1]);
+                } else {
+                    formattedResponse.append(part);
+                }
+            }
 
+            response = formattedResponse.toString();
+
+            ModelResponseFormat responseFormat = gson.fromJson(response, ModelResponseFormat.class);
+            if (responseFormat == null) {
+                System.err.println("Error: Unable to parse response from AI.");
+                return new ModelResponseFormat(
+                    false,
+                    false,
+                    "Error: Unable to parse response from AI.",
+                    null
+                );
+            }
+
+            return responseFormat;
         /* Not sure whats the proper way to handle these exceptions */
         } catch (Exception e) {
             System.err.println("Error generating response: " + e.getMessage());
-            return "Error generating response: " + e.getMessage();
+            return new ModelResponseFormat(
+                false,
+                true,
+                "Error: Unable to generate response from AI.",
+                null
+            );
         }
     }
 

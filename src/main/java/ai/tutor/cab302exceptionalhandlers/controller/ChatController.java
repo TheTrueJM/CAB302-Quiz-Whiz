@@ -1,6 +1,7 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.controller.AIController.ModelResponseFormat;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -678,12 +679,6 @@ public class ChatController {
         validateChatExistsForCurrentUser(userMessage.getChatId());
 
         Message aiResponse = generateAIResponse(userMessage);
-
-        //TODO: Operation to split the message for quiz if needed
-        if (aiResponse.getIsQuiz()) {
-            createNewQuiz(aiResponse.getContent(), aiResponse);
-        }
-
         return aiResponse;
     }
 
@@ -695,8 +690,8 @@ public class ChatController {
         List<Message> chatHistory = getChatMessages(userMessage.getChatId());
 
         /* Generation */
-        String aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
-        Message aiResponse = new Message(chatID, aiMessageContent, false, isQuiz);
+        ModelResponseFormat aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
+        Message aiResponse = new Message(chatID, aiMessageContent.response, false, isQuiz);
 
         /* Automatically add message to database */
         messageDAO.createMessage(aiResponse);
@@ -704,7 +699,7 @@ public class ChatController {
 
         //TODO: Operation to split the message for quiz if needed
         if (aiResponse.getIsQuiz()) {
-            createNewQuiz(aiMessageContent, aiResponse);
+            createNewQuiz(aiMessageContent.response, aiResponse);
         }
 
         return aiResponse;
