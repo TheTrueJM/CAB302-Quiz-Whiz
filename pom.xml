@@ -139,13 +139,21 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${spotless.version}</version>
         <configuration>
+          <java>
+            <includes>
+              <include>src/main/java/**/*.java</include>
+              <include>src/test/java/**/*.java</include>
+            </includes>
+            <eclipse></eclipse>
+            <removeUnusedImports/>
+            <formatAnnotations/>
+            <importOrder/>
+          </java>
           <formats>
             <format>
               <includes>
                 <include>.gitattributes</include>
                 <include>.gitignore</include>
-                <include>src/main/java/**/*.java</include>
-                <include>src/test/java/**/*.java</include>
               </includes>
               <trimTrailingWhitespace/>
               <endWithNewline/>
@@ -155,17 +163,6 @@
               </indent>
             </format>
           </formats>
-          <java>
-            <googleJavaFormat>
-              <version>1.8</version>
-              <style>AOSP</style>
-              <reflowLongStrings>true</reflowLongStrings>
-              <formatJavadoc>true</formatJavadoc>
-            </googleJavaFormat>
-            <removeUnusedImports/>
-            <formatAnnotations/>
-            <importOrder/>
-          </java>
         </configuration>
       </plugin>
       <plugin>

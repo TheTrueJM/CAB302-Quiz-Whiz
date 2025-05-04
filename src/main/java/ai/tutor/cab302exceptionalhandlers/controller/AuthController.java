@@ -2,112 +2,92 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
-
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.SQLException;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class AuthController {
-    private final SQLiteConnection db;
-    private final UserDAO userDAO;
+	private final SQLiteConnection db;
+	private final UserDAO userDAO;
 
+	public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
+		this.db = db;
+		this.userDAO = new UserDAO(db);
+	}
 
-    public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
-        this.db = db;
-        this.userDAO = new UserDAO(db);
-    }
+	/* FXML UI Controllers */
 
+	public void authenticate(User user, Stage stage) throws IOException, SQLException {
+		FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("chat-view.fxml"));
 
-    /*
-     * =========================
-     *    FXML UI Controllers
-     * =========================
-     */
+		ChatController controller = new ChatController(db, user);
+		fxmlLoader.setController(controller);
 
-    public void authenticate(User user, Stage stage) throws IOException, SQLException {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                QuizWhizApplication.class.getResource("chat-view.fxml")
-        );
+		Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+		stage.setScene(scene);
+	}
 
-        ChatController controller = new ChatController(db, user);
-        fxmlLoader.setController(controller);
+	public void switchLayout(String layout, Stage stage) throws IOException, SQLException {
+		if (layout.equals("sign-up") || layout.equals("login")) {
+			FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource(layout + "-view.fxml"));
 
-        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-        stage.setScene(scene);
-    }
+			if (layout.equals("sign-up")) {
+				SignUpController controller = new SignUpController(db);
+				fxmlLoader.setController(controller);
+			} else {
+				LoginController controller = new LoginController(db);
+				fxmlLoader.setController(controller);
+			}
 
-    public void switchLayout(String layout, Stage stage) throws IOException, SQLException {
-        if (layout.equals("sign-up") || layout.equals("login")) {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource(layout + "-view.fxml")
-            );
+			Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+			stage.setScene(scene);
+		}
+	}
 
-            if (layout.equals("sign-up")) {
-                SignUpController controller = new SignUpController(db);
-                fxmlLoader.setController(controller);
-            } else {
-                LoginController controller = new LoginController(db);
-                fxmlLoader.setController(controller);
-            }
+	/* CRUD Operations */
 
-            Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-            stage.setScene(scene);
-        }
-    }
+	public User signUp(String username, String password)
+			throws IllegalStateException, IllegalArgumentException, SQLException {
+		if (!validUsername(username)) {
+			throw new IllegalArgumentException("Username is invalid");
+		}
+		if (!validPassword(password)) {
+			throw new IllegalArgumentException("Password is invalid");
+		}
 
+		User existingUser = userDAO.getUser(username);
+		if (existingUser != null) {
+			throw new IllegalStateException("Username is already taken");
+		}
 
-    /*
-     * =====================
-     *    CRUD Operations
-     * =====================
-     */
+		String hashedPassword = User.hashPassword(password);
+		User newUser = new User(username, hashedPassword);
+		userDAO.createUser(newUser);
 
-    public User signUp(String username, String password) throws IllegalStateException, IllegalArgumentException, SQLException {
-        if (!validUsername(username)) {
-            throw new IllegalArgumentException("Username is invalid");
-        }
-        if (!validPassword(password)) {
-            throw new IllegalArgumentException("Password is invalid");
-        }
+		return newUser;
+	}
 
-        User existingUser = userDAO.getUser(username);
-        if (existingUser != null) {
-            throw new IllegalStateException("Username is already taken");
-        }
+	public User login(String username, String password) throws SecurityException, SQLException {
+		User existingUser = userDAO.getUser(username == null ? "" : username);
+		if (existingUser == null) {
+			throw new SecurityException("User does not exist");
+		}
 
-        String hashedPassword = User.hashPassword(password);
-        User newUser = new User(username, hashedPassword);
-        userDAO.createUser(newUser);
+		// Verify input password equals hashed user password
+		if (!existingUser.verifyPassword(password == null ? "" : password)) {
+			throw new SecurityException("Incorrect Password");
+		}
 
-        return newUser;
-    }
+		return existingUser;
+	}
 
-    public User login(String username, String password) throws SecurityException, SQLException {
-        User existingUser = userDAO.getUser(username == null ? "" : username);
-        if (existingUser == null) {
-            throw new SecurityException("User does not exist");
-        }
+	public static boolean validUsername(String username) {
+		return username != null && username.matches("^[a-zA-Z0-9]+$");
+	}
 
-        // Verify input password equals hashed user password
-        if (!existingUser.verifyPassword(password == null ? "" : password)) {
-            throw new SecurityException("Incorrect Password");
-        }
-
-        return existingUser;
-    }
-
-    public static boolean validUsername(String username) {
-        return username != null && username.matches("^[a-zA-Z0-9]+$");
-    }
-
-    public static boolean validPassword(String password) {
-        return password != null && password.matches("^[a-zA-Z0-9]+$");
-    }
+	public static boolean validPassword(String password) {
+		return password != null && password.matches("^[a-zA-Z0-9]+$");
+	}
 }
