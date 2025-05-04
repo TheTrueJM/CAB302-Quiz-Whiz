@@ -11,69 +11,69 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class LoginController {
-	private final AuthController authController;
+    private final AuthController authController;
 
-	@FXML
-	private TextField usernameField;
-	@FXML
-	private TextField passwordField;
-	@FXML
-	private Button loginButton;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private Button loginButton;
 
-	private boolean usernameEmpty = true;
-	private boolean passwordEmpty = true;
+    private boolean usernameEmpty = true;
+    private boolean passwordEmpty = true;
 
-	public LoginController(SQLiteConnection db) throws RuntimeException, SQLException {
-		this.authController = new AuthController(db);
-	}
+    public LoginController(SQLiteConnection db) throws RuntimeException, SQLException {
+        this.authController = new AuthController(db);
+    }
 
-	/* FXML UI Controllers */
+    /* FXML UI Controllers */
 
-	private Stage getStage() {
-		return (Stage) loginButton.getScene().getWindow();
-	}
+    private Stage getStage() {
+        return (Stage) loginButton.getScene().getWindow();
+    }
 
-	@FXML
-	protected void onFieldChanged(KeyEvent e) {
-		TextField sender = (TextField) e.getSource();
-		String senderID = sender.getId();
-		String senderText = sender.getText();
+    @FXML
+    protected void onFieldChanged(KeyEvent e) {
+        TextField sender = (TextField) e.getSource();
+        String senderID = sender.getId();
+        String senderText = sender.getText();
 
-		switch (senderID) {
-			case "usernameField" :
-				usernameEmpty = senderText.isEmpty();
-				break;
-			case "passwordField" :
-				passwordEmpty = senderText.isEmpty();
-				break;
-		}
+        switch (senderID) {
+            case "usernameField" :
+                usernameEmpty = senderText.isEmpty();
+                break;
+            case "passwordField" :
+                passwordEmpty = senderText.isEmpty();
+                break;
+        }
 
-		submitButtonToggle();
-	}
+        submitButtonToggle();
+    }
 
-	private void submitButtonToggle() {
-		loginButton.setDisable(usernameEmpty || passwordEmpty);
-	}
+    private void submitButtonToggle() {
+        loginButton.setDisable(usernameEmpty || passwordEmpty);
+    }
 
-	@FXML
-	protected void onLogin() throws IOException, SQLException {
-		String username = usernameField.getText();
-		String password = passwordField.getText();
+    @FXML
+    protected void onLogin() throws IOException, SQLException {
+        String username = usernameField.getText();
+        String password = passwordField.getText();
 
-		try {
-			User existingUser = authController.login(username, password);
+        try {
+            User existingUser = authController.login(username, password);
 
-			// Open Chat Page
-			authController.authenticate(existingUser, getStage());
-		} catch (Exception e) {
-			// TODO: Display possible Login error messages to FXML
-			System.err.println("User Login Failed: " + e.getMessage() + e.getClass());
-		}
-	}
+            // Open Chat Page
+            authController.authenticate(existingUser, getStage());
+        } catch (Exception e) {
+            // TODO: Display possible Login error messages to FXML
+            System.err.println("User Login Failed: " + e.getMessage() + e.getClass());
+        }
+    }
 
-	// Open Login Page
-	@FXML
-	protected void switchToSignUp() throws IOException, SQLException {
-		authController.switchLayout("sign-up", getStage());
-	}
+    // Open Login Page
+    @FXML
+    protected void switchToSignUp() throws IOException, SQLException {
+        authController.switchLayout("sign-up", getStage());
+    }
 }

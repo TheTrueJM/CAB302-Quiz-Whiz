@@ -12,31 +12,31 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class HelloController {
-	@FXML
-	private Label welcomeText;
+    @FXML
+    private Label welcomeText;
 
-	@FXML
-	private Button nextButton;
+    @FXML
+    private Button nextButton;
 
-	@FXML
-	protected void onHelloButtonClick() {
-		welcomeText.setText("Welcome to JavaFX Application!");
-	}
+    @FXML
+    protected void onHelloButtonClick() {
+        welcomeText.setText("Welcome to JavaFX Application!");
+    }
 
-	@FXML
-	protected void onNextButtonClick() throws IOException {
-		try {
-			Stage stage = (Stage) nextButton.getScene().getWindow();
-			FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("sign-up-view.fxml"));
+    @FXML
+    protected void onNextButtonClick() throws IOException {
+        try {
+            Stage stage = (Stage) nextButton.getScene().getWindow();
+            FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("sign-up-view.fxml"));
 
-			SQLiteConnection db = new SQLiteConnection();
-			AuthController controller = new AuthController(db);
-			fxmlLoader.setController(controller);
+            SQLiteConnection db = new SQLiteConnection();
+            AuthController controller = new AuthController(db);
+            fxmlLoader.setController(controller);
 
-			Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-			stage.setScene(scene);
-		} catch (SQLException e) {
-			System.err.println(e.getMessage());
-		}
-	}
+            Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+            stage.setScene(scene);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
 }

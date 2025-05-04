@@ -10,26 +10,26 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class QuizWhizApplication extends Application {
-	public static final String TITLE = "Quiz Whiz";
-	public static final int WIDTH = 960;
-	public static final int HEIGHT = 540;
+    public static final String TITLE = "Quiz Whiz";
+    public static final int WIDTH = 960;
+    public static final int HEIGHT = 540;
 
-	@Override
-	public void start(Stage stage) throws IOException, SQLException {
-		FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("sign-up-view.fxml"));
+    @Override
+    public void start(Stage stage) throws IOException, SQLException {
+        FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("sign-up-view.fxml"));
 
-		// In-Memory for developing
-		SQLiteConnection db = new SQLiteConnection();
-		SignUpController controller = new SignUpController(db);
-		fxmlLoader.setController(controller);
+        // In-Memory for developing
+        SQLiteConnection db = new SQLiteConnection();
+        SignUpController controller = new SignUpController(db);
+        fxmlLoader.setController(controller);
 
-		Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
-		stage.setTitle(TITLE);
-		stage.setScene(scene);
-		stage.show();
-	}
+        Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
+        stage.setTitle(TITLE);
+        stage.setScene(scene);
+        stage.show();
+    }
 
-	public static void main(String[] args) {
-		launch();
-	}
+    public static void main(String[] args) {
+        launch();
+    }
 }

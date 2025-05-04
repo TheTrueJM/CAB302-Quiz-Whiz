@@ -5,46 +5,46 @@ import com.password4j.Password;
 import com.password4j.ScryptFunction;
 
 public class User {
-	private int id;
-	private String username;
-	private String passwordHash;
-	private static final ScryptFunction scrypt = ScryptFunction.getInstance(65536, 8, 1, 64);
+    private int id;
+    private String username;
+    private String passwordHash;
+    private static final ScryptFunction scrypt = ScryptFunction.getInstance(65536, 8, 1, 64);
 
-	public User(String username, String passwordHash) {
-		this.username = username;
-		this.passwordHash = passwordHash;
-	}
+    public User(String username, String passwordHash) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getPasswordHash() {
-		return passwordHash;
-	}
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
-	}
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
-	public boolean verifyPassword(String passwordPlaintext) {
-		return Password.check(passwordPlaintext, this.passwordHash).with(scrypt);
-	}
+    public boolean verifyPassword(String passwordPlaintext) {
+        return Password.check(passwordPlaintext, this.passwordHash).with(scrypt);
+    }
 
-	public static String hashPassword(String passwordPlaintext) {
-		Hash passwordHash = Password.hash(passwordPlaintext).addRandomSalt(16).with(scrypt);
-		return passwordHash.getResult();
-	}
+    public static String hashPassword(String passwordPlaintext) {
+        Hash passwordHash = Password.hash(passwordPlaintext).addRandomSalt(16).with(scrypt);
+        return passwordHash.getResult();
+    }
 }
