@@ -520,7 +520,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
