@@ -1,0 +1,27 @@
+{
+  "response": "invalid answers",
+  "isError": false,
+  "quizzes": [
+    {
+      "quizTitle": "fooo",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionText": "What is the capital of France?",
+          "options": [
+            {
+              "optionLetter": "",
+              "optionText": "",
+              "isCorrect": false
+            },
+            {
+              "optionLetter": "B",
+              "optionText": "Paris",
+              "isCorrect": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

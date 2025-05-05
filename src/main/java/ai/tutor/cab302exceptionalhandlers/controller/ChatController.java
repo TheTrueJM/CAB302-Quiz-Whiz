@@ -1,7 +1,7 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
-import ai.tutor.cab302exceptionalhandlers.controller.AIController.ModelResponseFormat;
+import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -697,9 +697,8 @@ public class ChatController {
         messageDAO.createMessage(aiResponse);
         addMessage(aiResponse);
 
-        //TODO: Operation to split the message for quiz if needed
         if (aiResponse.getIsQuiz()) {
-            createNewQuiz(aiMessageContent.response, aiResponse);
+            createNewQuiz(aiMessageContent, aiResponse);
         }
 
         return aiResponse;
@@ -713,7 +712,7 @@ public class ChatController {
 
 
     // Create a Quiz object from the AI's response message if it is a quiz message
-    public Quiz createNewQuiz(String quizContent, Message responseMessage) throws IllegalArgumentException, NoSuchElementException, SQLException {
+    public Quiz createNewQuiz(ModelResponseFormat response, Message responseMessage) throws IllegalArgumentException, NoSuchElementException, SQLException {
         if (responseMessage == null) {
             throw new IllegalArgumentException("Quiz must be for a message");
         }
@@ -723,18 +722,14 @@ public class ChatController {
         if (responseMessage.getFromUser()){
             throw new IllegalArgumentException("Quiz cannot be for a user message");
         }
+        if (!AIController.validateQuizResponse(response) || response.getQuizTitle() == null) {
+            throw new IllegalArgumentException("Invalid quiz content");
+        }
 
-        // TODO: Implement proper invalid quiz content format checking
-//        if (!quizContent.equals("[Valid Quiz Content Format]")){
-//            throw new IllegalArgumentException("Invalid quiz content format");
-//        }
-
-        // TODO: Depending on AI response quizContent extract name
-        String quizName = "Computer Science Quiz";
+        String quizName = response.getQuizTitle();
         Chat currentChat = getChat(responseMessage.getChatId());
         Quiz newQuiz = new Quiz(responseMessage.getId(), quizName, currentChat.getQuizDifficulty());
         quizDAO.createQuiz(newQuiz);
-
         return newQuiz;
     }
 
@@ -785,6 +780,17 @@ public class ChatController {
         return answerOption;
     }
 
+    public void setQuizMode(boolean quizMode) {
+        this.isQuiz = quizMode;
+    }
+
+    public Quiz getQuizForMessage(int messageId) throws SQLException, NoSuchElementException {
+        Quiz quiz = quizDAO.getQuiz(messageId);
+        if (quiz == null) {
+            throw new NoSuchElementException("No quiz found for message ID: " + messageId);
+        }
+        return quiz;
+    }
 
     private boolean validateNullOrEmpty(String value) {
         return value == null || value.trim().isEmpty();

@@ -19,8 +19,7 @@ import com.google.gson.Gson;
 
 public class AIController {
     private final OllamaAPI ollamaAPI;
-    private final String modelName = "qwen3:4b"; // hardcoded, do we want this???
-    private final String currentSystemPrompt;
+    private final String modelName = "qwen3:4b";
     private final OllamaChatRequestBuilder ollamaBuilder = OllamaChatRequestBuilder.getInstance(modelName);
     private final HashMap<String, String> prompts = new HashMap<>();
     private final Gson gson = new Gson();
@@ -33,9 +32,6 @@ public class AIController {
 
     public class ModelResponseFormat {
         @SuppressWarnings("unused")
-        public final boolean userWantsQuiz;
-
-        @SuppressWarnings("unused")
         public final String response;
 
         @SuppressWarnings("unused")
@@ -43,39 +39,118 @@ public class AIController {
 
         public final QuizFormat[] quizzes;
 
-        public ModelResponseFormat(boolean userWantsQuiz, boolean isError, String response, QuizFormat[] quizzes) {
-            this.userWantsQuiz = userWantsQuiz;
+        public ModelResponseFormat(boolean isError, String response, QuizFormat[] quizzes) {
             this.response = response;
             this.isError = isError;
             this.quizzes = quizzes;
+        }
+
+        public String getQuizTitle() {
+            if (quizzes != null && quizzes.length > 0) {
+                return quizzes[0].getQuizTitle();
+            }
+            return null;
         }
     }
 
     public class QuizFormat {
         @SuppressWarnings("unused")
-        public final String question;
+        public final String quizTitle;
 
         @SuppressWarnings("unused")
-        public final String answer;
+        public final Question[] questions;
+
+        public QuizFormat(String quizTitle, Question[] questions) {
+            this.quizTitle = quizTitle;
+            this.questions = questions;
+        }
+
+        public String getQuizTitle() {
+            return quizTitle;
+        }
+    }
+
+    public class Question {
+        @SuppressWarnings("unused")
+        public final int questionNumber;
 
         @SuppressWarnings("unused")
-        public final String[] answerOptions;
+        public final String questionText;
 
         @SuppressWarnings("unused")
-        public final String answerSolutions;
+        public final Option[] options;
 
-        public QuizFormat(String question, String answer, String[] options, String answerSolutions) {
-            this.question = question;
-            this.answer = answer;
-            this.answerOptions = options;
-            this.answerSolutions = answerSolutions;
+        public Question(int questionNumber, String questionText, Option[] options) {
+            this.questionNumber = questionNumber;
+            this.questionText = questionText;
+            this.options = options;
+        }
+    }
+
+    public class Option {
+        @SuppressWarnings("unused")
+        public final String optionLetter;
+
+        @SuppressWarnings("unused")
+        public final String optionText;
+
+        @SuppressWarnings("unused")
+        public final boolean isCorrect;
+
+        public Option(String optionLetter, String optionText, boolean isCorrect) {
+            this.optionLetter = optionLetter;
+            this.optionText = optionText;
+            this.isCorrect = isCorrect;
         }
     }
 
     public AIController() throws IOException {
         this.ollamaAPI = new OllamaAPI();
         this.ollamaAPI.setVerbose(false);
-        this.currentSystemPrompt = loadSystemPrompt();
+        loadPrompts();
+    }
+
+    public static boolean validateQuizResponse(ModelResponseFormat response) {
+        if (response == null || response.isError || response.quizzes == null || response.quizzes.length == 0) {
+            return false;
+        }
+
+        for (QuizFormat quiz : response.quizzes) {
+            if (quiz == null ||
+                quiz.quizTitle == null || quiz.quizTitle.isEmpty() ||
+                quiz.questions == null || quiz.questions.length == 0) {
+                return false;
+            }
+
+            for (Question question : quiz.questions) {
+                if (question == null ||
+                    question.questionNumber < 1 ||
+                    question.questionText == null || question.questionText.isEmpty() ||
+                    question.options == null || question.options.length == 0) {
+                    return false;
+                }
+
+                boolean hasCorrectOption = false;
+                for (Option option : question.options) {
+                    if (option == null ||
+                        option.optionLetter == null || option.optionLetter.isEmpty() ||
+                        option.optionText == null || option.optionText.isEmpty()) {
+                        return false;
+                    }
+
+                    hasCorrectOption |= option.isCorrect;
+                    if (hasCorrectOption) {
+                        break;
+                    }
+                }
+
+                if (!hasCorrectOption) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public boolean isOllamaRunning() {
@@ -105,16 +180,15 @@ public class AIController {
         this.verbose = verbose;
     }
 
-    private String loadSystemPrompt() throws IOException {
+    private void loadPrompts() throws IOException {
         String systemTutorPromptPath = "/ai/tutor/cab302exceptionalhandlers/prompts/system_prompt.txt";
-        String systemQuizPromptPath = "/ai/tutor/cab302exceptionalhandlers/prompts/quiz_prompt.txt";
+        String systemQuizPromptPath = "/ai/tutor/cab302exceptionalhandlers/prompts/quiz_system_prompt.txt";
 
         String tutorPrompt = loadPromptFromFile(systemTutorPromptPath);
         String quizPrompt = loadPromptFromFile(systemQuizPromptPath);
 
         prompts.put("tutor", tutorPrompt);
         prompts.put("quiz", quizPrompt);
-        return tutorPrompt;
     }
 
     private String loadPromptFromFile(String resourcePath) throws IOException {
@@ -131,11 +205,12 @@ public class AIController {
                 || ollamaRequest.getMessages().isEmpty();
     }
 
-    public ModelResponseFormat generateResponse(List<Message> history, Chat chatConfig, boolean requestQuiz) {
-        // TODO: quiz handling
+    public ModelResponseFormat generateResponse(List<Message> history, Chat chatConfig, boolean isQuizMode) {
         try {
+            String promptTemplate = isQuizMode ? prompts.get("quiz") : prompts.get("tutor");
+
             String systemPrompt = String.format(
-                currentSystemPrompt,
+                promptTemplate,
                 chatConfig.getName(),
                 chatConfig.getResponseAttitude(),
                 chatConfig.getQuizDifficulty(),
@@ -192,23 +267,15 @@ public class AIController {
 
             response = formattedResponse.toString();
 
-            ModelResponseFormat responseFormat = gson.fromJson(response, ModelResponseFormat.class);
-            if (responseFormat == null) {
-                System.err.println("Error: Unable to parse response from AI.");
-                return new ModelResponseFormat(
-                    false,
-                    false,
-                    "Error: Unable to parse response from AI.",
-                    null
-                );
+            if (isQuizMode) {
+                return processQuizResponse(response);
+            } else {
+                return processChatResponse(response);
             }
 
-            return responseFormat;
-        /* Not sure whats the proper way to handle these exceptions */
         } catch (Exception e) {
             System.err.println("Error generating response: " + e.getMessage());
             return new ModelResponseFormat(
-                false,
                 true,
                 "Error: Unable to generate response from AI.",
                 null
@@ -216,6 +283,54 @@ public class AIController {
         }
     }
 
+    private ModelResponseFormat processQuizResponse(String response) {
+        try {
+            String jsonContent = response;
+            if (response.contains("```json")) {
+                jsonContent = response.substring(response.indexOf("```json") + 7);
+                jsonContent = jsonContent.substring(0, jsonContent.indexOf("```"));
+                jsonContent = jsonContent.trim();
+            } else if (response.contains("```")) {
+                jsonContent = response.substring(response.indexOf("```") + 3);
+                jsonContent = jsonContent.substring(0, jsonContent.indexOf("```"));
+                jsonContent = jsonContent.trim();
+            }
 
-   // TODO: Quiz
+            QuizFormat quizData = gson.fromJson(jsonContent, QuizFormat.class);
+
+            return new ModelResponseFormat(
+                false,
+                response,
+                new QuizFormat[] { quizData }
+            );
+        } catch (Exception e) {
+            System.err.println("Error parsing quiz response: " + e.getMessage());
+            return new ModelResponseFormat(
+                true,
+                "Error: Unable to parse quiz response from AI. " + e.getMessage(),
+                null
+            );
+        }
+    }
+
+    private ModelResponseFormat processChatResponse(String response) {
+        try {
+            ModelResponseFormat responseFormat = gson.fromJson(response, ModelResponseFormat.class);
+            if (responseFormat == null) {
+                System.err.println("Error: Unable to parse response from AI.");
+                return new ModelResponseFormat(
+                    false,
+                    "Error: Unable to parse response from AI.",
+                    null
+                );
+            }
+            return responseFormat;
+        } catch (Exception e) {
+            return new ModelResponseFormat(
+                false,
+                response,
+                null
+            );
+        }
+    }
 }

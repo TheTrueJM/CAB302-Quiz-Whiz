@@ -6,12 +6,17 @@ import static org.junit.jupiter.api.Assumptions.*;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
+import ai.tutor.cab302exceptionalhandlers.controller.AIController.ModelResponseFormat;
+
+import com.google.gson.Gson;
 
 public class ChatControllerTest {
     private SQLiteConnection db;
@@ -19,6 +24,8 @@ public class ChatControllerTest {
     private ChatController chatController;
     private boolean isOllamaRunning = false;
     private boolean hasCorrectModel = false;
+
+    private static final Gson gson = new Gson();
 
     private static final User CurrentUser = new User(
             "TestUser", User.hashPassword("password")
@@ -39,13 +46,25 @@ public class ChatControllerTest {
         Messages.put("messageAIQuiz", new Message(1, "Quiz Message from AI", false, true));
     }
 
+    private static ModelResponseFormat loadModelResponseFromResource(String resourcePath) {
+        try (InputStream is = ChatControllerTest.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new IOException("Resource not found: " + resourcePath);
+            }
+            String jsonContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            return gson.fromJson(jsonContent, ModelResponseFormat.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load quiz content: " + e.getMessage(), e);
+        }
+    }
+
     // TODO: Figure out format for AI quiz response
-    private static final Map<String, String> QuizContent = new HashMap<>();
+    private static final Map<String, ModelResponseFormat> QuizContent = new HashMap<>();
     static {
-        QuizContent.put("valid", "[Valid Quiz Content Format]");
-        QuizContent.put("invalidQuiz", "[Invalid Quiz Content Format]");
-        QuizContent.put("invalidQuestion", "[Invalid Quiz Question Content Format]");
-        QuizContent.put("invalidAnswer", "[Invalid Quiz Question Answer Option Content Format]");
+        QuizContent.put("valid", loadModelResponseFromResource("/ai/tutor/testdata/valid_quiz.json"));
+        QuizContent.put("invalidQuiz", loadModelResponseFromResource("/ai/tutor/testdata/invalid_quiz.json"));
+        QuizContent.put("invalidQuestion", loadModelResponseFromResource("/ai/tutor/testdata/invalid_question.json"));
+        QuizContent.put("invalidAnswer", loadModelResponseFromResource("/ai/tutor/testdata/invalid_answer.json"));
     }
 
     private static final Map<String, String> QuestionContent = new HashMap<>();
@@ -518,6 +537,56 @@ public class ChatControllerTest {
                 NoSuchElementException.class,
                 () -> chatController.getChatMessages(-1)
         );
+    }
+
+    @Test
+    public void testAIGenerateQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+        assumeTrue(hasCorrectModel, "Required model is not available");
+
+        Chat chat = Chats.get("chat1");
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        assertNotNull(newChat);
+        int chatID = newChat.getId();
+
+        // Send a regular message to establish context
+        Message userMessage = chatController.createNewChatMessage(
+                chatID, "Tell me about object-oriented programming principles", true, false
+        );
+        assertNotNull(userMessage);
+
+        // Generate AI response for the regular message
+        Message aiResponse = chatController.generateChatMessageResponse(userMessage);
+        assertNotNull(aiResponse);
+        assertFalse(aiResponse.getIsQuiz());
+
+        // Switch to quiz mode and request a quiz
+        chatController.setQuizMode(true);
+
+        // Create a message requesting a quiz
+        Message quizRequest = chatController.createNewChatMessage(
+                chatID, "Create a quiz about object-oriented programming", true, true
+        );
+        assertNotNull(quizRequest);
+        assertTrue(quizRequest.getIsQuiz());
+
+        // Generate AI response in quiz mode
+        Message quizResponse = chatController.generateChatMessageResponse(quizRequest);
+        assertNotNull(quizResponse);
+        assertTrue(quizResponse.getIsQuiz());
+        assertFalse(quizResponse.getFromUser());
+
+        // TODO: Improve and remove this
+        Quiz quiz = null;
+        try {
+            quiz = chatController.getQuizForMessage(quizResponse.getId());
+            assertNotNull(quiz);
+            assertEquals(quizResponse.getId(), quiz.getMessageId());
+        } catch (NoSuchElementException e) {
+            fail("Expected a quiz to be created");
+        }
     }
 
     @Test
