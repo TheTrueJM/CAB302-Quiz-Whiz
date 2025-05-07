@@ -8,9 +8,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ai.tutor.cab302exceptionalhandlers.controller.QuizController">
-
-
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <!-- Left Sidebar -->
     <left>
         <!-- Other Chat Options -->
@@ -20,7 +18,7 @@
             </ListView>
             <!-- User Details -->
             <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-background-color: #333333; -fx-padding: 10;">
-                <Button maxWidth="-Infinity" onAction="#quizSubmit" text="Submit Quiz" />
+                <Button maxWidth="-Infinity" text="Submit Quiz" />
             </VBox>
         </VBox>
     </left>

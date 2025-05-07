@@ -1,67 +1,87 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.model.Chat;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class ChatSetupController {
-    @FXML private ComboBox responseAttitude;
+    @FXML private ComboBox<String> responseAttitude;
+    @FXML private ComboBox<String> educationLevel;
+    @FXML private ComboBox<String> quizDifficulty;
+
     @FXML private Slider responseLength;
     @FXML private TextField chatNameInput;
     @FXML private TextField chatTopic;
-    @FXML private ComboBox educationLevel;
     @FXML private Button startChatButton;
-    @FXML private ComboBox quizDifficulty;
     @FXML private Button exitButton;
     @FXML private Pane backgroundOverlay;
+    @FXML private Label settingsTitle;
 
-    private final SQLiteConnection db;
-    private final User currentUser;
-    private final ChatController controller;
-    // DAO fields...
+    private final ChatController mainController;
+    private final String operation;
+    private Chat selectedChat;
 
-    public ChatSetupController(SQLiteConnection db, User authenticatedUser) throws SQLException {
-        this.db = db;
-        this.currentUser = authenticatedUser;
-        this.controller = new ChatController(db, currentUser);
+    public ChatSetupController(SQLiteConnection db, User authenticatedUser, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
+        this.operation = operation;
+        this.mainController = mainController;
+        this.selectedChat = selectedChat;
     }
 
     @FXML
     public void initialize() {
-        setupStartChatButton();
+        if (Objects.equals(operation, "Create")) {
+            setupStartChatButton();
+        }
+        else if ((Objects.equals(operation, "Update"))) {
+            configureChatSettings();
+            setupUpdateChatButton();
+        }
         setupExitButton();
         setupBackgroundExit();
     }
 
     // Move other methods related to chat-setup-view.fxml
-    public void setupStartChatButton() {
-        List<String> responseLengths = new ArrayList<String>(){{
-            add("Concise");
-            add("Moderate");
-            add("Detailed");
-        }};
+    private void setupStartChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                controller.createNewChat(chatNameInput.getText(), responseAttitude.getValue().toString(), responseLengths.get((int) responseLength.getValue()), educationLevel.getValue().toString(), chatTopic.getText());
+                mainController.createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
                 cancel();
             } catch (SQLException e ) {
-                controller.showErrorAlert("Error creating chat" + e);
+                mainController.showErrorAlert("Error creating chat" + e);
             }
+        });
+    }
 
+    private void configureChatSettings(){
+        settingsTitle.setText("Chat Settings");
+        chatNameInput.setText(selectedChat.getName());
+        responseAttitude.setValue(selectedChat.getResponseAttitude());
+        quizDifficulty.setValue(selectedChat.getQuizDifficulty());
+        educationLevel.setValue(selectedChat.getEducationLevel());
+        chatTopic.setText(selectedChat.getStudyArea());
+        startChatButton.setText("Update Chat");
+
+    }
+
+    private void setupUpdateChatButton() {
+        startChatButton.setOnAction(actionEvent -> {
+            try {
+                mainController.updateChatDetails(mainController.getSelectedChat().getId(),chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                cancel();
+            } catch (SQLException e ) {
+                mainController.showErrorAlert("Error updating chat" + e);
+            }
         });
     }
 
@@ -71,8 +91,7 @@ public class ChatSetupController {
             FXMLLoader fxmlLoader = new FXMLLoader(
                     QuizWhizApplication.class.getResource("chat-view.fxml")
             );
-            ChatController controller = new ChatController(db, currentUser);
-            fxmlLoader.setController(controller);
+            fxmlLoader.setController(mainController);
 
             // Create the scene
             Scene previousScene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
@@ -80,8 +99,9 @@ public class ChatSetupController {
             // Get the current Stage
             Stage stage = (Stage) startChatButton.getScene().getWindow();
             stage.setScene(previousScene);
-        } catch (IOException | SQLException e) {
-            controller.showErrorAlert("Failed to return to chat view:" + e.getMessage());
+
+        } catch (IOException e) {
+            mainController.showErrorAlert("Failed to return to chat view:" + e.getMessage());
         }
     }
 

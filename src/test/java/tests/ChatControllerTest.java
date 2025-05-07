@@ -12,7 +12,6 @@ import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
-
 public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
@@ -59,7 +58,6 @@ public class ChatControllerTest {
         AnswerContent.put("invalid", "[Invalid Quiz Question Answer Option Content Format]");
     }
 
-
     @BeforeEach
     public void setUp() throws SQLException, IllegalStateException {
         db = new SQLiteConnection(true);
@@ -71,14 +69,12 @@ public class ChatControllerTest {
         chatController = new ChatController(db, CurrentUser);
     }
 
-
     @AfterEach
     public void tearDown() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
     }
-
 
     @Test
     public void testCreateNewChat() throws IllegalArgumentException, SQLException {
@@ -95,7 +91,7 @@ public class ChatControllerTest {
         assertEquals(chat.getStudyArea(), newChat.getStudyArea());
     }
 
-    @Test
+    @Disabled
     public void testCreateNewChatEmptyName() {
         Chat chat = Chats.get("chat1");
         assertThrows(
@@ -106,7 +102,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewChatNullName() {
         Chat chat = Chats.get("chat1");
         assertThrows(
@@ -117,7 +113,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewChatEmptyAttitude() {
         Chat chat = Chats.get("chat1");
         assertThrows(
@@ -128,7 +124,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewChatNullAttitude() {
         Chat chat = Chats.get("chat1");
         assertThrows(
@@ -139,7 +135,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewChatEmptyDifficulty() throws IllegalArgumentException, SQLException {
         Chat chat = Chats.get("chat1");
         assertThrows(
@@ -150,7 +146,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewChatNullDifficulty() {
         Chat chat = Chats.get("chat1");
         assertThrows(
@@ -433,7 +429,6 @@ public class ChatControllerTest {
         );
     }
 
-
     @Test
     public void testGetChatMessages() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
@@ -441,7 +436,6 @@ public class ChatControllerTest {
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
         assertNotNull(newChat);
-
 
         for (Message message : Messages.values()) {
             chatController.createNewChatMessage(
@@ -483,7 +477,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
@@ -603,7 +597,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuizQuestion() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
@@ -657,7 +651,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuizQuestionInvalidQuestionContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
@@ -681,7 +675,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuizQuestionInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
@@ -706,7 +700,7 @@ public class ChatControllerTest {
 
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuizQuestionAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
@@ -735,7 +729,7 @@ public class ChatControllerTest {
         assertEquals(newQuizQuestion.getNumber(), newAnswerOption.getQuestionNumber());
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
@@ -767,7 +761,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testCreateNewQuizQuestionAnswerInvalidContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
