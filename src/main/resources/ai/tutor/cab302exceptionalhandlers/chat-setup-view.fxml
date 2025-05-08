@@ -35,6 +35,20 @@
          <children>
               <Label fx:id="settingsTitle" alignment="CENTER" prefHeight="53.0" prefWidth="294.0" style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold;" styleClass="setup-header" text="Chat Setup" />
             <Region prefHeight="100.0" prefWidth="183.0" />
+
+             <Button fx:id="downloadButton" styleClass="download-button" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;" onAction="#downloadChat">
+                 <graphic>
+                     <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                         <image>
+                             <Image url="@images/download.png" />
+                         </image>
+                     </ImageView>
+                 </graphic>
+                 <HBox.margin>
+                     <Insets right="10.0" />
+                 </HBox.margin>
+             </Button>
+
             <Button fx:id="exitButton" styleClass="exit-button" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;">
                <graphic>
                   <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
@@ -126,6 +140,9 @@
                   <Insets top="15.0" />
                </VBox.margin>
             </Pane>
+
+
+
             </VBox>
         </HBox>
         <HBox alignment="CENTER" prefHeight="85.0" prefWidth="822.0" spacing="10">
