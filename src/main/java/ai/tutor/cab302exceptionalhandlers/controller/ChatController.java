@@ -417,7 +417,7 @@ public class ChatController {
     // Set up button that activates the ability to edit the chat name
     private void setupActivateEdit() {
         editChatName.setOnAction(actionEvent ->  {
-            // TODO: Refactor these into class in styles.css and change the css class instead
+            // TODO: Refactor these into class in ChatStyles.css and change the css class instead
             editChatName.setVisible(false);
             chatNameField.setOpacity(0.8);
             chatNameField.setEditable(true);
