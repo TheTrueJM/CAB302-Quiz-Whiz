@@ -92,10 +92,10 @@
 }
 
 .takeQuizButton {
-    -fx-background-color: white;
+    -fx-background-color: #6C95DF;
+    -fx-text-fill: black;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-border-color: black;
     -fx-padding: 8 15;
 }
 
