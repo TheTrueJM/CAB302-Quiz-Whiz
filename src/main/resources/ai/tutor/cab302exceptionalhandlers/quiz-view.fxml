@@ -96,9 +96,9 @@
     <left>
         <VBox alignment="CENTER" prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 5;" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
-            <StackPane fx:id="quizQuestionContainer" prefWidth="230.0">
+            <StackPane fx:id="quizQuestionsContainer" prefWidth="230.0">
                 <TextField fx:id="noQuizField" alignment="TOP_CENTER" editable="false" prefHeight="404.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" />
-                <ListView fx:id="quizListView" prefHeight="380.0" prefWidth="264.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
+                <ListView fx:id="questionListView" prefHeight="380.0" prefWidth="264.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
                     <StackPane.margin>
                         <Insets bottom="5.0" />
                     </StackPane.margin></ListView>

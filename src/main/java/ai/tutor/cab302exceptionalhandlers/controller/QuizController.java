@@ -1,11 +1,55 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.paint.Color;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class QuizController {
+    @FXML private Button returnButton;
+    @FXML private Button searchButton;
+    @FXML private Button editQuizName;
+    @FXML private Button confirmEditQuizName;
+    @FXML private Button quizSettingsButton;
+    @FXML private Button userDetailsButton;
+    @FXML private Button answerA;
+    @FXML private Button answerB;
+    @FXML private Button answerC;
+    @FXML private Button answerD;
+    @FXML private Button configureQuiz;
+    @FXML private Button chatModeButton;
+    @FXML private Button quizModeButton;
+    @FXML private TextField quizNameField;
+    @FXML private TextField noQuizField;
+    @FXML private TextField welcomeTitle;
+    @FXML private ListView questionListView;
+    @FXML private ScrollPane quizScrollPane;
+    @FXML private VBox quizQuestion;
+    @FXML private VBox quizAnswers;
+    @FXML private VBox greetingContainer;
+    @FXML private StackPane quizQuestionsContainer;
+    @FXML private StackPane quizListContainer1;
+    @FXML private Label quizQuestionLabel;
+
     private SQLiteConnection db;
     private Quiz currentQuiz;
     private UserDAO userDAO;
@@ -16,11 +60,15 @@ public class QuizController {
     private AnswerOptionDAO answerOptionDAO;
     private UserAnswerDAO userAnswerDAO;
 
+    @FXML
+    public void initialize() {
+
+    }
+
     public QuizController(SQLiteConnection db, Quiz chosenQuiz) throws IllegalStateException {
         if (chosenQuiz == null) {
             throw new IllegalStateException("No quiz was chosen");
         }
-
         try {
             this.db = db;
             this.currentQuiz = chosenQuiz;
