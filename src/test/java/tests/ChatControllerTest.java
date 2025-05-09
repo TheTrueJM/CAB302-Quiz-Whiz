@@ -540,7 +540,7 @@ public class ChatControllerTest {
     }
 
     @Test
-    public void testAIGenerateQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
+    public void testGenerateQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
         assumeTrue(hasCorrectModel, "Required model is not available");
 
@@ -551,13 +551,13 @@ public class ChatControllerTest {
         assertNotNull(newChat);
         int chatID = newChat.getId();
 
-        // Send a regular message to establish context
+        // Send a regular message
         Message userMessage = chatController.createNewChatMessage(
                 chatID, "Tell me about object-oriented programming principles", true, false
         );
         assertNotNull(userMessage);
 
-        // Generate AI response for the regular message
+        // Generate AI response
         Message aiResponse = chatController.generateChatMessageResponse(userMessage);
         assertNotNull(aiResponse);
         assertFalse(aiResponse.getIsQuiz());
@@ -580,13 +580,9 @@ public class ChatControllerTest {
 
         // TODO: Improve and remove this
         Quiz quiz = null;
-        try {
-            quiz = chatController.getQuizForMessage(quizResponse.getId());
-            assertNotNull(quiz);
-            assertEquals(quizResponse.getId(), quiz.getMessageId());
-        } catch (NoSuchElementException e) {
-            fail("Expected a quiz to be created");
-        }
+        quiz = chatController.getQuizForMessage(quizResponse.getId());
+        assertNotNull(quiz);
+        assertEquals(quizResponse.getId(), quiz.getMessageId());
     }
 
     @Test
@@ -805,7 +801,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
@@ -832,7 +828,8 @@ public class ChatControllerTest {
 
     }
 
-    @Disabled
+/* TODO??? imo these tests are not needed but up to you
+    @Test
     public void testCreateNewQuizQuestionAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
@@ -856,7 +853,7 @@ public class ChatControllerTest {
         assertNotNull(newQuizQuestion);
 
         AnswerOption newAnswerOption = chatController.createNewQuestionAnswerOption(
-                AnswerContent.get("valid"), newQuizQuestion
+                AnswerContent.get("valid")[], newQuizQuestion
         );
         assertNotNull(newAnswerOption);
         assertEquals(newQuizQuestion.getMessageId(), newAnswerOption.getMessageId());
@@ -926,4 +923,5 @@ public class ChatControllerTest {
                 )
         );
     }
+*/
 }

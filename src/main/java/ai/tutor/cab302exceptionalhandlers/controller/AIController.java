@@ -51,14 +51,21 @@ public class AIController {
             }
             return null;
         }
+
+        public List<Question> getQuizQuestions() {
+            if (quizzes != null && quizzes.length > 0) {
+                return List.of(quizzes[0].questions);
+            }
+            return null;
+        }
     }
 
     public class QuizFormat {
         @SuppressWarnings("unused")
-        public final String quizTitle;
+        private final String quizTitle;
 
         @SuppressWarnings("unused")
-        public final Question[] questions;
+        private final Question[] questions;
 
         public QuizFormat(String quizTitle, Question[] questions) {
             this.quizTitle = quizTitle;
@@ -72,35 +79,59 @@ public class AIController {
 
     public class Question {
         @SuppressWarnings("unused")
-        public final int questionNumber;
+        private final int questionNumber;
 
         @SuppressWarnings("unused")
-        public final String questionText;
+        private final String questionContent;
 
         @SuppressWarnings("unused")
-        public final Option[] options;
+        private final Option[] options;
 
         public Question(int questionNumber, String questionText, Option[] options) {
             this.questionNumber = questionNumber;
-            this.questionText = questionText;
+            this.questionContent = questionText;
             this.options = options;
+        }
+
+        public int getQuestionNumber() {
+            return questionNumber;
+        }
+
+        public String getQuestionContent() {
+            return questionContent;
+        }
+
+        public Option[] getOptions() {
+            return options;
         }
     }
 
     public class Option {
         @SuppressWarnings("unused")
-        public final String optionLetter;
+        private final String optionLetter;
 
         @SuppressWarnings("unused")
-        public final String optionText;
+        private final String optionText;
 
         @SuppressWarnings("unused")
-        public final boolean isCorrect;
+        private final boolean isCorrect;
 
         public Option(String optionLetter, String optionText, boolean isCorrect) {
             this.optionLetter = optionLetter;
             this.optionText = optionText;
             this.isCorrect = isCorrect;
+        }
+
+        public String getOptionLetter() {
+            return optionLetter;
+        }
+
+        public String getOptionText() {
+            return optionText;
+        }
+
+        public boolean isCorrect() {
+            return isCorrect;
         }
     }
 
@@ -125,7 +156,7 @@ public class AIController {
             for (Question question : quiz.questions) {
                 if (question == null ||
                     question.questionNumber < 1 ||
-                    question.questionText == null || question.questionText.isEmpty() ||
+                    question.getQuestionContent() == null || question.getQuestionContent().isEmpty() ||
                     question.options == null || question.options.length == 0) {
                     return false;
                 }

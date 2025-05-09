@@ -7,7 +7,7 @@
       "questions": [
         {
           "questionNumber": 1,
-          "questionText": "",
+          "questionContent": "",
           "options": [
             {
               "optionLetter": "A",

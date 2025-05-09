@@ -7,7 +7,7 @@
       "questions": [
         {
           "questionNumber": 1,
-          "questionText": "Which of the following is a valid Java variable name?",
+          "questionContent": "Which of the following is a valid Java variable name?",
           "options": [
             {
               "optionLetter": "A",
@@ -33,7 +33,7 @@
         },
         {
           "questionNumber": 2,
-          "questionText": "What is the output of System.out.println(2 + 3 + \"4\")?",
+          "questionContent": "What is the output of System.out.println(2 + 3 + \"4\")?",
           "options": [
             {
               "optionLetter": "A",

@@ -730,6 +730,13 @@ public class ChatController {
         Chat currentChat = getChat(responseMessage.getChatId());
         Quiz newQuiz = new Quiz(responseMessage.getId(), quizName, currentChat.getQuizDifficulty());
         quizDAO.createQuiz(newQuiz);
+
+        for (Question questionFormat : response.getQuizQuestions()) {
+            QuizQuestion question = createNewQuizQuestion(questionFormat.getQuestionContent(), newQuiz);
+            for (Option answerOptionFormat : questionFormat.getOptions()) {
+                createNewQuestionAnswerOption(answerOptionFormat, question);
+            }
+        }
         return newQuiz;
     }
 
@@ -739,12 +746,6 @@ public class ChatController {
             throw new IllegalArgumentException("Question must be for a quiz");
         }
 
-        // TODO: Implement proper invalid quiz question content format checking
-        if (!questionContent.equals("[Valid Quiz Question Content Format]")){
-            throw new IllegalArgumentException("Invalid quiz question content format");
-        }
-
-        // TODO: Depending on AI response quizContent extract number from questionContent or assign dynamically
         int questionsCreated = quizQuestionDAO.getAllQuizQuestions(quiz.getMessageId()).size();
         int questionNumber = questionsCreated + 1;
 
@@ -755,26 +756,20 @@ public class ChatController {
     }
 
     // Create an AnswerOption object from the AI's response message if it is a quiz message
-    public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
+    public AnswerOption createNewQuestionAnswerOption(Option option, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
         if (quizQuestion == null) {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
         }
 
-        // TODO: Implement proper invalid question answer option content format checking
-        if (!answerOptionContent.equals("[Valid Quiz Question Answer Option Content Format]")){
-            throw new IllegalArgumentException("Invalid question answer option content format");
-        }
-
-        // TODO: Depending on AI response quizContent extract option, value and correctness
-        String option = "Option";
-        String value = "Answer option statement";
+        String optionLetter = option.getOptionLetter();
+        String optionValue = option.getOptionText();
         boolean isAnswer = true;
 
-        if (answerOptionDAO.getQuestionAnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option) != null) {
+        if (answerOptionDAO.getQuestionAnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), optionLetter) != null) {
             throw new IllegalStateException("Answer option already exists");
         }
 
-        AnswerOption answerOption = new AnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option, value, isAnswer);
+        AnswerOption answerOption = new AnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), optionLetter, optionValue, isAnswer);
         answerOptionDAO.createAnswerOption(answerOption);
 
         return answerOption;
@@ -787,7 +782,7 @@ public class ChatController {
     public Quiz getQuizForMessage(int messageId) throws SQLException, NoSuchElementException {
         Quiz quiz = quizDAO.getQuiz(messageId);
         if (quiz == null) {
-            throw new NoSuchElementException("No quiz found for message ID: " + messageId);
+            return null;
         }
         return quiz;
     }
