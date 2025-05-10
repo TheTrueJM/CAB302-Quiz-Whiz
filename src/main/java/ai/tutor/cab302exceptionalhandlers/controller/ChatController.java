@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
+import javafx.concurrent.Task;
 
 public class ChatController {
     // Chat Window
@@ -217,8 +218,7 @@ public class ChatController {
             greetingContainer.setManaged(false);
             greetingContainer.setMouseTransparent(true);
         }
-}
-
+    }
 
     public void refreshChatListView () {
         try {
@@ -358,6 +358,27 @@ public class ChatController {
         });
     }
 
+    private Node createThinkingNode() {
+        Label thinkingLabel = new Label("Thinking...");
+        thinkingLabel.setWrapText(true);
+        thinkingLabel.setMaxWidth(450);
+        thinkingLabel.setTextFill(Color.BLACK);
+
+        VBox verticalContainer = new VBox(thinkingLabel);
+        verticalContainer.setAlignment(Pos.CENTER);
+
+        HBox horizontalContainer = new HBox(verticalContainer);
+        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+
+        HBox wrapper = new HBox(horizontalContainer);
+        wrapper.setAlignment(Pos.CENTER_LEFT);
+        wrapper.setFillHeight(false);
+
+        HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
+        return wrapper;
+    }
+
     private void handleTakeQuiz(ActionEvent actionEvent, Message message) {
         // TODO: Implement logic for quiz action
         try {
@@ -383,7 +404,7 @@ public class ChatController {
         messageInputField.setOnAction(event -> {
             Chat selectedChat = getSelectedChat();
 
-        if (!isOllamaRunning()) {
+            if (!isOllamaRunning()) {
                 showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
                 return;
             } else if (!hasModel()) {
@@ -404,7 +425,32 @@ public class ChatController {
                 Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
                 messageInputField.clear();
                 addMessage(userMessage);
-                generateChatMessageResponse(userMessage);
+
+                Node thinkingNode = createThinkingNode();
+                chatMessagesVBox.getChildren().add(thinkingNode);
+                messageInputField.setDisable(true);
+
+                Task<Message> aiResponseTask = new Task<Message>() {
+                    @Override
+                    protected Message call() throws Exception {
+                        return generateAIResponse(userMessage);
+                    }
+                };
+
+                aiResponseTask.setOnSucceeded(e -> {
+                    Message aiResponse = aiResponseTask.getValue();
+                    chatMessagesVBox.getChildren().remove(thinkingNode);
+                    addMessage(aiResponse);
+                    messageInputField.setDisable(false);
+                });
+
+                aiResponseTask.setOnFailed(e -> {
+                    showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
+                    chatMessagesVBox.getChildren().remove(thinkingNode);
+                    messageInputField.setDisable(false);
+                });
+
+                new Thread(aiResponseTask).start();
             } catch (SQLException e) {
                 showErrorAlert("Failed to send message: " + e.getMessage());
             }
@@ -695,7 +741,6 @@ public class ChatController {
 
         /* Automatically add message to database */
         messageDAO.createMessage(aiResponse);
-        addMessage(aiResponse);
 
         if (aiResponse.getIsQuiz()) {
             createNewQuiz(aiMessageContent, aiResponse);
