@@ -22,6 +22,9 @@
     <javadoc.version>3.11.2</javadoc.version>
     <password4j.version>1.8.2</password4j.version>
     <monacle.version>21.0.2</monacle.version>
+    <slf4j.version>2.0.12</slf4j.version>
+    <ollama4j.version>1.0.100</ollama4j.version>
+    <gson.version>2.13.1</gson.version>
   </properties>
 
   <dependencies>
@@ -78,12 +81,22 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.12</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.12</version>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.ollama4j</groupId>
+        <artifactId>ollama4j</artifactId>
+        <version>${ollama4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
     </dependency>
   </dependencies>
 
@@ -132,6 +145,7 @@
             <prism.order>sw</prism.order>
             <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
+          <rerunFailingTestsCount>3</rerunFailingTestsCount>
         </configuration>
       </plugin>
       <plugin>

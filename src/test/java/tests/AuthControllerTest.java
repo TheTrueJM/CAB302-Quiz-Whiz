@@ -27,7 +27,8 @@ public class AuthControllerTest {
 
 
     @BeforeEach
-    public void setUp() throws RuntimeException, SQLException {
+    public void setUp(TestInfo testInfo) throws RuntimeException, SQLException {
+        System.out.println("Running test: " + testInfo.getDisplayName());
         db = new SQLiteConnection(true);
         connection = db.getInstance();
         authController = new AuthController(db);

@@ -1,7 +1,6 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
-import ai.tutor.cab302exceptionalhandlers.model.User;
+import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
