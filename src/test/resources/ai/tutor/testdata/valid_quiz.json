@@ -12,22 +12,22 @@
             {
               "optionLetter": "A",
               "optionText": "2variable",
-              "isCorrect": false
+              "isAnswer": false
             },
             {
               "optionLetter": "B",
               "optionText": "_myVariable",
-              "isCorrect": true
+              "isAnswer": true
             },
             {
               "optionLetter": "C",
               "optionText": "class",
-              "isCorrect": false
+              "isAnswer": false
             },
             {
               "optionLetter": "D",
               "optionText": "my-variable",
-              "isCorrect": false
+              "isAnswer": false
             }
           ]
         },
@@ -38,22 +38,22 @@
             {
               "optionLetter": "A",
               "optionText": "9",
-              "isCorrect": false
+              "isAnswer": false
             },
             {
               "optionLetter": "B",
               "optionText": "234",
-              "isCorrect": false
+              "isAnswer": false
             },
             {
               "optionLetter": "C",
               "optionText": "54",
-              "isCorrect": true
+              "isAnswer": true
             },
             {
               "optionLetter": "D",
               "optionText": "Error",
-              "isCorrect": false
+              "isAnswer": false
             }
           ]
         }

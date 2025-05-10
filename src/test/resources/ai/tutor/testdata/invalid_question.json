@@ -12,12 +12,12 @@
             {
               "optionLetter": "A",
               "optionText": "Option A",
-              "isCorrect": true
+              "isAnswer": true
             },
             {
               "optionLetter": "B",
               "optionText": "Option B",
-              "isCorrect": false
+              "isAnswer": false
             }
           ]
         }

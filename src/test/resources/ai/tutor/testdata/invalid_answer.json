@@ -12,12 +12,12 @@
             {
               "optionLetter": "",
               "optionText": "",
-              "isCorrect": false
+              "isAnswer": false
             },
             {
               "optionLetter": "B",
               "optionText": "Paris",
-              "isCorrect": true
+              "isAnswer": true
             }
           ]
         }

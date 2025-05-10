@@ -118,12 +118,12 @@ public class AIController {
         private final String optionText;
 
         @SuppressWarnings("unused")
-        private final boolean isCorrect;
+        private final boolean isAnswer;
 
-        public Option(String optionLetter, String optionText, boolean isCorrect) {
+        public Option(String optionLetter, String optionText, boolean isAnswer) {
             this.optionLetter = optionLetter;
             this.optionText = optionText;
-            this.isCorrect = isCorrect;
+            this.isAnswer = isAnswer;
         }
 
         public String getOptionLetter() {
@@ -134,8 +134,8 @@ public class AIController {
             return optionText;
         }
 
-        public boolean isCorrect() {
-            return isCorrect;
+        public boolean isAnswer() {
+            return isAnswer;
         }
     }
 
@@ -173,7 +173,7 @@ public class AIController {
                         return false;
                     }
 
-                    hasCorrectOption |= option.isCorrect;
+                    hasCorrectOption |= option.isAnswer;
                     if (hasCorrectOption) {
                         break;
                     }

@@ -23,18 +23,18 @@ Respond ONLY with a valid JSON object adhering to the following structure:
       "questionNumber": 1,
       "questionContent": "Text of the first question?",
       "options": [
-        {"optionLetter": "a", "optionText": "Text for option A", "isCorrect": false},
-        {"optionLetter": "b", "optionText": "Text for option B", "isCorrect": true},
-        {"optionLetter": "c", "optionText": "Text for option C", "isCorrect": false},
-        {"optionLetter": "d", "optionText": "Text for option D", "isCorrect": false}
+        {"optionLetter": "a", "optionText": "Text for option A", "isAnswer": false},
+        {"optionLetter": "b", "optionText": "Text for option B", "isAnswer": true},
+        {"optionLetter": "c", "optionText": "Text for option C", "isAnswer": false},
+        {"optionLetter": "d", "optionText": "Text for option D", "isAnswer": false}
       ]
     },
     {
       "questionNumber": 2,
       "questionContent": "Text of the second question (True/False)?",
       "options": [
-        {"optionLetter": "true", "optionText": "True", "isCorrect": true},
-        {"optionLetter": "false", "optionText": "False", "isCorrect": false}
+        {"optionLetter": "true", "optionText": "True", "isAnswer": true},
+        {"optionLetter": "false", "optionText": "False", "isAnswer": false}
       ]
     }
     // ... more questions. Aim for 5 questions total.

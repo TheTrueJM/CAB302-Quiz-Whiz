@@ -820,7 +820,7 @@ public class ChatController {
 
         String optionLetter = option.getOptionLetter();
         String optionValue = option.getOptionText();
-        boolean isAnswer = true;
+        boolean isAnswer = option.isAnswer();
 
         if (answerOptionDAO.getQuestionAnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), optionLetter) != null) {
             throw new IllegalStateException("Answer option already exists");
