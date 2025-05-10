@@ -1,0 +1,27 @@
+{
+  "response": "invalid questions",
+  "isError": false,
+  "quizzes": [
+    {
+      "quizTitle": "Invalid Questions",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionContent": "",
+          "options": [
+            {
+              "optionLetter": "A",
+              "optionText": "Option A",
+              "isAnswer": true
+            },
+            {
+              "optionLetter": "B",
+              "optionText": "Option B",
+              "isAnswer": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
