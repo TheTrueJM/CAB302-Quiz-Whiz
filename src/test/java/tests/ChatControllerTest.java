@@ -611,7 +611,6 @@ public class ChatControllerTest {
         assertTrue(quizResponse.getIsQuiz());
         assertFalse(quizResponse.getFromUser());
 
-        // TODO: Improve and remove this
         Quiz quiz = null;
         quiz = chatController.getQuizForMessage(quizResponse.getId());
         assertNotNull(quiz);

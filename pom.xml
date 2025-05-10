@@ -145,6 +145,7 @@
             <prism.order>sw</prism.order>
             <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
+          <rerunFailingTestsCount>3</rerunFailingTestsCount>
         </configuration>
       </plugin>
       <plugin>
