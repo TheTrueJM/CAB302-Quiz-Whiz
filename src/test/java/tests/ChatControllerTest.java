@@ -14,7 +14,7 @@ import java.util.*;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
-import ai.tutor.cab302exceptionalhandlers.controller.AIController.ModelResponseFormat;
+import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 
 import com.google.gson.Gson;
 
@@ -58,7 +58,6 @@ public class ChatControllerTest {
         }
     }
 
-    // TODO: Figure out format for AI quiz response
     private static final Map<String, ModelResponseFormat> QuizContent = new HashMap<>();
     static {
         QuizContent.put("valid", loadModelResponseFromResource("/ai/tutor/testdata/valid_quiz.json"));
@@ -67,18 +66,52 @@ public class ChatControllerTest {
         QuizContent.put("invalidAnswer", loadModelResponseFromResource("/ai/tutor/testdata/invalid_answer.json"));
     }
 
-    private static final Map<String, String> QuestionContent = new HashMap<>();
+    private static final Map<String, Question[]> QuestionContent = new HashMap<>();
     static {
-        QuestionContent.put("valid", "[Valid Quiz Question Content Format]");
-        QuestionContent.put("invalidQuestion", "[Invalid Quiz Question Content Format]");
-        QuestionContent.put("invalidAnswer", "[Invalid Quiz Question Answer Option Content Format]");
+        QuestionContent.put("valid", getQuestionsFromResponse(QuizContent.get("valid")));
+        QuestionContent.put("invalidQuestion", getQuestionsFromResponse(QuizContent.get("invalidQuestion")));
+        QuestionContent.put("invalidAnswer", getQuestionsFromResponse(QuizContent.get("invalidAnswer")));
     }
 
-    private static final Map<String, String> AnswerContent = new HashMap<>();
+    private static final Map<String, Option> AnswerContent = new HashMap<>();
     static {
-        AnswerContent.put("valid", "[Valid Quiz Question Answer Option Content Format]");
-        AnswerContent.put("invalid", "[Invalid Quiz Question Answer Option Content Format]");
+        AnswerContent.put("valid", getFirstOptionFromQuiz("valid"));
+        AnswerContent.put("invalid", getFirstOptionFromQuiz("invalidAnswer"));
     }
+
+    /* ----- */
+
+    private static Question[] getQuestionsFromResponse(ModelResponseFormat response) {
+        if (response != null && response.quizzes != null && response.quizzes.length > 0) {
+            return response.quizzes[0].getQuestions();
+        } else {
+            return new Question[0];
+        }
+    }
+
+    private static Option getFirstOptionFromQuiz(String key) {
+        ModelResponseFormat response = QuizContent.get(key);
+        if (response != null && response.quizzes != null && response.quizzes.length > 0) {
+            QuizFormat quiz = response.quizzes[0];
+            return extractFirstOption(quiz);
+        }
+        return null;
+    }
+
+    private static Option extractFirstOption(QuizFormat quiz) {
+        if (quiz != null) {
+            Question[] questions = quiz.getQuestions();
+            if (questions != null && questions.length > 0) {
+                Option[] options = questions[0].getOptions();
+                if (options != null && options.length > 0) {
+                    return options[0];
+                }
+            }
+        }
+        return null;
+    }
+
+    /* ----- */
 
     @BeforeEach
     public void setUp(TestInfo testInfo) throws SQLException, IllegalStateException, IOException {
@@ -736,8 +769,9 @@ public class ChatControllerTest {
         );
         assertNotNull(newQuiz);
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
         assertNotNull(newQuizQuestion);
         assertEquals(newQuiz.getMessageId(), newQuizQuestion.getMessageId());
@@ -763,14 +797,16 @@ public class ChatControllerTest {
         );
 
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                QuestionContent.get("valid")[0].getQuestionContent(), newQuiz
         );
         assertNotNull(newQuizQuestion);
+
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
 
         assertThrows(
                 IllegalStateException.class,
                 () -> chatController.createNewQuizQuestion(
-                        QuestionContent.get("valid"), newQuiz
+                        questionStrContent, newQuiz
                 )
         );
     }
@@ -793,18 +829,18 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("invalidQuestion")[0].getQuestionContent();
+
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatController.createNewQuizQuestion(
-                        QuestionContent.get("invalidQuestion"), newQuiz
+                        questionStrContent, newQuiz
                 )
         );
     }
 
     @Test
     public void testCreateNewQuizQuestionInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -822,17 +858,14 @@ public class ChatControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatController.createNewQuizQuestion(
-                        QuestionContent.get("invalidAnswer"), newQuiz
+                        "", newQuiz
                 )
         );
 
     }
 
-/* TODO??? imo these tests are not needed but up to you
     @Test
     public void testCreateNewQuizQuestionAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -847,23 +880,22 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
         assertNotNull(newQuizQuestion);
 
         AnswerOption newAnswerOption = chatController.createNewQuestionAnswerOption(
-                AnswerContent.get("valid")[], newQuizQuestion
+                AnswerContent.get("valid"), newQuizQuestion
         );
         assertNotNull(newAnswerOption);
         assertEquals(newQuizQuestion.getMessageId(), newAnswerOption.getMessageId());
         assertEquals(newQuizQuestion.getNumber(), newAnswerOption.getQuestionNumber());
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -878,8 +910,9 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
 
         chatController.createNewQuestionAnswerOption(
@@ -894,10 +927,8 @@ public class ChatControllerTest {
         );
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionAnswerInvalidContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
         Chat chat = Chats.get("chat1");
         chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
@@ -912,8 +943,9 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
 
         assertThrows(
@@ -923,5 +955,4 @@ public class ChatControllerTest {
                 )
         );
     }
-*/
 }

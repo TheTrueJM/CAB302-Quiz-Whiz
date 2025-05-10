@@ -75,6 +75,10 @@ public class AIController {
         public String getQuizTitle() {
             return quizTitle;
         }
+
+        public Question[] getQuestions() {
+            return questions;
+        }
     }
 
     public class Question {
@@ -148,12 +152,12 @@ public class AIController {
 
         for (QuizFormat quiz : response.quizzes) {
             if (quiz == null ||
-                quiz.quizTitle == null || quiz.quizTitle.isEmpty() ||
-                quiz.questions == null || quiz.questions.length == 0) {
+                quiz.getQuizTitle() == null || quiz.getQuizTitle().isEmpty() ||
+                quiz.getQuestions() == null || quiz.getQuestions().length == 0) {
                 return false;
             }
 
-            for (Question question : quiz.questions) {
+            for (Question question : quiz.getQuestions()) { // Use getter
                 if (question == null ||
                     question.questionNumber < 1 ||
                     question.getQuestionContent() == null || question.getQuestionContent().isEmpty() ||

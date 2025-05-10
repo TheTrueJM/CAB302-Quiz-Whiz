@@ -746,6 +746,10 @@ public class ChatController {
             throw new IllegalArgumentException("Question must be for a quiz");
         }
 
+        if (validateNullOrEmpty(questionContent)) {
+            throw new IllegalArgumentException("Question content cannot be empty");
+        }
+
         int questionsCreated = quizQuestionDAO.getAllQuizQuestions(quiz.getMessageId()).size();
         int questionNumber = questionsCreated + 1;
 
@@ -759,6 +763,14 @@ public class ChatController {
     public AnswerOption createNewQuestionAnswerOption(Option option, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
         if (quizQuestion == null) {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
+        }
+
+        if (validateNullOrEmpty(option.getOptionLetter())) {
+            throw new IllegalArgumentException("Answer option letter cannot be empty");
+        }
+
+        if (validateNullOrEmpty(option.getOptionText())) {
+            throw new IllegalArgumentException("Answer option text cannot be empty");
         }
 
         String optionLetter = option.getOptionLetter();
