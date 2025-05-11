@@ -37,28 +37,6 @@
                 <children>
                     <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="62.0" prefWidth="690.0" spacing="10" style="-fx-padding: 0;" HBox.hgrow="NEVER">
                         <ImageView fitHeight="29.0" fitWidth="3.0" nodeOrientation="INHERIT" HBox.hgrow="NEVER" />
-                        <StackPane prefHeight="62.0" prefWidth="31.0">
-                            <children>
-                                <Button fx:id="editQuizName" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand;" styleClass="editName" visible="false">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@images/edit.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
-                                <Button fx:id="confirmEditQuizName" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand;" styleClass="confirmEdit" visible="false">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@images/confirm.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
-                            </children>
-                        </StackPane>
                         <TextField fx:id="quizNameField" editable="false" prefHeight="46.0" prefWidth="421.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@ChatStyles.css" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                             <children>
@@ -103,7 +81,7 @@
                         <Insets bottom="5.0" />
                     </StackPane.margin></ListView>
             </StackPane>
-            <Button fx:id="userDetailsButton" prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="User Details" />
+            <Button fx:id="submitQuizButton" prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="Submit Quiz" />
         </VBox>
     </left>
 
@@ -132,12 +110,6 @@
                             </VBox>
                         </content>
                     </ScrollPane>
-                    <VBox fx:id="greetingContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-                        <children>
-                            <TextField fx:id="welcomeTitle" alignment="CENTER" editable="false" maxWidth="650.0" prefHeight="67.0" prefWidth="500.0" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: black; -fx-background-insets: 0; -fx-background-color: white;" text="Welcome, X" visible="false" VBox.vgrow="NEVER" />
-                            <Button fx:id="configureQuiz" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" style="-fx-font-size: 12; -fx-border-color: black; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1; -fx-padding: 0; -fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold;" styleClass="createChat2" text="Create a Chat" visible="false" />
-                        </children>
-                    </VBox>
                 </children>
             </StackPane>
             <!-- Chat Input -->

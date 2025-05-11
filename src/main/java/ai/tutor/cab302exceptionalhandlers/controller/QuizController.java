@@ -1,34 +1,17 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class QuizController {
     @FXML private Button returnButton;
     @FXML private Button searchButton;
-    @FXML private Button editQuizName;
-    @FXML private Button confirmEditQuizName;
     @FXML private Button quizSettingsButton;
     @FXML private Button userDetailsButton;
     @FXML private Button answerA;
@@ -45,7 +28,6 @@ public class QuizController {
     @FXML private ScrollPane quizScrollPane;
     @FXML private VBox quizQuestion;
     @FXML private VBox quizAnswers;
-    @FXML private VBox greetingContainer;
     @FXML private StackPane quizQuestionsContainer;
     @FXML private StackPane quizListContainer1;
     @FXML private Label quizQuestionLabel;
@@ -59,11 +41,12 @@ public class QuizController {
     private QuizQuestionDAO quizQuestionDAO;
     private AnswerOptionDAO answerOptionDAO;
     private UserAnswerDAO userAnswerDAO;
+    //Extra added for quiz functionality
+    private int questionNumber;
+    private List<QuizQuestion> quizQuestions;
+    private Map<Integer, List<AnswerOption>> questionAnswers = new HashMap<>();
 
-    @FXML
-    public void initialize() {
 
-    }
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz) throws IllegalStateException {
         if (chosenQuiz == null) {
@@ -84,102 +67,205 @@ public class QuizController {
         }
     }
 
+    // Intialisation for assets(currently none but might need this)
+    @FXML
+    public void initialize() {
+        setupQuestions();
+        setupQuizListView();
+    }
+
+    //Error alert copy pasted from chat controller
+    public void showErrorAlert (String message){
+        // Create error alert object
+        Alert alert = new Alert(Alert.AlertType.ERROR, message);
+        alert.showAndWait();
+    }
+
+    //A function that places each question into a list to use later
+    private void setupQuestions(){
+        try {
+            //Get the questions
+            List<QuizQuestion> questions = quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
+
+            if (questions == null || questions.isEmpty()) {
+                showErrorAlert("No questions found for the selected quiz.");
+            }
+            questionListView.getItems().setAll(questions);
+
+            // For each question store its answers
+            for (int i = 0; i < quizQuestions.size(); i++) {
+                int questionNumber = i + 1;
+                QuizQuestion question = quizQuestions.get(i);
+                List<AnswerOption> options = answerOptionDAO.getAllQuestionAnswerOptions(
+                        currentQuiz.getMessageId(), questionNumber
+                );
+                questionAnswers.put(questionNumber, options);
+            }
+        } catch (SQLException e) {
+            showErrorAlert("Failed to load quiz questions: " + e.getMessage());
+        }
+    }
+
+    // same way its done in the chat sidebar, just without the delete functionality
+    private void setupQuizListView() {
+        questionListView.setCellFactory(listView -> new ListCell<QuizQuestion>() {
+            private final Button selectQuestion = new Button();
+            private final HBox container = new HBox(selectQuestion);
+
+            {
+                selectQuestion.setOnAction(event -> {
+                    QuizQuestion question = getItem();
+                    if (question != null) {
+                        questionNumber = getIndex() + 1;
+                        displayQuestion(questionNumber);
+                    }
+
+                });
+            }
+            @Override
+            protected void updateItem(QuizQuestion item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    selectQuestion.setText("Question " + (getIndex() + 1));
+                    setGraphic(selectQuestion);
+                }
+            }
+        });
+    }
+
+    //Display the questions on the buttons
+    private void displayQuestion(int questionNumber) {
+        QuizQuestion question = quizQuestions.get(questionNumber - 1);
+        quizQuestionLabel.setText(question.getQuestion());
+
+        // Get the answer options
+        List<AnswerOption> options = questionAnswers.get(questionNumber);
+        if (options == null || options.size() < 4) {
+            showErrorAlert("Answer options are missing");
+            return;
+        }
+
+        // Sort answer options
+        options.sort(Comparator.comparing(AnswerOption::getOption));
+
+        // Assign text
+        answerA.setText(options.get(0).getValue());
+        answerB.setText(options.get(1).getValue());
+        answerC.setText(options.get(2).getValue());
+        answerD.setText(options.get(3).getValue());
+    }
+
+    //Saving the User Answers
+    private void saveUserAnswer(int messageId, int attempt, int questionNumber, String answerOption) {
+        try {
+            UserAnswer newAnswer = new UserAnswer(messageId, attempt, questionNumber, answerOption);
+            userAnswerDAO.createUserAnswer(newAnswer);
+
+        } catch (SQLException e) {
+            System.err.println("Database error saving answer: " + e.getMessage());
+            showErrorAlert("Failed to save answer.");
+        }
+    }
+
+
     // Calculate the current attempt number for a specific question
-    private int calculateCurrentAttempt(int questionNumber) {
-        try {
-            return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
-        } catch (SQLException e) {
-            System.err.println("Failed to calculate current attempt: " + e.getMessage());
-            return -1; // This should trigger an exception when creating a new UserAnswer
-        }
-    }
-
-    // Retrieve a specific Quiz record
-    public Quiz getQuiz() {
-        try {
-            return quizDAO.getQuiz(currentQuiz.getMessageId());
-        } catch (SQLException e) {
-            System.err.println("Failed to read quiz: " + e.getMessage());
-            return null;
-        }
-    }
-
-    // Retrieve Quiz Question records for a specific Quiz
-    public List<QuizQuestion> getQuizQuestions() {
-        try {
-            return quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
-        } catch (SQLException e) {
-            System.err.println("Failed to read quiz questions: " + e.getMessage());
-            return null;
-        }
-    }
-
-    // Retrieve a specific Quiz Question record
-    public QuizQuestion getQuizQuestion(int questionNumber) {
-        try {
-            return quizQuestionDAO.getQuizQuestion(currentQuiz.getMessageId(), questionNumber);
-        } catch (SQLException e) {
-            System.err.println("Failed to read quiz question: " + e.getMessage());
-            return null;
-        }
-    }
-
-    // Retrieve Answer Option records for a specific Question
-    public List<AnswerOption> getQuestionAnswerOptions(int questionNumber) {
-        try {
-            return answerOptionDAO.getAllQuestionAnswerOptions(currentQuiz.getMessageId(), questionNumber);
-        } catch (SQLException e) {
-            System.err.println("Failed to read question answer options: " + e.getMessage());
-            return null;
-        }
-    }
-
-    // Retrieve a specific Answer Option record
-    public AnswerOption getQuestionAnswerOption(int questionNumber, String option) {
-        try {
-            return answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
-        } catch (SQLException e) {
-            System.err.println("Failed to read question answer option: " + e.getMessage());
-            return null;
-        }
-    }
-
-    // Create a new User Answer record using UI user input
-    public UserAnswer createNewUserAnswer(int questionNumber, String option) {
-        try {
-            int currentAttempt = calculateCurrentAttempt(questionNumber);
-            AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
-
-            if (answerOption == null) {
-                throw new SQLException("Invalid answer option was given");
+            private int calculateCurrentAttempt(int questionNumber) {
+                try {
+                    return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
+                } catch (SQLException e) {
+                    System.err.println("Failed to calculate current attempt: " + e.getMessage());
+                    return -1; // This should trigger an exception when creating a new UserAnswer
+                }
             }
 
-            UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
-            userAnswerDAO.createUserAnswer(userAnswer);
-            return userAnswer;
-        } catch (SQLException e) {
-            System.err.println("Failed to create user answer: " + e.getMessage());
-            return null;
-        }
-    }
+            // Retrieve a specific Quiz record
+            public Quiz getQuiz() {
+                try {
+                    return quizDAO.getQuiz(currentQuiz.getMessageId());
+                } catch (SQLException e) {
+                    System.err.println("Failed to read quiz: " + e.getMessage());
+                    return null;
+                }
+            }
 
-    // Retrieve a specific User Answer record
-    public UserAnswer getQuestionUserAnswer(int attempt, int questionNumber) {
-        try {
-            return userAnswerDAO.getUserQuestionAnswer(currentQuiz.getMessageId(), attempt, questionNumber);
-        } catch (SQLException e) {
-            System.err.println("Failed to read question user answer: " + e.getMessage());
-            return null;
-        }
-    }
+            // Retrieve Quiz Question records for a specific Quiz
+            public List<QuizQuestion> getQuizQuestions() {
+                try {
+                    return quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
+                } catch (SQLException e) {
+                    System.err.println("Failed to read quiz questions: " + e.getMessage());
+                    return null;
+                }
+            }
 
-    // Retrieve User Answer records for a specific Quiz
-    public List<UserAnswer> getQuizUserAnswers(int attempt) {
-        try {
-            return userAnswerDAO.getAllUserQuizAnswers(currentQuiz.getMessageId(), attempt);
-        } catch (SQLException e) {
-            System.err.println("Failed to read quiz user answers: " + e.getMessage());
-            return null;
+            // Retrieve a specific Quiz Question record
+            public QuizQuestion getQuizQuestion(int questionNumber) {
+                try {
+                    return quizQuestionDAO.getQuizQuestion(currentQuiz.getMessageId(), questionNumber);
+                } catch (SQLException e) {
+                    System.err.println("Failed to read quiz question: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            // Retrieve Answer Option records for a specific Question
+            public List<AnswerOption> getQuestionAnswerOptions(int questionNumber) {
+                try {
+                    return answerOptionDAO.getAllQuestionAnswerOptions(currentQuiz.getMessageId(), questionNumber);
+                } catch (SQLException e) {
+                    System.err.println("Failed to read question answer options: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            // Retrieve a specific Answer Option record
+            public AnswerOption getQuestionAnswerOption(int questionNumber, String option) {
+                try {
+                    return answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
+                } catch (SQLException e) {
+                    System.err.println("Failed to read question answer option: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            // Create a new User Answer record using UI user input
+            public UserAnswer createNewUserAnswer(int questionNumber, String option) {
+                try {
+                    int currentAttempt = calculateCurrentAttempt(questionNumber);
+                    AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
+
+                    if (answerOption == null) {
+                        throw new SQLException("Invalid answer option was given");
+                    }
+
+                    UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
+                    userAnswerDAO.createUserAnswer(userAnswer);
+                    return userAnswer;
+                } catch (SQLException e) {
+                    System.err.println("Failed to create user answer: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            // Retrieve a specific User Answer record
+            public UserAnswer getQuestionUserAnswer(int attempt, int questionNumber) {
+                try {
+                    return userAnswerDAO.getUserQuestionAnswer(currentQuiz.getMessageId(), attempt, questionNumber);
+                } catch (SQLException e) {
+                    System.err.println("Failed to read question user answer: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            // Retrieve User Answer records for a specific Quiz
+            public List<UserAnswer> getQuizUserAnswers(int attempt) {
+                try {
+                    return userAnswerDAO.getAllUserQuizAnswers(currentQuiz.getMessageId(), attempt);
+                } catch (SQLException e) {
+                    System.err.println("Failed to read quiz user answers: " + e.getMessage());
+                    return null;
+                }
+            }
         }
-    }
-}
