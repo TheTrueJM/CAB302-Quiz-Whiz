@@ -11,24 +11,39 @@ import java.util.Arrays;
 public final class Utils {
     // Generic function that loads fxml page and controller class
     // TODO: Move to accessible place
-    public static <T> void loadPage(String fileName, Class<T> controllerClass, Stage stage, Object[] params){
+    public static <T> void loadPage(String fileName, Class<T> controllerClass, Stage stage, Object[] params) {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 QuizWhizApplication.class.getResource(fileName)
         );
 
         try {
-            // Get the first constructor
-            Constructor<?> constructor = controllerClass.getDeclaredConstructors()[0];
-            Class<?>[] paramTypes = constructor.getParameterTypes();
+            // Find matching constructor
+            Constructor<?> matchingConstructor = null;
+            for (Constructor<?> constructor : controllerClass.getDeclaredConstructors()) {
+                Class<?>[] paramTypes = constructor.getParameterTypes();
+                if (paramTypes.length == params.length) {
+                    boolean matches = true;
+                    for (int i = 0; i < paramTypes.length; i++) {
+                        if (params[i] != null && !paramTypes[i].isAssignableFrom(params[i].getClass())) {
+                            matches = false;
+                            break;
+                        }
+                    }
+                    if (matches) {
+                        matchingConstructor = constructor;
+                        break;
+                    }
+                }
+            }
 
-            // Validate parameter count
-            if (paramTypes.length != params.length) {
-                throw new RuntimeException("Parameter count mismatch for " + controllerClass.getName());
+            // Validate constructor found
+            if (matchingConstructor == null) {
+                throw new RuntimeException("No matching constructor found for " + controllerClass.getName());
             }
 
             // Instantiate the controller
-            constructor.setAccessible(true);
-            T controller = (T) constructor.newInstance(params);
+            matchingConstructor.setAccessible(true);
+            T controller = (T) matchingConstructor.newInstance(params);
             fxmlLoader.setController(controller);
 
             // Load the FXML and set the scene
