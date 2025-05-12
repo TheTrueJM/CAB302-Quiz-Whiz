@@ -177,7 +177,7 @@ public class QuizController {
     //Submit Answers
     private void submitAnswers(){
         int messageId = currentQuiz.getMessageId();
-        int attempt = 1;  // Later you can call calculateCurrentAttempt() per question if needed
+        int attempt = 1;  //Hardcoded until that system is explained
 
         try {
             saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
