@@ -44,11 +44,11 @@ public class QuizController {
     private UserAnswerDAO userAnswerDAO;
     //Extra added for quiz functionality
     private int questionNumber;
-    private List<QuizQuestion> quizQuestions;
+    private List<QuizQuestion> quizQuestions = new ArrayList<>();
     //For question answers
-    private Map<Integer, List<AnswerOption>> answerOptions = new HashMap<>();
+    private final Map<Integer, List<AnswerOption>> answerOptions = new HashMap<>();
     //For User Answers
-    private Map<Integer, String> questionAnswers = new HashMap<>();
+    private final Map<Integer, String> questionAnswers = new HashMap<>();
 
 
 
@@ -89,22 +89,19 @@ public class QuizController {
     //A function that places each question into a list to use later
     private void setupQuestions(){
         try {
-            //Get the questions
-            List<QuizQuestion> questions = quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
-
-            if (questions == null || questions.isEmpty()) {
+            quizQuestions = quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
+            if (quizQuestions == null || quizQuestions.isEmpty()) {
                 showErrorAlert("No questions found for the selected quiz.");
+                return;
             }
-            questionListView.getItems().setAll(questions);
 
-            // For each question store its answers
+            questionListView.getItems().setAll(quizQuestions);
+
             for (int i = 0; i < quizQuestions.size(); i++) {
-                int questionNumber = i + 1;
-                QuizQuestion question = quizQuestions.get(i);
+                int questionNum = i + 1;
                 List<AnswerOption> options = answerOptionDAO.getAllQuestionAnswerOptions(
-                        currentQuiz.getMessageId(), questionNumber
-                );
-                answerOptions.put(questionNumber, options);
+                        currentQuiz.getMessageId(), questionNum);
+                answerOptions.put(questionNum, options);
             }
         } catch (SQLException e) {
             showErrorAlert("Failed to load quiz questions: " + e.getMessage());
