@@ -37,6 +37,14 @@
     -fx-padding: 8;
 }
 
+.download-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.download-button:hover {
+    -fx-opacity: 0.7;
+}
+
 .chat-list .scroll-bar:horizontal .increment-arrow,
 .chat-list .scroll-bar:horizontal .decrement-arrow,
 .chat-list .scroll-bar:horizontal .increment-button,

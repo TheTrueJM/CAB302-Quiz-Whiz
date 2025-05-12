@@ -1,12 +1,12 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
+import javafx.concurrent.Task;
 import javafx.util.Duration;
 
 public class ChatController {
@@ -47,7 +48,6 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
-    @FXML private Node tempThinkingMessageNode;
     @FXML private Timeline thinkingAnimation;
 
     private final SQLiteConnection db;
@@ -60,7 +60,6 @@ public class ChatController {
     private final AnswerOptionDAO answerOptionDAO;
     private boolean isQuiz;
     private final AIController aiController;
-    private boolean isGenerating;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException, IOException {
         if (authenticatedUser == null) {
@@ -75,10 +74,7 @@ public class ChatController {
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
         this.isQuiz = false;
-        this.isGenerating = false;
         this.aiController = new AIController();
-        this.tempThinkingMessageNode = null;
-        this.thinkingAnimation = null;
     }
 
     @FXML
@@ -174,6 +170,7 @@ public class ChatController {
                         }
                     }
                 });
+
             }
             @Override
             protected void updateItem(Chat chat, boolean empty) {
@@ -225,7 +222,8 @@ public class ChatController {
             greetingContainer.setManaged(false);
             greetingContainer.setMouseTransparent(true);
         }
-}
+    }
+
     public void refreshChatListView () {
         try {
             Chat selectedChat = getSelectedChat();
@@ -296,50 +294,29 @@ public class ChatController {
 
         HBox wrapper = new HBox(horizontalContainer);
         wrapper.setFillHeight(false);
-        if (message.getContent().equals("Thinking...")) {
-            styleThinkingMessage(wrapper, horizontalContainer);
-        }
-        else if (message.getFromUser()) {
-            styleUserMessage(wrapper, horizontalContainer);
+
+        if (message.getFromUser()) {
+            addUserMessage(wrapper, horizontalContainer);
         } else if (!message.getFromUser() && message.getIsQuiz()) {
             addQuizMessage(wrapper, horizontalContainer, messageLabel, message, verticalContainer);
         } else {
-            styleAIMessage(wrapper, horizontalContainer);
+            addAIMessage(wrapper, horizontalContainer);
         }
 
         HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
         return wrapper;
     }
 
-    private void styleUserMessage(HBox wrapper, HBox horizontalContainer) {
+    private void addUserMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_RIGHT);
         horizontalContainer.getStyleClass().add("user-message");
         horizontalContainer.setAlignment(Pos.CENTER_RIGHT);
     }
 
-    private void styleAIMessage(HBox wrapper, HBox horizontalContainer) {
+    private void addAIMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_LEFT);
         horizontalContainer.getStyleClass().add("ai-message");
         horizontalContainer.setAlignment(Pos.CENTER_LEFT);
-    }
-
-    private void styleThinkingMessage(HBox wrapper, HBox horizontalContainer) {
-        wrapper.setAlignment(Pos.CENTER_LEFT);
-        horizontalContainer.getStyleClass().add("thinking-message");
-        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
-        scrollToBottom();
-
-        Label messageLabel = (Label) ((VBox) horizontalContainer.getChildren().getFirst()).getChildren().getFirst();
-
-        thinkingAnimation = new Timeline(
-                new KeyFrame(Duration.seconds(0.0), e -> messageLabel.setText("Thinking")),
-                new KeyFrame(Duration.seconds(0.5), e -> messageLabel.setText("Thinking.")),
-                new KeyFrame(Duration.seconds(1.0), e -> messageLabel.setText("Thinking..")),
-                new KeyFrame(Duration.seconds(1.5), e -> messageLabel.setText("Thinking..."))
-
-        );
-        thinkingAnimation.setCycleCount(Timeline.INDEFINITE);
-        thinkingAnimation.play();
     }
 
     private void addQuizMessage(HBox wrapper, HBox horizontalContainer, Label messageLabel, Message message, VBox verticalContainer) {
@@ -363,15 +340,58 @@ public class ChatController {
 
         Node messageNode = createMessageNode(message);
         chatMessagesVBox.getChildren().add(messageNode);
-        scrollToBottom();
+
+        // listener so that scrollpae auto-scrolls
+        ChangeListener<Number> heightListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(javafx.beans.value.ObservableValue<? extends Number> obs, Number oldHeight, Number newHeight) {
+                if (newHeight.doubleValue() > oldHeight.doubleValue()) {
+                    chatScrollPane.setVvalue(1.0);
+                    chatMessagesVBox.heightProperty().removeListener(this);
+                }
+            }
+        };
+
+        chatMessagesVBox.heightProperty().addListener(heightListener);
+
+        Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                 chatScrollPane.setVvalue(1.0);
+            });
+            chatMessagesVBox.heightProperty().removeListener(heightListener);
+        });
     }
 
-    private void scrollToBottom() {
-        Platform.runLater(() -> {
-            // Force layout to update VBox height
-            chatMessagesVBox.layout();
-            chatScrollPane.setVvalue(1.0);
-        });
+    private Node createThinkingNode() {
+        Label thinkingLabel = new Label("Thinking...");
+        thinkingLabel.setWrapText(true);
+        thinkingLabel.setMaxWidth(450);
+        thinkingLabel.setTextFill(Color.BLACK);
+
+        thinkingAnimation = new Timeline(
+                new KeyFrame(Duration.seconds(0.0), e -> thinkingLabel.setText("Thinking")),
+                new KeyFrame(Duration.seconds(0.5), e -> thinkingLabel.setText("Thinking.")),
+                new KeyFrame(Duration.seconds(1.0), e -> thinkingLabel.setText("Thinking..")),
+                new KeyFrame(Duration.seconds(1.5), e -> thinkingLabel.setText("Thinking...")),
+                new KeyFrame(Duration.seconds(2), e -> thinkingLabel.setText("Thinking"))
+
+        );
+        thinkingAnimation.setCycleCount(Timeline.INDEFINITE);
+        thinkingAnimation.play();
+
+        VBox verticalContainer = new VBox(thinkingLabel);
+        verticalContainer.setAlignment(Pos.CENTER);
+
+        HBox horizontalContainer = new HBox(verticalContainer);
+        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.setAlignment(Pos.CENTER_LEFT);
+
+        HBox wrapper = new HBox(horizontalContainer);
+        wrapper.setAlignment(Pos.CENTER_LEFT);
+        wrapper.setFillHeight(false);
+
+        HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
+        return wrapper;
     }
 
     private void handleTakeQuiz(ActionEvent actionEvent, Message message) {
@@ -399,7 +419,7 @@ public class ChatController {
         messageInputField.setOnAction(event -> {
             Chat selectedChat = getSelectedChat();
 
-        if (!isOllamaRunning()) {
+            if (!isOllamaRunning()) {
                 showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
                 return;
             } else if (!hasModel()) {
@@ -417,35 +437,39 @@ public class ChatController {
                 return;
             }
             try {
-                messageInputField.setDisable(true);
                 Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
                 messageInputField.clear();
                 addMessage(userMessage);
-                generateChatMessageResponse(userMessage);
-            } catch (SQLException | NoSuchElementException | IllegalArgumentException e) {
-                Platform.runLater(() -> {
-                    showErrorAlert("Failed to send message: " + e.getMessage());
-                    removeTempThinkingMessage();
+
+                Node thinkingNode = createThinkingNode();
+                chatMessagesVBox.getChildren().add(thinkingNode);
+                messageInputField.setDisable(true);
+
+                Task<Message> aiResponseTask = new Task<Message>() {
+                    @Override
+                    protected Message call() throws Exception {
+                        return generateAIResponse(userMessage);
+                    }
+                };
+
+                aiResponseTask.setOnSucceeded(e -> {
+                    Message aiResponse = aiResponseTask.getValue();
+                    chatMessagesVBox.getChildren().remove(thinkingNode);
+                    addMessage(aiResponse);
                     messageInputField.setDisable(false);
                 });
+
+                aiResponseTask.setOnFailed(e -> {
+                    showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
+                    chatMessagesVBox.getChildren().remove(thinkingNode);
+                    messageInputField.setDisable(false);
+                });
+
+                new Thread(aiResponseTask).start();
+            } catch (SQLException e) {
+                showErrorAlert("Failed to send message: " + e.getMessage());
             }
         });
-    }
-
-    private void addTempThinkingMessage() {
-        // Create a temporary message (not saved to database)
-        Message thinkingMessage = new Message(getSelectedChat().getId(), "Thinking...", false, false);
-        tempThinkingMessageNode = createMessageNode(thinkingMessage);
-        chatMessagesVBox.getChildren().add(tempThinkingMessageNode);
-        chatScrollPane.setVvalue(1.0);
-    }
-
-
-    private void removeTempThinkingMessage() {
-        if (tempThinkingMessageNode != null) {
-            chatMessagesVBox.getChildren().remove(tempThinkingMessageNode);
-            tempThinkingMessageNode = null;
-        }
     }
 
     private void editChatNameAction() {
@@ -558,7 +582,7 @@ public class ChatController {
 
     /*
      * =========================================================================
-     *                          Chat CRUD Operations
+     *                          CRUD Operations
      * =========================================================================
      */
 
@@ -653,12 +677,6 @@ public class ChatController {
     }
 
 
-    /*
-     * =========================================================================
-     *                          Message CRUD Operations
-     * =========================================================================
-     */
-
     // Create a Message object using UI user input
     public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) throws NoSuchElementException, SQLException {
         if (validateNullOrEmpty(content)) {
@@ -675,86 +693,47 @@ public class ChatController {
 
     // Create a Message object from the AI's response output using a user's Message object as input
     // If AI generation fails, create the Message object with default feedback content
-    public void generateChatMessageResponse(Message userMessage) throws SQLException, IllegalArgumentException, NoSuchElementException {
+    public Message generateChatMessageResponse(Message userMessage) throws IllegalArgumentException, NoSuchElementException, SQLException {
         if (!userMessage.getFromUser()) {
             throw new IllegalArgumentException("Message must be from user");
         }
 
-        isGenerating = true;
-        Platform.runLater(this::addTempThinkingMessage);
+        validateChatExistsForCurrentUser(userMessage.getChatId());
 
-        try {
-            validateChatExistsForCurrentUser(userMessage.getChatId());
-            handleAIResponseGeneration(userMessage, getSelectedChat());
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            handleGenerationError(e.getMessage());
-            throw e;
+        Message aiResponse = generateAIResponse(userMessage);
+        return aiResponse;
+    }
+
+    private Message generateAIResponse(Message userMessage) throws NoSuchElementException, SQLException {
+        /* Preprocess Chat */
+        boolean isQuiz = userMessage.getIsQuiz();
+        int chatID = userMessage.getChatId();
+        Chat chatConfig = getChat(userMessage.getChatId());
+        List<Message> chatHistory = getChatMessages(userMessage.getChatId());
+
+        /* Generation */
+        ModelResponseFormat aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
+        Message aiResponse = new Message(chatID, aiMessageContent.response, false, isQuiz);
+
+        /* Automatically add message to database */
+        messageDAO.createMessage(aiResponse);
+
+        if (aiResponse.getIsQuiz()) {
+            createNewQuiz(aiMessageContent, aiResponse);
         }
-    }
 
-    /* ===================== AI Generation Process  ===================== */
-
-    private void handleAIResponseGeneration(Message userMessage, Chat chat){
-        generateAIResponse(userMessage, chat)
-                .thenAcceptAsync(this::processAIResponse, Platform::runLater)
-                .exceptionally(throwable -> {
-                    handleGenerationError(throwable.getMessage());
-                    return null;
-                });
-    }
-
-    private CompletableFuture<Message> generateAIResponse(Message userMessage, Chat chat) {
-        return aiController.generateResponse(getChatMessages(userMessage.getChatId()), chat, userMessage.getIsQuiz())
-                .thenApply(aiMessageContent -> new Message(userMessage.getChatId(), aiMessageContent, false, userMessage.getIsQuiz()));
-    }
-
-    private void processAIResponse(Message aiResponse) {
-        try {
-            messageDAO.createMessage(aiResponse);
-            addMessage(aiResponse);
-            if (aiResponse.getIsQuiz()) {
-                createNewQuiz(aiResponse.getContent(), aiResponse);
-            }
-            isGenerating = false;
-            removeTempThinkingMessage();
-            messageInputField.setDisable(false);
-        } catch (SQLException e) {
-            showErrorAlert("Failed to save AI response: " + e.getMessage());
-            isGenerating = false;
-            removeTempThinkingMessage();
-            messageInputField.setDisable(false);
-        }
-    }
-
-    private void handleGenerationError(String errorMessage) {
-        Platform.runLater(() -> {
-            showErrorAlert("Failed to generate AI response: " + errorMessage);
-            isGenerating = false;
-            removeTempThinkingMessage();
-            messageInputField.setDisable(false);
-        });
+        return aiResponse;
     }
 
     // Retrieve Message records for a specific Chat
-    public List<Message> getChatMessages(int chatId) {
-        try {
-            validateChatExistsForCurrentUser(chatId);
-            return messageDAO.getAllChatMessages(chatId);
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("Chat doesn't exist");
-        } catch (SQLException e) {
-            throw new IllegalArgumentException("Failed to get chat messages");
-        }
+    public List<Message> getChatMessages(int chatId) throws NoSuchElementException, SQLException {
+        validateChatExistsForCurrentUser(chatId);
+        return messageDAO.getAllChatMessages(chatId);
     }
 
-    /*
-     * =========================================================================
-     *                          Quiz CRUD Operations
-     * =========================================================================
-     */
 
     // Create a Quiz object from the AI's response message if it is a quiz message
-    public Quiz createNewQuiz(String quizContent, Message responseMessage) throws IllegalArgumentException, NoSuchElementException, SQLException {
+    public Quiz createNewQuiz(ModelResponseFormat response, Message responseMessage) throws IllegalArgumentException, NoSuchElementException, SQLException {
         if (responseMessage == null) {
             throw new IllegalArgumentException("Quiz must be for a message");
         }
@@ -764,18 +743,21 @@ public class ChatController {
         if (responseMessage.getFromUser()){
             throw new IllegalArgumentException("Quiz cannot be for a user message");
         }
+        if (!AIController.validateQuizResponse(response) || response.getQuizTitle() == null) {
+            throw new IllegalArgumentException("Invalid quiz content");
+        }
 
-        // TODO: Implement proper invalid quiz content format checking
-//        if (!quizContent.equals("[Valid Quiz Content Format]")){
-//            throw new IllegalArgumentException("Invalid quiz content format");
-//        }
-
-        // TODO: Depending on AI response quizContent extract name
-        String quizName = "Computer Science Quiz";
+        String quizName = response.getQuizTitle();
         Chat currentChat = getChat(responseMessage.getChatId());
         Quiz newQuiz = new Quiz(responseMessage.getId(), quizName, currentChat.getQuizDifficulty());
         quizDAO.createQuiz(newQuiz);
 
+        for (Question questionFormat : response.getQuizQuestions()) {
+            QuizQuestion question = createNewQuizQuestion(questionFormat.getQuestionContent(), newQuiz);
+            for (Option answerOptionFormat : questionFormat.getOptions()) {
+                createNewQuestionAnswerOption(answerOptionFormat, question);
+            }
+        }
         return newQuiz;
     }
 
@@ -785,9 +767,8 @@ public class ChatController {
             throw new IllegalArgumentException("Question must be for a quiz");
         }
 
-        // TODO: Implement proper invalid quiz question content format checking
-        if (!questionContent.equals("[Valid Quiz Question Content Format]")){
-            throw new IllegalArgumentException("Invalid quiz question content format");
+        if (validateNullOrEmpty(questionContent)) {
+            throw new IllegalArgumentException("Question content cannot be empty");
         }
 
         // TODO: Depending on AI response quizContent extract number from questionContent or assign dynamically
@@ -801,44 +782,47 @@ public class ChatController {
     }
 
     // Create an AnswerOption object from the AI's response message if it is a quiz message
-    public AnswerOption createNewQuestionAnswerOption(String answerOptionContent, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
+    public AnswerOption createNewQuestionAnswerOption(Option option, QuizQuestion quizQuestion) throws IllegalStateException, IllegalStateException, IllegalArgumentException, SQLException{
         if (quizQuestion == null) {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
         }
 
-        // TODO: Implement proper invalid question answer option content format checking
-        if (!answerOptionContent.equals("[Valid Quiz Question Answer Option Content Format]")){
-            throw new IllegalArgumentException("Invalid question answer option content format");
+        if (validateNullOrEmpty(option.getOptionLetter())) {
+            throw new IllegalArgumentException("Answer option letter cannot be empty");
         }
 
-        // TODO: Depending on AI response quizContent extract option, value and correctness
-        String option = "Option";
-        String value = "Answer option statement";
-        boolean isAnswer = true;
+        if (validateNullOrEmpty(option.getOptionText())) {
+            throw new IllegalArgumentException("Answer option text cannot be empty");
+        }
 
-        if (answerOptionDAO.getQuestionAnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option) != null) {
+        String optionLetter = option.getOptionLetter();
+        String optionValue = option.getOptionText();
+        boolean isAnswer = option.isAnswer();
+
+        if (answerOptionDAO.getQuestionAnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), optionLetter) != null) {
             throw new IllegalStateException("Answer option already exists");
         }
 
-        AnswerOption answerOption = new AnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), option, value, isAnswer);
+        AnswerOption answerOption = new AnswerOption(quizQuestion.getMessageId(), quizQuestion.getNumber(), optionLetter, optionValue, isAnswer);
         answerOptionDAO.createAnswerOption(answerOption);
 
         return answerOption;
     }
 
+    public void setQuizMode(boolean quizMode) {
+        this.isQuiz = quizMode;
+    }
 
-    /*
-     * =========================================================================
-     *                          Utility Methods
-     * =========================================================================
-     */
+    public Quiz getQuizForMessage(int messageId) throws SQLException, NoSuchElementException {
+        Quiz quiz = quizDAO.getQuiz(messageId);
+        if (quiz == null) {
+            return null;
+        }
+        return quiz;
+    }
 
     private boolean validateNullOrEmpty(String value) {
         return value == null || value.trim().isEmpty();
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
     }
 
 }

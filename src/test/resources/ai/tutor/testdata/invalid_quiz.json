@@ -1,0 +1,10 @@
+{
+  "response": "invalid format",
+  "isError": false,
+  "quizzes": [
+    {
+      "quizTitle": "",
+      "questions": []
+    }
+  ]
+}

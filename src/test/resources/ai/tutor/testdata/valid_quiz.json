@@ -1,0 +1,63 @@
+{
+  "response": "Here is a quiz about Java Programming",
+  "isError": false,
+  "quizzes": [
+    {
+      "quizTitle": "Java Programming Basics",
+      "questions": [
+        {
+          "questionNumber": 1,
+          "questionContent": "Which of the following is a valid Java variable name?",
+          "options": [
+            {
+              "optionLetter": "A",
+              "optionText": "2variable",
+              "isAnswer": false
+            },
+            {
+              "optionLetter": "B",
+              "optionText": "_myVariable",
+              "isAnswer": true
+            },
+            {
+              "optionLetter": "C",
+              "optionText": "class",
+              "isAnswer": false
+            },
+            {
+              "optionLetter": "D",
+              "optionText": "my-variable",
+              "isAnswer": false
+            }
+          ]
+        },
+        {
+          "questionNumber": 2,
+          "questionContent": "What is the output of System.out.println(2 + 3 + \"4\")?",
+          "options": [
+            {
+              "optionLetter": "A",
+              "optionText": "9",
+              "isAnswer": false
+            },
+            {
+              "optionLetter": "B",
+              "optionText": "234",
+              "isAnswer": false
+            },
+            {
+              "optionLetter": "C",
+              "optionText": "54",
+              "isAnswer": true
+            },
+            {
+              "optionLetter": "D",
+              "optionText": "Error",
+              "isAnswer": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
