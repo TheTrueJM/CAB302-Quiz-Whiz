@@ -4,7 +4,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -13,10 +12,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
 
-<BorderPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
-        <URL value="@styles.css" />
+        <URL value="@ChatStyles.css" />
     </stylesheets>
     <!-- Top Region -->
     <top>
@@ -79,7 +79,7 @@
                         </Button>
                      </children>
                   </StackPane>
-                        <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" prefWidth="421.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@styles.css" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" prefWidth="421.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>
                               <TextField prefHeight="31.0" prefWidth="127.0" promptText="Search..." style="-fx-background-radius: 10 0 0 10; -fx-padding: 7 0 7 8; -fx-background-color: white;" HBox.hgrow="NEVER" />
@@ -146,7 +146,7 @@
                   <VBox fx:id="greetingContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: white;">
                      <children>
                            <TextField fx:id="welcomeTitle" alignment="CENTER" editable="false" maxWidth="650.0" prefHeight="67.0" prefWidth="500.0" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: black; -fx-background-insets: 0; -fx-background-color: white;" text="Welcome, X" visible="false" VBox.vgrow="NEVER" />
-                           <Button fx:id="configureChat" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" style="-fx-font-size: 12; -fx-border-color: black; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1; -fx-padding: 0; -fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold;" styleClass="createChat2" text="Create a Chat" visible="false" />
+                           <Button fx:id="addNewChatMain" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" style="-fx-font-size: 12; -fx-border-color: black; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1; -fx-padding: 0; -fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold;" styleClass="createChat2" text="Create a Chat" visible="false" />
                      </children>
                   </VBox>
                </children>

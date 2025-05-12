@@ -38,7 +38,7 @@ public class ChatController {
     @FXML private TextField chatNameField;
     @FXML private TextField messageInputField;
     @FXML private TextField noChatsField;
-    @FXML private Button configureChat;
+    @FXML private Button addNewChatMain;
     @FXML private TextField welcomeTitle;
     @FXML private Button logoutButton;
     @FXML private Button chatModeButton;
@@ -207,7 +207,7 @@ public class ChatController {
         if (getSelectedChat() == null) {
             editChatName.setVisible(false);
             chatSettingsButton.setVisible(false);
-            configureChat.setVisible(true);
+            addNewChatMain.setVisible(true);
             welcomeTitle.setVisible(true);
             welcomeTitle.setText("Welcome, " + currentUser.getUsername());
             greetingContainer.setVisible(true);
@@ -216,7 +216,7 @@ public class ChatController {
         } else {
             editChatName.setVisible(true);
             chatSettingsButton.setVisible(true);
-            configureChat.setVisible(false);
+            addNewChatMain.setVisible(false);
             welcomeTitle.setVisible(false);
             greetingContainer.setVisible(false);
             greetingContainer.setManaged(false);
@@ -329,7 +329,7 @@ public class ChatController {
         takeQuizButton.getStyleClass().add("takeQuizButton");
         VBox.setMargin(takeQuizButton, new Insets(6, 0, 0, 0));
         takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
-        verticalContainer.getChildren().add(takeQuizButton);;
+        verticalContainer.getChildren().add(takeQuizButton);
     }
 
     private void addMessage(Message message) {
@@ -383,7 +383,7 @@ public class ChatController {
         verticalContainer.setAlignment(Pos.CENTER);
 
         HBox horizontalContainer = new HBox(verticalContainer);
-        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.getStyleClass().add("thinking-message");
         horizontalContainer.setAlignment(Pos.CENTER_LEFT);
 
         HBox wrapper = new HBox(horizontalContainer);
@@ -503,7 +503,7 @@ public class ChatController {
     // Set up button that activates the ability to edit the chat name
     private void setupActivateEdit() {
         editChatName.setOnAction(actionEvent ->  {
-            // TODO: Refactor these into class in styles.css and change the css class instead
+            // TODO: Refactor these into class in ChatStyles.css and change the css class instead
             editChatName.setVisible(false);
             chatNameField.setOpacity(0.8);
             chatNameField.setEditable(true);
@@ -518,6 +518,8 @@ public class ChatController {
             loadChatSettings(actionEvent, "Create");
         });
     }
+
+
 
     // Loads settings of specfic chat
     private void setupChatSettingsButton() {
