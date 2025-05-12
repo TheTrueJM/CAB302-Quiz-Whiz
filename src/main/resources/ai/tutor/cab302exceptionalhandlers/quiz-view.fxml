@@ -93,20 +93,22 @@
                     <!-- Chat Section -->
                     <ScrollPane fx:id="quizScrollPane" fitToWidth="true" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
                         <content>
-                            <VBox fx:id="quizQuestion" spacing="10" style="-fx-background-color: #98E4CF;">
-                                <Label fx:id="quizQuestionLabel" text="Placeholder" style="-fx-background-color: #98E4CF;" />
-                            </VBox>
+                            <VBox spacing="10">
+                                <VBox fx:id="quizQuestion" spacing="10" style="-fx-background-color: #98E4CF;">
+                                    <Label fx:id="quizQuestionLabel" text="Placeholder" style="-fx-background-color: #98E4CF;" />
+                                </VBox>
 
-                            <VBox fx:id="quizAnswers" style="-fx-background-color: #CBD6FF; -fx-border-color: #000000;" spacing="10">
-                                <Label text="Please select one of the options" style="-fx-background-color: #CBD6FF;" />
-                                <HBox>
-                                    <Button fx:id="answerA"  text="A - Placeholder" style="-fx-padding: 10;" alignment="CENTER_LEFT" />
-                                    <Button fx:id="answerB"  text="B - Placeholder" style="-fx-padding: 10;" alignment="CENTER_RIGHT" />
-                                </HBox>
-                                <HBox>
-                                    <Button fx:id="answerC"  text="C - Placeholder" style="-fx-padding: 10;" alignment="BOTTOM_LEFT" />
-                                    <Button fx:id="answerD"  text="D - Placeholder" style="-fx-padding: 10;" alignment="BOTTOM_RIGHT" />
-                                </HBox>
+                                <VBox fx:id="quizAnswers" style="-fx-background-color: #CBD6FF; -fx-border-color: #000000;" spacing="10">
+                                    <Label text="Please select one of the options" style="-fx-background-color: #CBD6FF;" />
+                                    <HBox>
+                                        <Button fx:id="answerA"  text="A - Placeholder" style="-fx-padding: 10;" alignment="CENTER_LEFT" />
+                                        <Button fx:id="answerB"  text="B - Placeholder" style="-fx-padding: 10;" alignment="CENTER_RIGHT" />
+                                    </HBox>
+                                    <HBox>
+                                        <Button fx:id="answerC"  text="C - Placeholder" style="-fx-padding: 10;" alignment="BOTTOM_LEFT" />
+                                        <Button fx:id="answerD"  text="D - Placeholder" style="-fx-padding: 10;" alignment="BOTTOM_RIGHT" />
+                                    </HBox>
+                                </VBox>
                             </VBox>
                         </content>
                     </ScrollPane>
