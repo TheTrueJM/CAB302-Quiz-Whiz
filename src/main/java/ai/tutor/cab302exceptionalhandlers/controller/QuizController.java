@@ -1,11 +1,17 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -77,6 +83,7 @@ public class QuizController {
     public void initialize() {
         setupQuestions();
         setupQuizListView();
+        //setupReturnButton();
     }
 
     //Error alert copy pasted from chat controller
@@ -265,6 +272,23 @@ public class QuizController {
             }
         })
     ;}
+
+//    //Return to chat
+//    private void setupReturnButton() {
+//        returnButton.setOnAction(actionEvent -> {
+//            FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("chat-view.fxml"));
+//            try {
+//                ChatController controller = new ChatController(db);
+//                fxmlLoader.setController(controller);
+//                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+//                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+//                stage.setScene(scene);
+//            } catch (IOException | SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+
 
 
     // Calculate the current attempt number for a specific question
