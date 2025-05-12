@@ -38,6 +38,27 @@
     -fx-border-radius: 5;
 }
 
+.option-button-toggled {
+    -fx-padding: 10;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-border-radius: 2 10 10 2;
+    -fx-background-radius: 2 10 10 2;
+    -fx-background-color: #6C95DF;
+    -fx-text-fill: white;
+    -fx-border-color: black;
+}
+
+.option-button{
+    -fx-padding: 10;
+    -fx-background-color: white;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-border-radius: 2 10 10 2;
+    -fx-background-radius: 2 10 10 2;
+    -fx-border-color: black;
+}
+
 .chat-mode-disabled, .quiz-mode-disabled {
     -fx-background-color: white;
     -fx-text-fill: black;
@@ -51,7 +72,7 @@
 .chat-mode-active:hover, .chat-mode-disabled:hover .chat-mode-disabled:hover, .quiz-mode-disabled:hover,
  .return-button:hover, .search-button:hover, .addChatButton:hover, .confirmEdit:hover, .editName:hover,
  .userDetailsButton:hover, .logoutButton:hover, .setting-button:hover, .upload-button:hover, .chat-selector:hover,
- .button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover {
+ .button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover, optionButton:hover{
     -fx-opacity: 0.8;
     -fx-transition: opacity 0.2s ease-in-out;
     -fx-cursor: hand;

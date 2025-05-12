@@ -300,7 +300,7 @@ public class AIController {
                 }
             }
 
-            response = formattedResponse.toString().replaceAll("\\n\\s*\\n+", "\n").trim();
+            response = formattedResponse.toString().replaceAll("\n", "").trim();
 
             if (isQuizMode) {
                 return processQuizResponse(response);

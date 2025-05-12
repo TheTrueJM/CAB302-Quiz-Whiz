@@ -158,6 +158,29 @@ public class QuizController {
         answerC.setText(options.get(2).getValue());
         answerD.setText(options.get(3).getValue());
 
+        // Reset button styles
+        Button[] answerButtons = {answerA, answerB, answerC, answerD};
+        for (Button btn : answerButtons) {
+            btn.getStyleClass().removeAll("option-button", "option-button-toggled");
+            btn.getStyleClass().add("option-button");
+        }
+
+        // Restore toggled state if an answer was previously selected
+        String selectedAnswer = questionAnswers.get(questionNumber);
+        if (selectedAnswer != null) {
+            Button selectedButton = switch (selectedAnswer) {
+                case "A" -> answerA;
+                case "B" -> answerB;
+                case "C" -> answerC;
+                case "D" -> answerD;
+                default -> null;
+            };
+            if (selectedButton != null) {
+                selectedButton.getStyleClass().remove("option-button");
+                selectedButton.getStyleClass().add("option-button-toggled");
+            }
+        }
+
         answerA.setOnAction(e -> registerAnswer(questionNumber,"A"));
         answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
         answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
@@ -169,6 +192,26 @@ public class QuizController {
     //register the answers to map
     private void registerAnswer(int questionNumber, String answerOption){
         questionAnswers.put(questionNumber, answerOption);
+
+        // Reset styles for all buttons
+        Button[] answerButtons = {answerA, answerB, answerC, answerD};
+        for (Button btn : answerButtons) {
+            btn.getStyleClass().removeAll("option-button", "option-button-toggled");
+            btn.getStyleClass().add("option-button");
+        }
+
+        // Apply toggled style to the selected button
+        Button selectedButton = switch (answerOption) {
+            case "A" -> answerA;
+            case "B" -> answerB;
+            case "C" -> answerC;
+            case "D" -> answerD;
+            default -> null;
+        };
+        if (selectedButton != null) {
+            selectedButton.getStyleClass().remove("option-button");
+            selectedButton.getStyleClass().add("option-button-toggled");
+        }
     }
 
     //Submit Answers
