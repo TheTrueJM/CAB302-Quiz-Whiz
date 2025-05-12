@@ -44,7 +44,11 @@ public class QuizController {
     //Extra added for quiz functionality
     private int questionNumber;
     private List<QuizQuestion> quizQuestions;
-    private Map<Integer, List<AnswerOption>> questionAnswers = new HashMap<>();
+    //For question answers
+    private Map<Integer, List<AnswerOption>> answerOptions = new HashMap<>();
+    //For User Answers
+    private Map<Integer, String> questionAnswers = new HashMap<>();
+
 
 
 
@@ -99,7 +103,7 @@ public class QuizController {
                 List<AnswerOption> options = answerOptionDAO.getAllQuestionAnswerOptions(
                         currentQuiz.getMessageId(), questionNumber
                 );
-                questionAnswers.put(questionNumber, options);
+                answerOptions.put(questionNumber, options);
             }
         } catch (SQLException e) {
             showErrorAlert("Failed to load quiz questions: " + e.getMessage());
@@ -135,13 +139,13 @@ public class QuizController {
         });
     }
 
-    //Display the questions on the buttons
+    //Display the questions on the buttons, and sets up the event handler for the answer buttons
     private void displayQuestion(int questionNumber) {
         QuizQuestion question = quizQuestions.get(questionNumber - 1);
         quizQuestionLabel.setText(question.getQuestion());
 
         // Get the answer options
-        List<AnswerOption> options = questionAnswers.get(questionNumber);
+        List<AnswerOption> options = answerOptions.get(questionNumber);
         if (options == null || options.size() < 4) {
             showErrorAlert("Answer options are missing");
             return;
@@ -155,20 +159,22 @@ public class QuizController {
         answerB.setText(options.get(1).getValue());
         answerC.setText(options.get(2).getValue());
         answerD.setText(options.get(3).getValue());
+
+        answerA.setOnAction(e -> registerAnswer(questionNumber,"A"));
+        answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
+        answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
+        answerD.setOnAction(e -> registerAnswer(questionNumber, "D"));
     }
 
-    //Saving the User Answers
-    private void saveUserAnswer(int messageId, int attempt, int questionNumber, String answerOption) {
-        try {
-            UserAnswer newAnswer = new UserAnswer(messageId, attempt, questionNumber, answerOption);
-            userAnswerDAO.createUserAnswer(newAnswer);
-
-        } catch (SQLException e) {
-            System.err.println("Database error saving answer: " + e.getMessage());
-            showErrorAlert("Failed to save answer.");
-        }
+    //register the answers to map
+    private void registerAnswer(int questionNumber, String answerOption){
+        questionAnswers.put(questionNumber, answerOption);
     }
 
+    //Submit Answers
+    private void submitAnswers(){
+
+    }
 
     // Calculate the current attempt number for a specific question
             private int calculateCurrentAttempt(int questionNumber) {
