@@ -49,14 +49,14 @@ public class QuizController {
     private final Map<Integer, List<AnswerOption>> answerOptions = new HashMap<>();
     //For User Answers
     private final Map<Integer, String> questionAnswers = new HashMap<>();
-
-
+    private boolean quizCompleted;
 
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz) throws IllegalStateException {
         if (chosenQuiz == null) {
             throw new IllegalStateException("No quiz was chosen");
         }
+
         try {
             this.db = db;
             this.currentQuiz = chosenQuiz;
@@ -67,6 +67,7 @@ public class QuizController {
             this.quizQuestionDAO = new QuizQuestionDAO(db);
             this.answerOptionDAO = new AnswerOptionDAO(db);
             this.userAnswerDAO = new UserAnswerDAO(db);
+            quizCompleted = false;
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
         }
@@ -77,6 +78,7 @@ public class QuizController {
     public void initialize() {
         setupQuestions();
         setupQuizListView();
+        //setupReturnButton();
     }
 
     //Error alert copy pasted from chat controller
@@ -158,35 +160,65 @@ public class QuizController {
         answerC.setText(options.get(2).getValue());
         answerD.setText(options.get(3).getValue());
 
-        // Reset button styles
-        Button[] answerButtons = {answerA, answerB, answerC, answerD};
-        for (Button btn : answerButtons) {
-            btn.getStyleClass().removeAll("option-button", "option-button-toggled");
-            btn.getStyleClass().add("option-button");
-        }
+        if(quizCompleted == true){
+            // Disable buttons
+            answerA.setDisable(true);
+            answerB.setDisable(true);
+            answerC.setDisable(true);
+            answerD.setDisable(true);
+            submitQuizButton.setDisable(true);
 
-        // Restore toggled state if an answer was previously selected
-        String selectedAnswer = questionAnswers.get(questionNumber);
-        if (selectedAnswer != null) {
-            Button selectedButton = switch (selectedAnswer) {
-                case "A" -> answerA;
-                case "B" -> answerB;
-                case "C" -> answerC;
-                case "D" -> answerD;
-                default -> null;
-            };
-            if (selectedButton != null) {
-                selectedButton.getStyleClass().remove("option-button");
-                selectedButton.getStyleClass().add("option-button-toggled");
+            // Get the user's selected answer
+            String selected = questionAnswers.get(questionNumber);
+
+            // Apply correct/incorrect CSS classes
+            for (AnswerOption opt : options) {
+                Button targetButton = null;
+                if (opt.getOption().equals("A")) targetButton = answerA;
+                if (opt.getOption().equals("B")) targetButton = answerB;
+                if (opt.getOption().equals("C")) targetButton = answerC;
+                if (opt.getOption().equals("D")) targetButton = answerD;
+
+                if (targetButton != null) {
+                    if (opt.getIsAnswer()) {
+                        targetButton.getStyleClass().add("correct-answer");
+                    } else if (opt.getOption().equals(selected)) {
+                        targetButton.getStyleClass().add("incorrect-answer");
+                    }
+                }
             }
-        }
 
-        answerA.setOnAction(e -> registerAnswer(questionNumber,"A"));
-        answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
-        answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
-        answerD.setOnAction(e -> registerAnswer(questionNumber, "D"));
-        //Activates the submit Button
-        submitQuizButton.setOnAction(e -> submitAnswers());
+        } else{
+            // Reset button styles
+            Button[] answerButtons = {answerA, answerB, answerC, answerD};
+            for (Button btn : answerButtons) {
+                btn.getStyleClass().removeAll("option-button", "option-button-toggled");
+                btn.getStyleClass().add("option-button");
+            }
+
+            // Restore toggled state if an answer was previously selected
+            String selectedAnswer = questionAnswers.get(questionNumber);
+            if (selectedAnswer != null) {
+                Button selectedButton = switch (selectedAnswer) {
+                    case "A" -> answerA;
+                    case "B" -> answerB;
+                    case "C" -> answerC;
+                    case "D" -> answerD;
+                    default -> null;
+                };
+                if (selectedButton != null) {
+                    selectedButton.getStyleClass().remove("option-button");
+                    selectedButton.getStyleClass().add("option-button-toggled");
+                }
+            }
+
+            answerA.setOnAction(e -> registerAnswer(questionNumber,"A"));
+            answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
+            answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
+            answerD.setOnAction(e -> registerAnswer(questionNumber, "D"));
+            //Activates the submit Button
+            submitQuizButton.setOnAction(e -> submitAnswers());
+        }
     }
 
     //register the answers to map
@@ -218,9 +250,10 @@ public class QuizController {
     private void submitAnswers(){
         int messageId = currentQuiz.getMessageId();
         int attempt = 1;  //Hardcoded until that system is explained
-
+        quizCompleted = true;
         try {
             saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
+            checkAnswers();
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Failed to submit answers: " + e.getMessage());
@@ -243,7 +276,60 @@ public class QuizController {
         }
     }
 
-            // Calculate the current attempt number for a specific question
+    //check the answers, restyle the list view
+    private void checkAnswers(){
+        questionListView.setCellFactory(lv -> new ListCell<QuizQuestion>() {
+            @Override
+            protected void updateItem(QuizQuestion item, boolean empty) {
+                super.updateItem(item, empty);
+                int qNumber = getIndex() + 1;
+                setText("Question " + qNumber);
+
+                // Clear previous style classes
+                getStyleClass().removeAll("correct-answer", "incorrect-answer");
+
+                // Get user's selected option and correct option
+                String userAnswer = questionAnswers.get(qNumber);
+                List<AnswerOption> options = answerOptions.get(qNumber);
+
+
+                if (userAnswer != null && options != null) {
+                    AnswerOption correct = options.stream()
+                            .filter(AnswerOption::getIsAnswer)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (correct != null) {
+                        if (userAnswer.equals(correct.getOption())) {
+                            getStyleClass().add("correct-answer");
+                        } else {
+                            getStyleClass().add("incorrect-answer");
+                        }
+                    }
+                }
+            }
+        })
+    ;}
+
+//    //Return to chat
+//    private void setupReturnButton() {
+//        returnButton.setOnAction(actionEvent -> {
+//            FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("chat-view.fxml"));
+//            try {
+//                ChatController controller = new ChatController(db);
+//                fxmlLoader.setController(controller);
+//                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+//                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+//                stage.setScene(scene);
+//            } catch (IOException | SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+
+
+
+    // Calculate the current attempt number for a specific question
             private int calculateCurrentAttempt(int questionNumber) {
                 try {
                     return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
@@ -341,4 +427,4 @@ public class QuizController {
                     return null;
                 }
             }
-        }
+}

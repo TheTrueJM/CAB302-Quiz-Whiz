@@ -77,6 +77,7 @@ public class ChatController {
         this.aiController = new AIController();
     }
 
+
     @FXML
     public void initialize() {
         setupChatSelectionListener();

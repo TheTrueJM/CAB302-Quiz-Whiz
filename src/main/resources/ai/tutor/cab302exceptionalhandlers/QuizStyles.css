@@ -72,7 +72,6 @@
 .chat-mode-active:hover, .chat-mode-disabled:hover .chat-mode-disabled:hover, .quiz-mode-disabled:hover,
  .return-button:hover, .search-button:hover, .addChatButton:hover, .confirmEdit:hover, .editName:hover,
  .userDetailsButton:hover, .logoutButton:hover, .setting-button:hover, .upload-button:hover, .chat-selector:hover,
- .button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover, optionButton:hover{
     -fx-opacity: 0.8;
     -fx-transition: opacity 0.2s ease-in-out;
     -fx-cursor: hand;
@@ -107,6 +106,17 @@
 #chatMessagesVBox {
     -fx-background-color: white;
 }
+
+.correct-answer {
+    -fx-background-color: #c8f7c5; /* light green */
+    -fx-text-fill: #2e7d32;        /* dark green text */
+}
+
+.incorrect-answer {
+    -fx-background-color: #ffcdd2; /* light red */
+    -fx-text-fill: #c62828;        /* dark red text */
+}
+
 
 
 
