@@ -87,6 +87,17 @@
     -fx-background-color: white;
 }
 
+.correct-answer {
+    -fx-background-color: #c8f7c5; /* light green */
+    -fx-text-fill: #2e7d32;        /* dark green text */
+}
+
+.incorrect-answer {
+    -fx-background-color: #ffcdd2; /* light red */
+    -fx-text-fill: #c62828;        /* dark red text */
+}
+
+
 
 
 
