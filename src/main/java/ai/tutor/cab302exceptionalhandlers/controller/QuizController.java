@@ -31,6 +31,7 @@ public class QuizController {
     @FXML private StackPane quizQuestionsContainer;
     @FXML private StackPane quizListContainer1;
     @FXML private Label quizQuestionLabel;
+    @FXML private Button submitQuizButton;
 
     private SQLiteConnection db;
     private Quiz currentQuiz;
@@ -164,6 +165,8 @@ public class QuizController {
         answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
         answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
         answerD.setOnAction(e -> registerAnswer(questionNumber, "D"));
+        //Activates the submit Button
+        submitQuizButton.setOnAction(e -> submitAnswers());
     }
 
     //register the answers to map
@@ -173,10 +176,34 @@ public class QuizController {
 
     //Submit Answers
     private void submitAnswers(){
+        int messageId = currentQuiz.getMessageId();
+        int attempt = 1;  // Later you can call calculateCurrentAttempt() per question if needed
 
+        try {
+            saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Failed to submit answers: " + e.getMessage());
+        }
     }
 
-    // Calculate the current attempt number for a specific question
+    //Save answers function
+    public void saveAnswers(int messageId, int attempt, Map<Integer, String> answers, UserAnswerDAO dao) {
+        for (Map.Entry<Integer, String> entry : answers.entrySet()) {
+            int questionNumber = entry.getKey();
+            String answerOption = entry.getValue();
+            try{
+                UserAnswer newAnswer = new UserAnswer(messageId, attempt, questionNumber, answerOption);
+                dao.createUserAnswer(newAnswer);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+            // Calculate the current attempt number for a specific question
             private int calculateCurrentAttempt(int questionNumber) {
                 try {
                     return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
