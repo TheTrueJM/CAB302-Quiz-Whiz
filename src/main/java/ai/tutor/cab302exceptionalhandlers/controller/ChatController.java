@@ -402,7 +402,7 @@ public class ChatController {
                     QuizWhizApplication.class.getResource("quiz-view.fxml")
             );
 
-            QuizController controller = new QuizController(db, quizDAO.getQuiz(message.getId()));
+            QuizController controller = new QuizController(db, quizDAO.getQuiz(message.getId()), currentUser);
             fxmlLoader.setController(controller);
 
             Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);

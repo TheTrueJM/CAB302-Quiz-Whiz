@@ -3,8 +3,10 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -42,6 +44,7 @@ public class QuizController {
     private QuizQuestionDAO quizQuestionDAO;
     private AnswerOptionDAO answerOptionDAO;
     private UserAnswerDAO userAnswerDAO;
+    private User currentUser;
     //Extra added for quiz functionality
     private int questionNumber;
     private List<QuizQuestion> quizQuestions = new ArrayList<>();
@@ -52,7 +55,7 @@ public class QuizController {
     private boolean quizCompleted;
 
 
-    public QuizController(SQLiteConnection db, Quiz chosenQuiz) throws IllegalStateException {
+    public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException {
         if (chosenQuiz == null) {
             throw new IllegalStateException("No quiz was chosen");
         }
@@ -67,6 +70,7 @@ public class QuizController {
             this.quizQuestionDAO = new QuizQuestionDAO(db);
             this.answerOptionDAO = new AnswerOptionDAO(db);
             this.userAnswerDAO = new UserAnswerDAO(db);
+            this.currentUser = currentUser;
             quizCompleted = false;
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
@@ -78,7 +82,7 @@ public class QuizController {
     public void initialize() {
         setupQuestions();
         setupQuizListView();
-        //setupReturnButton();
+        setupReturnButton();
     }
 
     //Error alert copy pasted from chat controller
@@ -311,21 +315,15 @@ public class QuizController {
         })
     ;}
 
-//    //Return to chat
-//    private void setupReturnButton() {
-//        returnButton.setOnAction(actionEvent -> {
-//            FXMLLoader fxmlLoader = new FXMLLoader(QuizWhizApplication.class.getResource("chat-view.fxml"));
-//            try {
-//                ChatController controller = new ChatController(db);
-//                fxmlLoader.setController(controller);
-//                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-//                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-//                stage.setScene(scene);
-//            } catch (IOException | SQLException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
+    //Return to chat
+    private void setupReturnButton() {
+        returnButton.setOnAction(actionEvent -> {
+            Object[] params = {db, currentUser};
+
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Utils.loadPage("chat-view.fxml", ChatController.class, stage, params);
+        });
+    }
 
 
 
