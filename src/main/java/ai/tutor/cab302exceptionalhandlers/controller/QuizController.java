@@ -46,6 +46,7 @@ public class QuizController {
     private QuizQuestionDAO quizQuestionDAO;
     private AnswerOptionDAO answerOptionDAO;
     private UserAnswerDAO userAnswerDAO;
+    private User currentUser;
     //Extra added for quiz functionality
     private int questionNumber;
     private List<QuizQuestion> quizQuestions = new ArrayList<>();
