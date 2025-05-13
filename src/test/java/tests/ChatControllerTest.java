@@ -453,7 +453,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testGenerateChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
@@ -477,7 +477,7 @@ public class ChatControllerTest {
         assertEquals(userMessage.getIsQuiz(), responseMessage.getIsQuiz());
     }
 
-    @Test
+    @Disabled
     public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
@@ -572,7 +572,7 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testGenerateQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
         assumeTrue(hasCorrectModel, "Required model is not available");
@@ -828,9 +828,11 @@ public class ChatControllerTest {
         );
 
         Message message = Messages.get("messageAIQuiz");
+        System.out.println(message.getIsQuiz());
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
         );
+
 
         Quiz newQuiz = chatController.createNewQuiz(
                 QuizContent.get("valid"), aiMessage

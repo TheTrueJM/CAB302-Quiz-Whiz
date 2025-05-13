@@ -688,7 +688,7 @@ public class ChatController {
 
         validateChatExistsForCurrentUser(chatId);
 
-        boolean messageIsQuiz = fromUser ? isQuiz : false;
+        boolean messageIsQuiz = isQuiz;
         Message newMessage = new Message(chatId, content, fromUser, messageIsQuiz);
         messageDAO.createMessage(newMessage);
         return newMessage;
