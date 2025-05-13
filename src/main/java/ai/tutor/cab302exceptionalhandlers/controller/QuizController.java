@@ -38,6 +38,7 @@ public class QuizController {
     private SQLiteConnection db;
     private Quiz currentQuiz;
     private UserDAO userDAO;
+    private User currentUser;
     private ChatDAO chatDAO;
     private MessageDAO messageDAO;
     private QuizDAO quizDAO;
