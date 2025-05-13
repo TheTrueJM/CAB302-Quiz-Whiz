@@ -76,7 +76,7 @@ public class QuizControllerTest {
             answerOptionDAO.createAnswerOption(answerOption);
         }
 
-        quizController = new QuizController(db, quiz);
+        quizController = new QuizController(db, quiz, user);
     }
 
 
