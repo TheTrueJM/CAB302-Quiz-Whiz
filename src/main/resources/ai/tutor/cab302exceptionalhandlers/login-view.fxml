@@ -10,25 +10,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ai.tutor.cab302exceptionalhandlers.controller.AuthController"
-            prefHeight="200.0" prefWidth="300.0">
-
-    <center>
-        <TextField fx:id="usernameField" promptText="Username..." />
-        <TextField fx:id="passwordField" promptText="Password..." />
-        <Button fx:id="loginButton" onAction="#onLogin" HBox.hgrow="ALWAYS"/>
-    </center>
-
-</BorderPane>
--->
-
-<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
-<stylesheets>
-    <URL value="@AuthStyles.css" />
-</stylesheets>
+<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
+    <stylesheets>
+        <URL value="@AuthStyles.css" />
+    </stylesheets>
 
       <!--The Header-->
     <HBox alignment="TOP_CENTER" spacing="10" style="-fx-background-color: #336699; -fx-padding: 10;">
@@ -43,7 +28,7 @@
                      <Insets top="10.0" />
                   </VBox.margin>
                </Label>
-            
+
                 <TextField fx:id="usernameField" maxWidth="400.0" onKeyReleased="#onFieldChanged" prefWidth="400.0" promptText="Username..." style="-fx-font-size: 17; -fx-background-radius: 8; -fx-border-radius: 8;" />
             </children>
             <VBox.margin>
@@ -68,10 +53,10 @@
                      <Insets right="6.0" />
                   </HBox.margin>
                </Label>
-                <Button onAction="#switchToSignUp" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-signup" text="Sign Up" />
+                <Button onAction="#switchToSignUp" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" text="Sign Up" />
             </children>
          </HBox>
-      
+
           <!-- Logo at the end of page -->
           <ImageView fitHeight="112.0" fitWidth="210.0" pickOnBounds="true" preserveRatio="true">
               <image>

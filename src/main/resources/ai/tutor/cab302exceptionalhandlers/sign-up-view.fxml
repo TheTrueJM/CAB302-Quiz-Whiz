@@ -10,24 +10,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ai.tutor.cab302exceptionalhandlers.controller.AuthController"
-            prefHeight="200.0" prefWidth="300.0">
-    <center>
-        <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged"/>
-        <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
-        <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
-        <Button fx:id="signupButton" onAction="#onSignUp" HBox.hgrow="ALWAYS"/>
-    </center>
-</BorderPane>
--->
 
 <VBox alignment="TOP_CENTER" maxHeight="540.0" prefHeight="540.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
-<stylesheets>
-    <URL value="@AuthStyles.css" />
-</stylesheets>
+    <stylesheets>
+        <URL value="@AuthStyles.css" />
+    </stylesheets>
     <!--The Header -->
     <HBox alignment="TOP_CENTER" style="-fx-background-color: #336699; -fx-padding: 10;">
         <Label alignment="TOP_CENTER" style="-fx-text-fill: white; -fx-font-size: 26; -fx-font-weight: bold;" text="Welcome to Quiz Whiz" textAlignment="CENTER" />
@@ -41,7 +28,7 @@
                      <Insets top="6.0" />
                   </VBox.margin>
                </Label>
-            
+
                   <!-- The Fields for Sign up page-->
                 <TextField fx:id="usernameField" maxWidth="400.0" onKeyReleased="#onFieldChanged" prefWidth="400.0" promptText="Username..." style="-fx-font-size: 16; -fx-border-radius: 8; -fx-background-radius: 8;" />
             </children>
@@ -70,7 +57,7 @@
                </TextField>
             </children>
          </VBox>
-          <Button fx:id="signUpButton" disable="true" onAction="#onSignUp" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" styleClass="toggle-signup" text="Sign Up">
+          <Button fx:id="signUpButton" disable="true" onAction="#onSignUp" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" text="Sign Up">
             <VBox.margin>
                <Insets bottom="20.0" />
             </VBox.margin>
@@ -82,11 +69,11 @@
                      <Insets right="6.0" />
                   </HBox.margin>
                </Label>
-                <Button onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 13;" styleClass="switch-login" text="Login" />
+                <Button onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 13;" text="Login" />
             </children>
          </HBox>
-      
-      
+
+
           <ImageView fitHeight="82.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
               <image>
                   <Image url="@images/logo-blue.png" />
