@@ -48,7 +48,6 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
-    @FXML private Timeline thinkingAnimation;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -369,7 +368,7 @@ public class ChatController {
         thinkingLabel.setMaxWidth(450);
         thinkingLabel.setTextFill(Color.BLACK);
 
-        thinkingAnimation = new Timeline(
+        Timeline thinkingAnimation = new Timeline(
                 new KeyFrame(Duration.seconds(0.0), e -> thinkingLabel.setText("Thinking")),
                 new KeyFrame(Duration.seconds(0.5), e -> thinkingLabel.setText("Thinking.")),
                 new KeyFrame(Duration.seconds(1.0), e -> thinkingLabel.setText("Thinking..")),

@@ -59,12 +59,12 @@
          </VBox>
           <Button fx:id="signUpButton" disable="true" onAction="#onSignUp" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" text="Sign Up">
             <VBox.margin>
-               <Insets bottom="20.0" />
+               <Insets bottom="10.0" />
             </VBox.margin>
          </Button>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
             <children>
-               <Label style="-fx-text-fill: black; -fx-font-size: 14; -fx-font-style: italic;" text="Don’t have an Account?">
+               <Label style="-fx-text-fill: black; -fx-font-size: 16; -fx-font-style: italic;" text="Don’t have an Account?">
                   <HBox.margin>
                      <Insets right="6.0" />
                   </HBox.margin>
@@ -79,7 +79,7 @@
                   <Image url="@images/logo-blue.png" />
               </image>
             <VBox.margin>
-               <Insets top="10.0" />
+               <Insets top="5.0" />
             </VBox.margin>
           </ImageView>
       </children>
