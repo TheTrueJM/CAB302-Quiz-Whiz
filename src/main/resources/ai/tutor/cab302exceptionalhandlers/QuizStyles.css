@@ -1,4 +1,4 @@
-.chat-selector {
+.quiz-selector {
     -fx-background-color: #FFFFFF;
     -fx-text-alignment: left;
     -fx-border-radius: 8 0 0 8;
@@ -11,12 +11,12 @@
     -fx-pref-height: 40;
 }
 
-.chat-selector-container {
+.quiz-selector-container {
     -fx-background-color: #535353;
     -fx-padding: 5 4 5 0;
 }
 
-.chat-list {
+.quiz-list {
     -fx-background-color: #535353;
 }
 
@@ -28,30 +28,6 @@
     -fx-background-color: #6C94DF;
 }
 
-.delete-button {
-    -fx-background-color: #FFFFFF;
-    -fx-pref-height: 42.1;
-    -fx-pref-width: 15;
-    -fx-border-radius: 0 8 8 0;
-    -fx-background-radius: 0 8 8 0;
-    -fx-padding: 8;
-}
-
-.download-button {
-    -fx-background-color: transparent;
-    -fx-cursor: hand;
-}
-.download-button:hover {
-    -fx-opacity: 0.7;
-}
-
-.chat-list .scroll-bar:horizontal .increment-arrow,
-.chat-list .scroll-bar:horizontal .decrement-arrow,
-.chat-list .scroll-bar:horizontal .increment-button,
-.chat-list .scroll-bar:horizontal .decrement-button {
-    -fx-padding:0;
-}
-
 .chat-mode-active, .quiz-mode-active {
     -fx-background-color: #6C95DF;
     -fx-text-fill: white;
@@ -60,6 +36,27 @@
     -fx-padding: 5;
     -fx-border-color: black;
     -fx-border-radius: 5;
+}
+
+.option-button-toggled {
+    -fx-padding: 10;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-border-radius: 2 10 10 2;
+    -fx-background-radius: 2 10 10 2;
+    -fx-background-color: #6C95DF;
+    -fx-text-fill: white;
+    -fx-border-color: black;
+}
+
+.option-button{
+    -fx-padding: 10;
+    -fx-background-color: white;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-border-radius: 2 10 10 2;
+    -fx-background-radius: 2 10 10 2;
+    -fx-border-color: black;
 }
 
 .chat-mode-disabled, .quiz-mode-disabled {
@@ -75,7 +72,6 @@
 .chat-mode-active:hover, .chat-mode-disabled:hover .chat-mode-disabled:hover, .quiz-mode-disabled:hover,
  .return-button:hover, .search-button:hover, .addChatButton:hover, .confirmEdit:hover, .editName:hover,
  .userDetailsButton:hover, .logoutButton:hover, .setting-button:hover, .upload-button:hover, .chat-selector:hover,
- .button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover {
     -fx-opacity: 0.8;
     -fx-transition: opacity 0.2s ease-in-out;
     -fx-cursor: hand;
@@ -110,6 +106,17 @@
 #chatMessagesVBox {
     -fx-background-color: white;
 }
+
+.correct-answer {
+    -fx-background-color: #c8f7c5; /* light green */
+    -fx-text-fill: #2e7d32;        /* dark green text */
+}
+
+.incorrect-answer {
+    -fx-background-color: #ffcdd2; /* light red */
+    -fx-text-fill: #c62828;        /* dark red text */
+}
+
 
 
 

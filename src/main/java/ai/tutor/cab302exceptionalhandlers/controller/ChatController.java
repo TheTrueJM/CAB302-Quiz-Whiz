@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +26,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
 import javafx.concurrent.Task;
+import javafx.util.Duration;
 
 public class ChatController {
     // Chat Window
@@ -35,7 +38,7 @@ public class ChatController {
     @FXML private TextField chatNameField;
     @FXML private TextField messageInputField;
     @FXML private TextField noChatsField;
-    @FXML private Button configureChat;
+    @FXML private Button addNewChatMain;
     @FXML private TextField welcomeTitle;
     @FXML private Button logoutButton;
     @FXML private Button chatModeButton;
@@ -45,6 +48,7 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
+    @FXML private Timeline thinkingAnimation;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -72,6 +76,7 @@ public class ChatController {
         this.isQuiz = false;
         this.aiController = new AIController();
     }
+
 
     @FXML
     public void initialize() {
@@ -203,7 +208,7 @@ public class ChatController {
         if (getSelectedChat() == null) {
             editChatName.setVisible(false);
             chatSettingsButton.setVisible(false);
-            configureChat.setVisible(true);
+            addNewChatMain.setVisible(true);
             welcomeTitle.setVisible(true);
             welcomeTitle.setText("Welcome, " + currentUser.getUsername());
             greetingContainer.setVisible(true);
@@ -212,7 +217,7 @@ public class ChatController {
         } else {
             editChatName.setVisible(true);
             chatSettingsButton.setVisible(true);
-            configureChat.setVisible(false);
+            addNewChatMain.setVisible(false);
             welcomeTitle.setVisible(false);
             greetingContainer.setVisible(false);
             greetingContainer.setManaged(false);
@@ -325,7 +330,7 @@ public class ChatController {
         takeQuizButton.getStyleClass().add("takeQuizButton");
         VBox.setMargin(takeQuizButton, new Insets(6, 0, 0, 0));
         takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
-        verticalContainer.getChildren().add(takeQuizButton);;
+        verticalContainer.getChildren().add(takeQuizButton);
     }
 
     private void addMessage(Message message) {
@@ -364,11 +369,22 @@ public class ChatController {
         thinkingLabel.setMaxWidth(450);
         thinkingLabel.setTextFill(Color.BLACK);
 
+        thinkingAnimation = new Timeline(
+                new KeyFrame(Duration.seconds(0.0), e -> thinkingLabel.setText("Thinking")),
+                new KeyFrame(Duration.seconds(0.5), e -> thinkingLabel.setText("Thinking.")),
+                new KeyFrame(Duration.seconds(1.0), e -> thinkingLabel.setText("Thinking..")),
+                new KeyFrame(Duration.seconds(1.5), e -> thinkingLabel.setText("Thinking...")),
+                new KeyFrame(Duration.seconds(2), e -> thinkingLabel.setText("Thinking"))
+
+        );
+        thinkingAnimation.setCycleCount(Timeline.INDEFINITE);
+        thinkingAnimation.play();
+
         VBox verticalContainer = new VBox(thinkingLabel);
         verticalContainer.setAlignment(Pos.CENTER);
 
         HBox horizontalContainer = new HBox(verticalContainer);
-        horizontalContainer.getStyleClass().add("ai-message");
+        horizontalContainer.getStyleClass().add("thinking-message");
         horizontalContainer.setAlignment(Pos.CENTER_LEFT);
 
         HBox wrapper = new HBox(horizontalContainer);
@@ -386,7 +402,7 @@ public class ChatController {
                     QuizWhizApplication.class.getResource("quiz-view.fxml")
             );
 
-            QuizController controller = new QuizController(db, quizDAO.getQuiz(message.getId()));
+            QuizController controller = new QuizController(db, quizDAO.getQuiz(message.getId()), currentUser);
             fxmlLoader.setController(controller);
 
             Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
@@ -488,7 +504,7 @@ public class ChatController {
     // Set up button that activates the ability to edit the chat name
     private void setupActivateEdit() {
         editChatName.setOnAction(actionEvent ->  {
-            // TODO: Refactor these into class in styles.css and change the css class instead
+            // TODO: Refactor these into class in ChatStyles.css and change the css class instead
             editChatName.setVisible(false);
             chatNameField.setOpacity(0.8);
             chatNameField.setEditable(true);
@@ -504,6 +520,8 @@ public class ChatController {
         });
     }
 
+
+
     // Loads settings of specfic chat
     private void setupChatSettingsButton() {
         chatSettingsButton.setOnAction(event -> {
@@ -516,45 +534,18 @@ public class ChatController {
     }
 
     private void loadChatSettings(ActionEvent actionEvent, String operation) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("chat-setup-view.fxml")
-            );
+        Object[] params = {db, this, operation, getSelectedChat()};
 
-            ChatSetupController controller = new ChatSetupController(db, currentUser, this, operation, getSelectedChat());
-            fxmlLoader.setController(controller);
-
-            Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-            // Get the Stage from the event
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        Utils.loadPage("chat-setup-view.fxml", ChatSetupController.class, stage, params);
     }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("login-view.fxml")
-            );
+            Object[] params = {db};
 
-            try {
-                LoginController controller = new LoginController(db);
-                fxmlLoader.setController(controller);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Utils.loadPage("login-view.fxml", LoginController.class, stage, params);
         });
     }
 
@@ -584,23 +575,11 @@ public class ChatController {
         userDetailsButton.setOnAction(actionEvent -> {
             System.out.println("=================User Details================");
 
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(
-                        QuizWhizApplication.class.getResource("user-settings-view.fxml")
-                );
+            Object[] params = {db, currentUser};
 
-                UserSettingsController controller = new UserSettingsController(db, currentUser);
-                fxmlLoader.setController(controller);
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Utils.loadPage("user-settings-view.fxml", UserSettingsController.class, stage, params);
 
-                Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-                // Get the Stage from the event
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         });
     }
 
@@ -795,6 +774,7 @@ public class ChatController {
             throw new IllegalArgumentException("Question content cannot be empty");
         }
 
+        // TODO: Depending on AI response quizContent extract number from questionContent or assign dynamically
         int questionsCreated = quizQuestionDAO.getAllQuizQuestions(quiz.getMessageId()).size();
         int questionNumber = questionsCreated + 1;
 

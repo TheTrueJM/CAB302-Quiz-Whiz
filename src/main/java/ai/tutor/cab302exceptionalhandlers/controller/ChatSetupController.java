@@ -37,7 +37,7 @@ public class ChatSetupController {
     private final SQLiteConnection db;
     private Chat selectedChat;
 
-    public ChatSetupController(SQLiteConnection db, User authenticatedUser, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
+    public ChatSetupController(SQLiteConnection db, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
         this.db = db;
         this.operation = operation;
         this.mainController = mainController;
