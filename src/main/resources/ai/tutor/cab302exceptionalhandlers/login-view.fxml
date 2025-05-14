@@ -9,11 +9,12 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.PasswordField?>
 
-<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
-    <stylesheets>
-        <URL value="@AuthStyles.css" />
-    </stylesheets>
+<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<stylesheets>
+    <URL value="@AuthStyles.css" />
+</stylesheets>
 
       <!--The Header-->
     <HBox alignment="TOP_CENTER" spacing="10" style="-fx-background-color: #336699; -fx-padding: 10;">
@@ -28,7 +29,7 @@
                      <Insets top="12.0" />
                   </VBox.margin>
                </Label>
-
+            
                 <TextField fx:id="usernameField" maxWidth="400.0" onKeyReleased="#onFieldChanged" prefWidth="400.0" promptText="Username..." style="-fx-font-size: 17; -fx-background-radius: 8; -fx-border-radius: 8;" />
             </children>
             <VBox.margin>
@@ -39,7 +40,7 @@
          <VBox alignment="BOTTOM_LEFT" maxWidth="400.0" prefHeight="79.0" prefWidth="400.0">
             <children>
                <Label style="-fx-font-weight: bold; -fx-font-size: 26;" text="Password" />
-                <TextField fx:id="passwordField" maxWidth="400.0" onKeyReleased="#onFieldChanged" promptText="Password..." style="-fx-font-size: 17; -fx-background-radius: 8; -fx-border-radius: 8;" />
+                <PasswordField fx:id="passwordField" maxWidth="400.0" onKeyReleased="#onFieldChanged" promptText="Password..." style="-fx-font-size: 17; -fx-background-radius: 8; -fx-border-radius: 8;" />
             </children>
          </VBox>
          <Label fx:id="passwordFeedback" prefWidth="400.0" style="-fx-text-fill: red; -fx-font-size: 17; -fx-font-weight: normal; -fx-font-style: italic;" />
@@ -55,7 +56,7 @@
                      <Insets right="6.0" />
                   </HBox.margin>
                </Label>
-                <Button onAction="#switchToSignUp" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" text="Sign Up" />
+                <Button onAction="#switchToSignUp" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-signup" text="Sign Up" />
             </children>
          </HBox>
 
