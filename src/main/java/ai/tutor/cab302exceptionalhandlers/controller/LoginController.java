@@ -59,6 +59,7 @@ public class LoginController {
 
     private void submitButtonToggle() {
         loginButton.setDisable(usernameEmpty || passwordEmpty);
+        loginButton.getStyleClass().add("toggle-login");
     }
 
     @FXML
