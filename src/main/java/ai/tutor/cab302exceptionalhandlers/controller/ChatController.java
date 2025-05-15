@@ -510,6 +510,10 @@ public class ChatController {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
+
+        addNewChatMain.setOnAction(actionEvent -> {
+            loadChatSettings(actionEvent, "Create");
+        });
     }
 
     // Loads settings of specific chat
