@@ -85,7 +85,7 @@ public class ChatController {
         refreshChatListView();
         setupEditChatNameButton();
         setupActivateEdit();
-        setupSendAndReceiveMessage();
+        setupMessageSendActions();
         setupCreateChatButton();
         setupChatSettingsButton();
         setupToggleChatMode();
@@ -211,6 +211,9 @@ public class ChatController {
             greetingContainer.setVisible(true);
             greetingContainer.setManaged(true);
             greetingContainer.setMouseTransparent(false);
+            messageInputField.setDisable(true);
+            sendMessage.setDisable(true);
+
         } else {
             editChatName.setVisible(true);
             chatSettingsButton.setVisible(true);
@@ -219,6 +222,8 @@ public class ChatController {
             greetingContainer.setVisible(false);
             greetingContainer.setManaged(false);
             greetingContainer.setMouseTransparent(true);
+            messageInputField.setDisable(false);
+            sendMessage.setDisable(false);
         }
     }
 
@@ -404,9 +409,8 @@ public class ChatController {
         Utils.loadView("quiz", new QuizController(db, currentQuiz, currentUser), getStage());
     }
 
-    public void setupSendAndReceiveMessage() {
-        messageInputField.setOnAction(event -> {
-            Chat selectedChat = getSelectedChat();
+    public void SendAndReceiveMessage() {
+        Chat selectedChat = getSelectedChat();
 
             if (!isOllamaRunning()) {
                 Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
@@ -430,23 +434,23 @@ public class ChatController {
                 messageInputField.clear();
                 addMessage(userMessage);
 
-                Node thinkingNode = createThinkingNode();
-                chatMessagesVBox.getChildren().add(thinkingNode);
-                messageInputField.setDisable(true);
+            Node thinkingNode = createThinkingNode();
+            chatMessagesVBox.getChildren().add(thinkingNode);
+            messageInputField.setDisable(true);
 
-                Task<Message> aiResponseTask = new Task<Message>() {
-                    @Override
-                    protected Message call() throws Exception {
-                        return generateAIResponse(userMessage);
-                    }
-                };
+            Task<Message> aiResponseTask = new Task<Message>() {
+                @Override
+                protected Message call() throws Exception {
+                    return generateAIResponse(userMessage);
+                }
+            };
 
-                aiResponseTask.setOnSucceeded(e -> {
-                    Message aiResponse = aiResponseTask.getValue();
-                    chatMessagesVBox.getChildren().remove(thinkingNode);
-                    addMessage(aiResponse);
-                    messageInputField.setDisable(false);
-                });
+            aiResponseTask.setOnSucceeded(e -> {
+                Message aiResponse = aiResponseTask.getValue();
+                chatMessagesVBox.getChildren().remove(thinkingNode);
+                addMessage(aiResponse);
+                messageInputField.setDisable(false);
+            });
 
                 aiResponseTask.setOnFailed(e -> {
                     Utils.showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
@@ -459,6 +463,11 @@ public class ChatController {
                 Utils.showErrorAlert("Failed to send message: " + e.getMessage());
             }
         });
+    }
+
+    private void setupMessageSendActions() {
+        messageInputField.setOnAction(event -> SendAndReceiveMessage());
+        sendMessage.setOnAction(event -> SendAndReceiveMessage());
     }
 
     private void editChatNameAction() {
