@@ -2,8 +2,10 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
+import io.github.ollama4j.models.request.Auth;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -22,6 +24,10 @@ public class SignUpController {
     private TextField confirmPasswordField;
     @FXML
     private Button signUpButton;
+    @FXML
+    private Label usernameFeedback;
+    @FXML
+    private Label passwordFeedback;
 
     private boolean usernameEmpty = true;
     private boolean passwordEmpty = true;
@@ -70,22 +76,26 @@ public class SignUpController {
 
     @FXML
     protected void onSignUp() throws IOException, SQLException {
+        AuthController.resetFeedbackError(usernameFeedback,passwordFeedback);
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
         try {
             if (!password.equals(confirmPassword)) {
-                throw new IllegalArgumentException("Passwords do not match");
+                AuthController.feedbackError(passwordFeedback, "Passwords do not match");
+            }
+            else {
+                User newUser = authController.signUp(username, password);
+
+                // Open Chat Page
+                authController.authenticate(newUser, getStage());
             }
 
-            User newUser = authController.signUp(username, password);
-
-            // Open Chat Page
-            authController.authenticate(newUser, getStage());
-        } catch (Exception e) {
-            // TODO: Display possible Sign Up error messages to FXML
-            System.err.println("User Sign Up Failed: " + e.getMessage() + e.getClass());
+        } catch (IllegalArgumentException e) {
+            AuthController.feedbackError(usernameFeedback, e.getMessage());
+        } catch (SecurityException e) {
+            AuthController.feedbackError(passwordFeedback, e.getMessage());
         }
     }
 

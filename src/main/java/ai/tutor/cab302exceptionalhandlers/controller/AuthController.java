@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -69,17 +71,17 @@ public class AuthController {
      * =====================
      */
 
-    public User signUp(String username, String password) throws IllegalStateException, IllegalArgumentException, SQLException {
+    public User signUp(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
         if (!validUsername(username)) {
             throw new IllegalArgumentException("Username is invalid");
         }
         if (!validPassword(password)) {
-            throw new IllegalArgumentException("Password is invalid");
+            throw new SecurityException ("Password is invalid");
         }
 
         User existingUser = userDAO.getUser(username);
         if (existingUser != null) {
-            throw new IllegalStateException("Username is already taken");
+            throw new IllegalArgumentException("Username is already taken");
         }
 
         String hashedPassword = User.hashPassword(password);
@@ -89,10 +91,10 @@ public class AuthController {
         return newUser;
     }
 
-    public User login(String username, String password) throws SecurityException, SQLException {
+    public User login(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
         User existingUser = userDAO.getUser(username == null ? "" : username);
         if (existingUser == null) {
-            throw new SecurityException("User does not exist");
+            throw new IllegalArgumentException("User does not exist");
         }
 
         // Verify input password equals hashed user password
@@ -109,5 +111,13 @@ public class AuthController {
 
     public static boolean validPassword(String password) {
         return password != null && password.matches("^[a-zA-Z0-9]+$");
+    }
+
+    public static void feedbackError(Label feedbackNode, String message) {
+        feedbackNode.setText(message);
+    }
+
+    public static void resetFeedbackError(Label feedbackNode, Label feedbackNode2) {
+        feedbackNode.setText("");
     }
 }

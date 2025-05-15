@@ -10,21 +10,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ai.tutor.cab302exceptionalhandlers.controller.AuthController"
-            prefHeight="200.0" prefWidth="300.0">
-    <center>
-        <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged"/>
-        <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
-        <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
-        <Button fx:id="signupButton" onAction="#onSignUp" HBox.hgrow="ALWAYS"/>
-    </center>
-</BorderPane>
--->
-
-<VBox alignment="TOP_CENTER" maxHeight="540.0" prefHeight="540.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.control.PasswordField?>
+<VBox alignment="TOP_CENTER" maxHeight="540.0" prefHeight="540.0" prefWidth="960.0" spacing="10.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 <stylesheets>
     <URL value="@AuthStyles.css" />
 </stylesheets>
@@ -46,43 +33,45 @@
                 <TextField fx:id="usernameField" maxWidth="400.0" onKeyReleased="#onFieldChanged" prefWidth="400.0" promptText="Username..." style="-fx-font-size: 16; -fx-border-radius: 8; -fx-background-radius: 8;" />
             </children>
          </VBox>
+         <Label fx:id="usernameFeedback" prefHeight="20.0" prefWidth="297.0" style="-fx-text-fill: red; -fx-font-size: 16; -fx-font-style: italic;" />
          <VBox alignment="CENTER_LEFT" maxWidth="300.0" prefHeight="200.0" prefWidth="100.0">
             <children>
                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="Password">
                   <VBox.margin>
-                     <Insets top="6.0" />
+                     <Insets />
                   </VBox.margin>
                </Label>
-                <TextField fx:id="passwordField" onKeyReleased="#onFieldChanged" prefHeight="35.0" prefWidth="467.0" promptText="Password..." style="-fx-font-size: 16; -fx-background-radius: 8; -fx-border-radius: 8;" />
+                <PasswordField fx:id="passwordField" onKeyReleased="#onFieldChanged" prefHeight="35.0" prefWidth="467.0" promptText="Password..." style="-fx-font-size: 16; -fx-background-radius: 8; -fx-border-radius: 8;" />
             </children>
          </VBox>
+         <Label fx:id="passwordFeedback" prefHeight="20.0" prefWidth="297.0" style="-fx-text-fill: red; -fx-font-size: 16; -fx-font-style: italic;" />
          <VBox alignment="CENTER_LEFT" maxWidth="300.0" prefHeight="200.0" prefWidth="100.0">
             <children>
                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="Confirm Password">
                   <VBox.margin>
-                     <Insets top="6.0" />
+                     <Insets />
                   </VBox.margin>
                </Label>
-                <TextField fx:id="confirmPasswordField" onKeyReleased="#onFieldChanged" promptText="Confirm Password..." style="-fx-font-size: 16; -fx-background-radius: 8; -fx-border-radius: 8;">
+                <PasswordField fx:id="confirmPasswordField" onKeyReleased="#onFieldChanged" promptText="Confirm Password..." style="-fx-font-size: 16; -fx-background-radius: 8; -fx-border-radius: 8;">
                   <VBox.margin>
                      <Insets bottom="20.0" />
                   </VBox.margin>
-               </TextField>
+               </PasswordField>
             </children>
          </VBox>
           <Button fx:id="signUpButton" disable="true" onAction="#onSignUp" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" styleClass="toggle-signup" text="Sign Up">
             <VBox.margin>
-               <Insets bottom="20.0" />
+               <Insets bottom="10.0" />
             </VBox.margin>
          </Button>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
             <children>
-               <Label style="-fx-text-fill: black; -fx-font-size: 14; -fx-font-style: italic;" text="Don’t have an Account?">
+               <Label style="-fx-text-fill: black; -fx-font-size: 16; -fx-font-style: italic;" text="Don’t have an Account?">
                   <HBox.margin>
                      <Insets right="6.0" />
                   </HBox.margin>
                </Label>
-                <Button onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 13;" styleClass="switch-login" text="Login" />
+                <Button onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-login" text="Login" />
             </children>
          </HBox>
       
@@ -92,7 +81,7 @@
                   <Image url="@images/logo-blue.png" />
               </image>
             <VBox.margin>
-               <Insets top="10.0" />
+               <Insets top="5.0" />
             </VBox.margin>
           </ImageView>
       </children>

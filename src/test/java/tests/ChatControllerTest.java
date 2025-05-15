@@ -505,6 +505,7 @@ public class ChatControllerTest {
         assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
 }
 
+
     @Test
     public void testGenerateChatMessageResponseInvalidFromAI() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Chat chat = Chats.get("chat1");

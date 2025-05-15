@@ -3,6 +3,7 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -19,6 +20,10 @@ public class LoginController {
     private TextField passwordField;
     @FXML
     private Button loginButton;
+    @FXML
+    private Label usernameFeedback;
+    @FXML
+    private Label passwordFeedback;
 
     private boolean usernameEmpty = true;
     private boolean passwordEmpty = true;
@@ -64,6 +69,7 @@ public class LoginController {
 
     @FXML
     protected void onLogin() throws IOException, SQLException {
+        AuthController.resetFeedbackError(usernameFeedback, passwordFeedback);
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -72,9 +78,10 @@ public class LoginController {
 
             // Open Chat Page
             authController.authenticate(existingUser, getStage());
-        } catch (Exception e) {
-            // TODO: Display possible Login error messages to FXML
-            System.err.println("User Login Failed: " + e.getMessage() + e.getClass());
+        } catch (IllegalArgumentException e) {
+            AuthController.feedbackError(usernameFeedback, e.getMessage());
+        } catch (SecurityException e) {
+            AuthController.feedbackError(passwordFeedback, e.getMessage());
         }
     }
 
