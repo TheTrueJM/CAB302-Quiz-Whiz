@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -129,25 +130,27 @@
          </StackPane>
          <!-- Chat Input -->
          <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-padding: 10; -fx-border-color: #757575; -fx-border-radius: 8; -fx-background-color: white; -fx-border-width: 1; -fx-background-radius: 8;">
-               <HBox maxHeight="200.0" prefHeight="0.0" prefWidth="648.0">
+               <HBox fx:id="messageContainer" maxHeight="200.0" prefWidth="628.0">
                   <children>
-                     <HBox alignment="TOP_CENTER" prefHeight="61.0" prefWidth="648.0" spacing="10">
-                        <TextField fx:id="messageInputField" maxWidth="455.0" prefHeight="27.0" prefWidth="455.0" promptText="Enter Message..." style="-fx-background-insets: 0; -fx-border-insets: 0; -fx-border-color: white; -fx-background-color: transparent; -fx-prompt-text-fill: #757575; -fx-font-size: 12;" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="chatModeButton" alignment="CENTER" disable="true" opacity="1" prefHeight="29.0" prefWidth="54.0" style="-fx-cursor: hand;" styleClass="chat-mode-active" text="Chat" />
-                        <Button fx:id="quizModeButton" alignment="CENTER" prefHeight="27.0" prefWidth="55.0" style="-fx-cursor: hand;" styleClass="quiz-mode-disabled" text="Quiz" />
-                        <Button fx:id="sendMessage" alignment="TOP_CENTER" prefHeight="27.0" prefWidth="48.0" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" styleClass="upload-button">
-                              <graphic>
-                                 <ImageView fitHeight="22.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                          <Image url="@images/send.png" />
-                                    </image>
-                                 </ImageView>
-                              </graphic>
-                        <HBox.margin>
-                           <Insets top="5.0" />
-                        </HBox.margin>
-                        </Button>
-                     </HBox>
+                     <TextArea fx:id="messageInputField" maxWidth="490.0" prefWidth="326.0" promptText="Enter Message..." style="-fx-background-insets: 0; -fx-border-color: white; -fx-background-color: transparent; -fx-prompt-text-fill: #757575; -fx-font-size: 14; -fx-border-color: white;" styleClass="message-area" wrapText="true" HBox.hgrow="ALWAYS" />
+                     <Button fx:id="chatModeButton" alignment="CENTER" disable="true" opacity="1" prefHeight="29.0" prefWidth="54.0" style="-fx-cursor: hand;" styleClass="chat-mode-active" text="Chat">
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin>
+                  </Button>
+                     <Button fx:id="quizModeButton" alignment="CENTER" prefHeight="27.0" prefWidth="55.0" style="-fx-cursor: hand;" styleClass="quiz-mode-disabled" text="Quiz" />
+                     <Button fx:id="sendMessage" alignment="TOP_CENTER" prefHeight="27.0" prefWidth="48.0" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" styleClass="upload-button">
+                           <graphic>
+                              <ImageView fitHeight="22.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                       <Image url="@images/send.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                     </Button>
                   </children>
                </HBox>
          </VBox>

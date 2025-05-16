@@ -124,7 +124,15 @@
     -fx-background-color: white;
 }
 
-
+.message-area .viewport,
+.message-area .scroll-pane,
+.message-area .content {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-border-color: white;
+}
 
 
 

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Arrays;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -22,12 +23,17 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
+import javafx.scene.input.KeyCode;
+
 
 public class ChatController {
     // Chat Window
@@ -37,7 +43,7 @@ public class ChatController {
     @FXML private Button addNewChat;
     @FXML private Button confirmEditChatName;
     @FXML private TextField chatNameField;
-    @FXML private TextField messageInputField;
+    @FXML private TextArea messageInputField;
     @FXML private TextField noChatsField;
     @FXML private Button addNewChatMain;
     @FXML private TextField welcomeTitle;
@@ -49,6 +55,8 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
+    @FXML private Button sendMessage;
+    @FXML private HBox messageContainer;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -86,6 +94,7 @@ public class ChatController {
         setupEditChatNameButton();
         setupActivateEdit();
         setupMessageSendActions();
+        setupExpandingMessageInput();
         setupCreateChatButton();
         setupChatSettingsButton();
         setupToggleChatMode();
@@ -466,9 +475,73 @@ public class ChatController {
     }
 
     private void setupMessageSendActions() {
-        messageInputField.setOnAction(event -> SendAndReceiveMessage());
+        messageInputField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                event.consume();
+                SendAndReceiveMessage();
+            }
+        });
         sendMessage.setOnAction(event -> SendAndReceiveMessage());
     }
+
+    private void setupExpandingMessageInput() {
+        final double maxHeight = 200;
+
+        // Adjust height dynamically
+        messageInputField.textProperty().addListener((obs, oldText, newText) -> {
+            Platform.runLater(() -> adjustTextAreaHeight(maxHeight));
+        });
+
+        Platform.runLater(() -> adjustTextAreaHeight(maxHeight));
+    }
+
+    private void adjustTextAreaHeight(double maxHeight) {
+        String text = messageInputField.getText();
+        Font font = messageInputField.getFont();
+        double lineHeight = font.getSize() * 1.4;
+        double padding = 15;
+
+        TextFlow localTextFlow = new TextFlow();
+        Text textNode = new Text(text);
+        textNode.setFont(font);
+
+        double currentMessageInputFieldWidth = messageInputField.getWidth();
+        double calculationMaxWidth = currentMessageInputFieldWidth - 10;
+
+        localTextFlow.setMaxWidth(calculationMaxWidth);
+        localTextFlow.getChildren().add(textNode);
+
+        // Calculate lines
+        String[] linesArray = text.isEmpty() ? new String[]{""} : text.split("\r\n|\n|\r");
+        int explicitLines = (int) Arrays.stream(linesArray)
+                .filter(line -> !line.trim().isEmpty())
+                .count();
+        explicitLines = Math.max(explicitLines, 1);
+
+        double contentWidthForWrapping = localTextFlow.getMaxWidth();
+        double actualTextWidthUnwrapped = textNode.getLayoutBounds().getWidth();
+
+        int wrappedLines;
+        if (text.isEmpty()) {
+            wrappedLines = 1;
+        } else if (contentWidthForWrapping > 0 && actualTextWidthUnwrapped > 0) {
+            wrappedLines = (int) Math.ceil(actualTextWidthUnwrapped / contentWidthForWrapping);
+        } else {
+            wrappedLines = 1;
+        }
+        wrappedLines = Math.max(wrappedLines, 1);
+
+        int lineCount = Math.max(explicitLines, wrappedLines);
+
+        // Calculate and set height
+        double newHeight = lineCount * lineHeight + padding;
+        newHeight = Math.min(newHeight, maxHeight);
+
+        // Update heights
+        messageInputField.setPrefHeight(newHeight);
+        messageContainer.setPrefHeight(newHeight);
+    }
+
 
     private void editChatNameAction() {
         try {
