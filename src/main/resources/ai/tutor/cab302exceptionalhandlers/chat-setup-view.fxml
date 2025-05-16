@@ -21,7 +21,7 @@
     <stylesheets>
         <URL value="@ChatStyles.css" />
     </stylesheets>
-    <Pane fx:id="backgroundOverlay" style="-fx-background-color: white;" styleClass="translucent-background" />
+    <Pane fx:id="backgroundOverlay" styleClass="background" />
     <VBox alignment="TOP_CENTER" maxHeight="491.0" maxWidth="822.0" prefHeight="475.0" prefWidth="820.0" style="-fx-background-color: white; -fx-border-radius: 60; -fx-background-radius: 60; -fx-border-color: grey;" styleClass="setup-form" StackPane.alignment="CENTER">
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-radius: 60 60 0 0; -fx-background-color: #213355; -fx-border-radius: 60 60 0 0;">
          <children>

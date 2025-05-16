@@ -68,6 +68,8 @@ public class ChatController {
     private final AnswerOptionDAO answerOptionDAO;
     private boolean isQuiz;
     private final AIController aiController;
+    private boolean isThinking = false;
+    private int thinkingChatId = -1;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws IOException, RuntimeException, SQLException {
         if (authenticatedUser == null) {
@@ -272,6 +274,15 @@ public class ChatController {
                 chatMessagesVBox.getChildren().add(messageNode);
             }
 
+            // Re-add the thinking node if a task is still running for this chat
+            if (isThinking && thinkingChatId == selectedChat.getId()) {
+                Node thinkingNode = createThinkingNode();
+                chatMessagesVBox.getChildren().add(thinkingNode);
+            }
+
+            messageInputField.setDisable(isThinking);
+            sendMessage.setDisable(isThinking);
+
             // Scroll to bottom after all messages are added
             Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
         } catch (SQLException e) {
@@ -318,6 +329,7 @@ public class ChatController {
         HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
         return wrapper;
     }
+
 
     private void addUserMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_RIGHT);
@@ -443,6 +455,11 @@ public class ChatController {
                 messageInputField.clear();
                 addMessage(userMessage);
 
+            messageInputField.setDisable(true);
+            sendMessage.setDisable(true);
+
+            isThinking = true;
+            thinkingChatId = selectedChat.getId();
             Node thinkingNode = createThinkingNode();
             chatMessagesVBox.getChildren().add(thinkingNode);
             messageInputField.setDisable(true);
@@ -456,16 +473,22 @@ public class ChatController {
 
             aiResponseTask.setOnSucceeded(e -> {
                 Message aiResponse = aiResponseTask.getValue();
-                chatMessagesVBox.getChildren().remove(thinkingNode);
+                chatMessagesVBox.getChildren().removeLast();
                 addMessage(aiResponse);
+                isThinking = false;
+                thinkingChatId = -1;
                 messageInputField.setDisable(false);
+                sendMessage.setDisable(false);
             });
 
-                aiResponseTask.setOnFailed(e -> {
-                    Utils.showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
-                    chatMessagesVBox.getChildren().remove(thinkingNode);
-                    messageInputField.setDisable(false);
-                });
+            aiResponseTask.setOnFailed(e -> {
+                Utils.showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
+                chatMessagesVBox.getChildren().removeLast();
+                isThinking = false;
+                thinkingChatId = -1;
+                messageInputField.setDisable(false);
+                sendMessage.setDisable(false);
+            });
 
                 new Thread(aiResponseTask).start();
             } catch (SQLException e) {
