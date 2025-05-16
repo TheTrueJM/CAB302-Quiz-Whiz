@@ -67,6 +67,8 @@ public class ChatController {
     private final QuizQuestionDAO quizQuestionDAO;
     private final AnswerOptionDAO answerOptionDAO;
     private boolean isQuiz;
+    private boolean isThinking;
+    private int thinkingChatId;
     private final AIController aiController;
     private boolean isThinking = false;
     private int thinkingChatId = -1;
@@ -84,6 +86,8 @@ public class ChatController {
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
         this.isQuiz = false;
+        this.isThinking = false;
+        this.thinkingChatId = -1;
         this.aiController = new AIController();
     }
 
@@ -295,7 +299,6 @@ public class ChatController {
         chatsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldChat, newChat) -> {
             if (newChat != null) {
                 chatNameField.setText(newChat.getName());
-                // No try-except here as refreshMessageList() will handle it
                 refreshMessageList(newChat);
             } else {
                 chatNameField.setText("");
@@ -385,9 +388,7 @@ public class ChatController {
         chatMessagesVBox.heightProperty().addListener(heightListener);
 
         Platform.runLater(() -> {
-            Platform.runLater(() -> {
-                 chatScrollPane.setVvalue(1.0);
-            });
+            chatScrollPane.setVvalue(1.0);
             chatMessagesVBox.heightProperty().removeListener(heightListener);
         });
     }
@@ -490,11 +491,10 @@ public class ChatController {
                 sendMessage.setDisable(false);
             });
 
-                new Thread(aiResponseTask).start();
-            } catch (SQLException e) {
+            new Thread(aiResponseTask).start();
+        } catch (SQLException e) {
                 Utils.showErrorAlert("Failed to send message: " + e.getMessage());
-            }
-        });
+        }
     }
 
     private void setupMessageSendActions() {
@@ -591,13 +591,11 @@ public class ChatController {
        // Update chat name with button or text field confirm
        confirmEditChatName.setOnAction(event -> editChatNameAction());
        chatNameField.setOnAction(event -> editChatNameAction());
-
     }
 
     // Set up button that activates the ability to edit the chat name
     private void setupActivateEdit() {
         editChatName.setOnAction(actionEvent ->  {
-            // TODO: Refactor these into class in ChatStyles.css and change the css class instead
             editChatName.setVisible(false);
             chatNameField.setOpacity(0.8);
             chatNameField.setEditable(true);
@@ -681,7 +679,6 @@ public class ChatController {
             }
         });
     }
-
 
     /*
      * =========================================================================
