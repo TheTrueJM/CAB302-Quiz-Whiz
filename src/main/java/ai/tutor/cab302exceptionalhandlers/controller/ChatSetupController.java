@@ -1,11 +1,8 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -13,8 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Objects;
-import javafx.scene.control.*;
+import java.util.NoSuchElementException;
+
 import javafx.stage.FileChooser;
 
 import java.util.List;
@@ -32,114 +29,121 @@ public class ChatSetupController {
     @FXML private Pane backgroundOverlay;
     @FXML private Label settingsTitle;
 
-    private final ChatController mainController;
-    private final String operation;
-    private final SQLiteConnection db;
-    private Chat selectedChat;
 
-    public ChatSetupController(SQLiteConnection db, ChatController mainController, String operation, Chat selectedChat) throws SQLException {
+    private final SQLiteConnection db;
+    private final Chat currentChat;
+    private final User currentUser;
+
+    private final UserDAO userDAO;
+    private final ChatDAO chatDAO;
+    private final MessageDAO messageDAO;
+
+
+    public ChatSetupController(SQLiteConnection db, User currentUser, Chat currentChat) throws RuntimeException, SQLException {
         this.db = db;
-        this.operation = operation;
-        this.mainController = mainController;
-        this.selectedChat = selectedChat;
+        this.currentUser = currentUser;
+        this.currentChat = currentChat;
+
+        this.userDAO = new UserDAO(db);
+        this.chatDAO = new ChatDAO(db);
+        this.messageDAO = new MessageDAO(db);
     }
+
+    protected Stage getStage() {
+        return (Stage) settingsTitle.getScene().getWindow();
+    }
+
+
+    /*
+     * =======================
+     *    FXML UI Functions
+     * =======================
+     */
 
     @FXML
     public void initialize() {
-        if (Objects.equals(operation, "Create")) {
+        if (currentChat == null) {
             setupStartChatButton();
         }
-        else if ((Objects.equals(operation, "Update"))) {
-            configureChatSettings();
-            setupUpdateChatButton();
-        }
         else {
-            mainController.showErrorAlert("No chat selected for update.");
-            cancel();
+            setupUpdateChatButton();
+            configureChatSettings();
         }
+
         setupExitButton();
         setupBackgroundExit();
     }
+
 
     // Move other methods related to chat-setup-view.fxml
     private void setupStartChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                mainController.createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
-                cancel();
-            } catch (SQLException e ) {
-                mainController.showErrorAlert("Error creating chat" + e);
+                createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                chatReturn();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Creating Chat: " + e);
             }
         });
-    }
-
-    private void configureChatSettings(){
-        settingsTitle.setText("Chat Settings");
-        chatNameInput.setText(selectedChat.getName());
-        responseAttitude.setValue(selectedChat.getResponseAttitude());
-        quizDifficulty.setValue(selectedChat.getQuizDifficulty());
-        educationLevel.setValue(selectedChat.getEducationLevel());
-        chatTopic.setText(selectedChat.getStudyArea());
-        startChatButton.setText("Update Chat");
-
     }
 
     private void setupUpdateChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                mainController.updateChatDetails(mainController.getSelectedChat().getId(),chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
-                cancel();
-            } catch (SQLException e ) {
-                mainController.showErrorAlert("Error updating chat" + e);
+                updateChatDetails(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                chatReturn();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Updating Chat: " + e);
             }
         });
     }
 
-    private void cancel() {
-        try {
-            // Load the previous FXML (chat-view.fxml)
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("chat-view.fxml")
-            );
-            fxmlLoader.setController(mainController);
-
-            // Create the scene
-            Scene previousScene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-
-            // Get the current Stage
-            Stage stage = (Stage) startChatButton.getScene().getWindow();
-            stage.setScene(previousScene);
-
-        } catch (IOException e) {
-            mainController.showErrorAlert("Failed to return to chat view:" + e.getMessage());
-        }
+    private void configureChatSettings() {
+        settingsTitle.setText("Chat Settings");
+        chatNameInput.setText(currentChat.getName());
+        responseAttitude.setValue(currentChat.getResponseAttitude());
+        quizDifficulty.setValue(currentChat.getQuizDifficulty());
+        educationLevel.setValue(currentChat.getEducationLevel());
+        chatTopic.setText(currentChat.getStudyArea());
+        startChatButton.setText("Update Chat");
     }
 
     private void setupExitButton() {
         exitButton.setOnAction(actionEvent -> {
-            cancel();
+            try {
+                chatReturn();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Exiting Chat Setup: " + e);
+            }
         });
     }
+
+    private void setupBackgroundExit() {
+        backgroundOverlay.setOnMouseClicked(actionEvent -> {
+            try {
+                chatReturn();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Exiting Chat Setup: " + e);
+            }
+        });
+    }
+
 
     // Saves a copy of the currently selected chat as a TXT file to directory of your choosing
     @FXML
     private void downloadChat() {
-
         try {
-            // Initialize MessageDAO
-            MessageDAO messageDAO = new MessageDAO(db);
-
             // Get messages for the current chat
-            List<Message> messages = messageDAO.getAllChatMessages(selectedChat.getId());
+            List<Message> messages = messageDAO.getAllChatMessages(currentChat.getId());
 
             if (messages.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "No Messages", "This chat has no messages to download.");
+                Utils.showInfoAlert("This chat has no messages to download."); // Header: No Messages
                 return;
             }
 
             // Create file content
             StringBuilder fileContent = new StringBuilder();
-            fileContent.append("Chat: ").append(selectedChat.getName()).append("\n\n");
+            fileContent.append("Chat: ").append(currentChat.getName()).append("\n\n");
             for (Message message : messages) {
                 String sender = message.getFromUser() ? "User" : "AI";
                 fileContent.append(sender)
@@ -153,7 +157,7 @@ public class ChatSetupController {
             // Open file chooser
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Chat Messages");
-            fileChooser.setInitialFileName("chat_" + selectedChat.getName().replaceAll("[^a-zA-Z0-9]", "_") + "_messages.txt");
+            fileChooser.setInitialFileName("chat_" + currentChat.getName().replaceAll("[^a-zA-Z0-9]", "_") + "_messages.txt");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
             File file = fileChooser.showSaveDialog(downloadButton.getScene().getWindow());
 
@@ -162,30 +166,71 @@ public class ChatSetupController {
                 try (FileWriter writer = new FileWriter(file)) {
                     writer.write(fileContent.toString());
                 }
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Chat messages downloaded successfully!");
+                Utils.showInfoAlert("Chat messages downloaded successfully!"); // Header: Success
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to retrieve messages: " + e.getMessage());
+            Utils.showErrorAlert( "Failed to retrieve messages: " + e.getMessage()); // Header: Database Error
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "File Error", "Failed to save file: " + e.getMessage());
+            Utils.showErrorAlert("Failed to save file: " + e.getMessage()); // Header: File Error
         }
     }
 
 
-    private void setupBackgroundExit() {
-        backgroundOverlay.setOnMouseClicked(actionEvent -> {
-            cancel();
-        });
+    private void chatReturn() throws IOException, RuntimeException, SQLException  {
+        Utils.loadView("chat", new ChatController(db, currentUser), getStage());
     }
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-}
 
 
+    /*
+     * =====================
+     *    CRUD Operations
+     * =====================
+     */
 
+    // Create a new Chat record using UI user input
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
+        if (Utils.validateNullOrEmpty(name)) {
+            throw new IllegalArgumentException("Chat name cannot be empty");
+        }
+        if (Utils.validateNullOrEmpty(responseAttitude)) {
+            throw new IllegalArgumentException("Chat response attitude cannot be empty");
+        }
+        if (Utils.validateNullOrEmpty(quizDifficulty)) {
+            throw new IllegalArgumentException("Chat quiz difficulty cannot be empty");
+        }
+
+        if (Utils.validateNullOrEmpty(educationLevel)) { educationLevel = null; }
+        if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
+
+        // Create and Add Chat to database
+        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+        chatDAO.createChat(newChat);
+
+        return newChat;
+    }
+
+
+    public void updateChatDetails(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, NoSuchElementException, SQLException {
+        if (Utils.validateNullOrEmpty(name)) {
+            throw new IllegalArgumentException("Chat name attitude cannot be empty");
+        }
+        if (Utils.validateNullOrEmpty(responseAttitude)) {
+            throw new IllegalArgumentException("Chat response attitude cannot be empty");
+        }
+        if (Utils.validateNullOrEmpty(quizDifficulty)) {
+            throw new IllegalArgumentException("Chat quiz difficulty cannot be empty");
+        }
+
+        if (Utils.validateNullOrEmpty(educationLevel)) { educationLevel = null; }
+        if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
+
+
+        currentChat.setName(name);
+        currentChat.setResponseAttitude(responseAttitude);
+        currentChat.setQuizDifficulty(quizDifficulty);
+        currentChat.setResponseAttitude(educationLevel);
+        currentChat.setStudyArea(studyArea);
+        chatDAO.updateChat(currentChat);
+    }
 }

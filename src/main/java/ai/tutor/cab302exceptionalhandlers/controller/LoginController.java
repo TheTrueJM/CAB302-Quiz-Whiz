@@ -1,6 +1,7 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -56,7 +57,7 @@ public class LoginController extends AuthController {
             User existingUser = authenticateUser(username, password);
 
             // Open Chat Page
-            loadChat(existingUser, getStage());
+            loadChat(existingUser);
 
         } catch (IllegalArgumentException e) {
             errorFeedback(usernameFeedback, e.getMessage());
@@ -68,15 +69,7 @@ public class LoginController extends AuthController {
     // Open Sign Up Page
     @FXML
     protected void switchLayout() throws IOException, RuntimeException, SQLException {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                QuizWhizApplication.class.getResource("sign-up-view.fxml")
-        );
-        SignUpController controller = new SignUpController(db);
-        fxmlLoader.setController(controller);
-
-        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-        Stage stage = getStage();
-        stage.setScene(scene);
+        Utils.loadView("sign-up", new SignUpController(db), getStage());
     }
 
 

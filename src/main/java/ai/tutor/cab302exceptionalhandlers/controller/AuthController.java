@@ -1,6 +1,7 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
@@ -47,9 +48,9 @@ public abstract class AuthController {
 
 
     /*
-     * =========================
-     *    FXML UI Controllers
-     * =========================
+     * =======================
+     *    FXML UI Functions
+     * =======================
      */
 
     @FXML
@@ -69,20 +70,13 @@ public abstract class AuthController {
     @FXML
     protected abstract void onSubmit() throws IOException, SQLException;
 
-    public void loadChat(User user, Stage stage) throws IOException, RuntimeException, SQLException {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                QuizWhizApplication.class.getResource("chat-view.fxml")
-        );
-
-        ChatController controller = new ChatController(db, user);
-        fxmlLoader.setController(controller);
-
-        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-        stage.setScene(scene);
+    public void loadChat(User user) throws IOException, RuntimeException, SQLException {
+        Utils.loadView("chat", new ChatController(db, user), getStage());
     }
 
     @FXML
     protected abstract void switchLayout() throws IOException, RuntimeException, SQLException;
+
 
     /*
      * =====================

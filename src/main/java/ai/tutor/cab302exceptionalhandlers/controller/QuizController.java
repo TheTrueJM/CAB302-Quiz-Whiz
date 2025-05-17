@@ -1,5 +1,6 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
@@ -77,6 +78,10 @@ public class QuizController {
         }
     }
 
+    private Stage getStage() {
+        return (Stage) quizNameField.getScene().getWindow();
+    }
+
     // Intialisation for assets(currently none but might need this)
     @FXML
     public void initialize() {
@@ -85,19 +90,12 @@ public class QuizController {
         setupReturnButton();
     }
 
-    //Error alert copy pasted from chat controller
-    public void showErrorAlert (String message){
-        // Create error alert object
-        Alert alert = new Alert(Alert.AlertType.ERROR, message);
-        alert.showAndWait();
-    }
-
     //A function that places each question into a list to use later
     private void setupQuestions(){
         try {
             quizQuestions = quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
             if (quizQuestions == null || quizQuestions.isEmpty()) {
-                showErrorAlert("No questions found for the selected quiz.");
+                Utils.showErrorAlert("No questions found for the selected quiz.");
                 return;
             }
 
@@ -110,7 +108,7 @@ public class QuizController {
                 answerOptions.put(questionNum, options);
             }
         } catch (SQLException e) {
-            showErrorAlert("Failed to load quiz questions: " + e.getMessage());
+            Utils.showErrorAlert("Failed to load quiz questions: " + e.getMessage());
         }
     }
 
@@ -151,7 +149,7 @@ public class QuizController {
         // Get the answer options
         List<AnswerOption> options = answerOptions.get(questionNumber);
         if (options == null || options.size() < 4) {
-            showErrorAlert("Answer options are missing");
+            Utils.showErrorAlert("Answer options are missing");
             return;
         }
 
@@ -260,7 +258,7 @@ public class QuizController {
             checkAnswers();
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Failed to submit answers: " + e.getMessage());
+            Utils.showErrorAlert("Failed to submit answers: " + e.getMessage());
         }
     }
 
@@ -318,10 +316,11 @@ public class QuizController {
     //Return to chat
     private void setupReturnButton() {
         returnButton.setOnAction(actionEvent -> {
-            Object[] params = {db, currentUser};
-
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            Utils.loadPage("chat-view.fxml", ChatController.class, stage, params);
+            try {
+                Utils.loadView("chat", new ChatController(db, currentUser), getStage());
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Returning To Chat: " + e);
+            }
         });
     }
 
