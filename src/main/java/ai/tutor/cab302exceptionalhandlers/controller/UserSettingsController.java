@@ -77,7 +77,7 @@ public class UserSettingsController {
                 String passwordText = passwordField.getText();
                 String usernameText = usernameField.getText();
 
-                if(!AuthController.validUsername(usernameText)){
+                if(!User.validUsername(usernameText)){
                     System.err.println("Invalid username...");
                     return;
                 }
@@ -86,7 +86,7 @@ public class UserSettingsController {
 
                 // Only update if different
                 if(!passwordText.equals(currentUser.getPasswordHash())){
-                    if(!AuthController.validPassword(passwordText)){
+                    if(!User.validPassword(passwordText)){
                         System.err.println("Invalid password...");
                         return;
                     }

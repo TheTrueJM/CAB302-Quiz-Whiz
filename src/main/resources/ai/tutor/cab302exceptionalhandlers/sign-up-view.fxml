@@ -59,7 +59,7 @@
                </PasswordField>
             </children>
          </VBox>
-          <Button fx:id="signUpButton" disable="true" onAction="#onSignUp" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" styleClass="toggle-signup" text="Sign Up">
+          <Button fx:id="submitButton" disable="true" onAction="#onSubmit" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" styleClass="toggle-signup" text="Sign Up">
             <VBox.margin>
                <Insets bottom="10.0" />
             </VBox.margin>
@@ -71,7 +71,7 @@
                      <Insets right="6.0" />
                   </HBox.margin>
                </Label>
-                <Button onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-login" text="Login" />
+                <Button onAction="#switchLayout" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-login" text="Login" />
             </children>
          </HBox>
       
