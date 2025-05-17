@@ -35,6 +35,14 @@ public class User {
     }
 
 
+    public static boolean validUsername(String username) {
+        return username != null && username.matches("^[a-zA-Z0-9]+$");
+    }
+
+    public static boolean validPassword(String password) {
+        return password != null && password.matches("^[a-zA-Z0-9]+$");
+    }
+
     public static String hashPassword(String passwordPlaintext) {
         Hash passwordHash = Password.hash(passwordPlaintext).addRandomSalt(16).with(scrypt);
         return passwordHash.getResult();

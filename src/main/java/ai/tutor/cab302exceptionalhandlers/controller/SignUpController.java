@@ -1,11 +1,11 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
-import io.github.ollama4j.models.request.Auth;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -13,29 +13,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class SignUpController {
-    private final AuthController authController;
-
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField passwordField;
+public class SignUpController extends AuthController {
     @FXML
     private TextField confirmPasswordField;
-    @FXML
-    private Button signUpButton;
-    @FXML
-    private Label usernameFeedback;
-    @FXML
-    private Label passwordFeedback;
 
-    private boolean usernameEmpty = true;
-    private boolean passwordEmpty = true;
     private boolean passwordCEmpty = true;
 
 
     public SignUpController(SQLiteConnection db) throws RuntimeException, SQLException {
-        this.authController = new AuthController(db);
+        super(db);
     }
 
 
@@ -44,10 +30,6 @@ public class SignUpController {
      *    FXML UI Controllers
      * =========================
      */
-
-    private Stage getStage() {
-        return (Stage) signUpButton.getScene().getWindow();
-    }
 
     @FXML
     protected void onFieldChanged(KeyEvent e) {
@@ -70,38 +52,72 @@ public class SignUpController {
         submitButtonToggle();
     }
 
-    private void submitButtonToggle() {
-        signUpButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
+    protected void submitButtonToggle() {
+        submitButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
     }
 
     @FXML
-    protected void onSignUp() throws IOException, SQLException {
-        AuthController.resetFeedbackError(usernameFeedback,passwordFeedback);
+    protected void onSubmit() throws IOException, RuntimeException, SQLException {
+        resetErrorFeedback();
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
         try {
             if (!password.equals(confirmPassword)) {
-                AuthController.feedbackError(passwordFeedback, "Passwords do not match");
+                throw new SecurityException("Passwords do not match");
             }
-            else {
-                User newUser = authController.signUp(username, password);
 
-                // Open Chat Page
-                authController.authenticate(newUser, getStage());
-            }
+            User newUser = authenticateUser(username, password);
+
+            // Open Chat Page
+            loadChat(newUser, getStage());
 
         } catch (IllegalArgumentException e) {
-            AuthController.feedbackError(usernameFeedback, e.getMessage());
+            errorFeedback(usernameFeedback, e.getMessage());
         } catch (SecurityException e) {
-            AuthController.feedbackError(passwordFeedback, e.getMessage());
+            errorFeedback(passwordFeedback, e.getMessage());
         }
     }
 
     // Open Login Page
     @FXML
-    protected void switchToLogin() throws IOException, SQLException {
-        authController.switchLayout("login", getStage());
+    protected void switchLayout() throws IOException, RuntimeException, SQLException {
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                QuizWhizApplication.class.getResource("login-view.fxml")
+        );
+        LoginController controller = new LoginController(db);
+        fxmlLoader.setController(controller);
+
+        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+        Stage stage = getStage();
+        stage.setScene(scene);
+    }
+
+
+    /*
+     * =====================
+     *    CRUD Operations
+     * =====================
+     */
+
+    public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
+        if (!User.validUsername(username)) {
+            throw new IllegalArgumentException("Username is invalid");
+        }
+        if (!User.validPassword(password)) {
+            throw new SecurityException("Password is invalid");
+        }
+
+        User existingUser = userDAO.getUser(username);
+        if (existingUser != null) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
+        String hashedPassword = User.hashPassword(password);
+        User newUser = new User(username, hashedPassword);
+        userDAO.createUser(newUser);
+
+        return newUser;
     }
 }
