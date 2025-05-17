@@ -477,35 +477,6 @@ public class ChatControllerTest {
         assertEquals(userMessage.getIsQuiz(), responseMessage.getIsQuiz());
     }
 
-    @Disabled
-    public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        int chatID = newChat.getId();
-
-        /* First User Message */
-        Message firstUserMessage = chatController.createNewChatMessage(chatID, "My favourite number is 5, remember that.", true, false);
-
-        /* First AI Response */
-        Message firstResponse = chatController.generateChatMessageResponse(firstUserMessage);
-
-        /* Second User Message */
-        Message secondUserMessage = chatController.createNewChatMessage(chatID, "So what is my favourite number?", true, false);
-
-        /* Second AI Response */
-        Message secondResponse = chatController.generateChatMessageResponse(secondUserMessage);
-
-        assertEquals(firstUserMessage.getChatId(), secondResponse.getChatId());
-        assertEquals(firstUserMessage.getId() + 1, firstResponse.getId());
-        assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
-        assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
-}
-
-
     @Test
     public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
