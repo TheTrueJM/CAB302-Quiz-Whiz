@@ -19,11 +19,12 @@ public class UserSettingsController {
     @FXML private Button backButton;
     @FXML private Button deleteUserButton;
     @FXML private TextField usernameField;
-    @FXML private TextField currentPasswordField;
-    @FXML private TextField newPasswordField;
-    @FXML private TextField confirmPasswordField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField newPasswordField;
     @FXML private TextField studyArea;
     @FXML private ComboBox educationLevelCombo;
+    @FXML private Label usernameFeedback;
+    @FXML private Label passwordFeedback;
 
     // User stats widgets
     @FXML private Label quizzesTakenLabel;
@@ -59,27 +60,73 @@ public class UserSettingsController {
     }
 
 
-    // TODO: Add separate buttons for change username and password
     private void setupSaveButton(){
         saveButton.setOnAction(actionEvent -> {
             try {
-                String username = usernameField.getText();
-                String currentPassword = currentPasswordField.getText();
-                String newPassword = newPasswordField.getText();
-                String confirmPassword = confirmPasswordField.getText();
+                usernameFeedback.setText(null);
+                passwordFeedback.setText(null);
 
-                if (!newPassword.equals(confirmPassword)) {
-                    throw new SecurityException("Passwords do not match");
+                String passwordText = passwordField.getText();
+                String newPasswordText = newPasswordField.getText();
+                String usernameText = usernameField.getText();
+
+                String originalUsername = currentUser.getUsername();
+
+                Boolean usernameChanged = false;
+                Boolean passwordChanged = false;
+
+                if (!User.validUsername(usernameText)){
+                    usernameFeedback.setText("Invalid username, try again");
+                    return;
                 }
 
-                if (Utils.validateNullOrEmpty(currentPassword) && Utils.validateNullOrEmpty(newPassword)) {
-                    updateUsername(username);
-                } else {
-                    updatePassword(newPassword, currentPassword);
+                if (!originalUsername.equals(usernameField.getText())) {
+                    for (User user : userDAO.getAllUsers()) {
+                        if (user.getUsername().equals(usernameText)) {
+                            usernameFeedback.setText("Username already exists");
+                            return;
+                        }
+                    }
+                    currentUser.setUsername(usernameField.getText());
+                    usernameChanged = true;
                 }
-                Utils.showInfoAlert("User details updated");
-            } catch (Exception e) {
-                Utils.showErrorAlert(e.getMessage());
+
+
+                if (Utils.validateNullOrEmpty(newPasswordText)) {
+                    if (!User.validPassword(passwordText)) {
+                        passwordFeedback.setText("Invalid password, try again");
+                        return;
+                    }
+
+                    if (!currentUser.verifyPassword(passwordText)){
+                        passwordFeedback.setText("Wrong Password");
+                        return;
+                    }
+
+                    String newPasswordHash = User.hashPassword(newPasswordText);
+                    currentUser.setPasswordHash(newPasswordHash);
+                    passwordChanged = true;
+                }
+
+                String successMessage = null;
+
+                if (usernameChanged && passwordChanged) {
+                    successMessage = "Username & Password updated";
+                } else if (usernameChanged) {
+                    successMessage = "Username updated";
+                } else if (passwordChanged) {
+                    successMessage = "Password updated";
+                }
+
+                if (successMessage != null) {
+                    userDAO.updateUser(currentUser);
+                    Utils.showAlert(Alert.AlertType.INFORMATION, "Success", successMessage);
+                    passwordField.setText(null);
+                    newPasswordField.setText(null);
+                }
+
+            } catch (SQLException e) {
+                    Utils.showAlert(Alert.AlertType.INFORMATION, "Failed to update details: ", e.getMessage());
             }
         });
     }
@@ -87,10 +134,13 @@ public class UserSettingsController {
     private void setupDeleteButton(){
         deleteUserButton.setOnAction(actionEvent -> {
             try {
-
-                //TODO: Should probably make a popup asking user to confirm
-                userDAO.deleteUser(currentUser);
-
+                Optional<ButtonType> result = Utils.showAlert(Alert.AlertType.CONFIRMATION, "Logout", "Are you sure you want to logout of your account?");
+                if (result.isPresent()) {
+                    ButtonType buttonClicked = result.get();
+                    if (buttonClicked == ButtonType.OK) {
+                        userDAO.deleteUser(currentUser);
+                    }
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -105,10 +155,16 @@ public class UserSettingsController {
 
     private void setupLogoutButton(){
         logoutButton.setOnAction(actionEvent -> {
-            try {
-                Utils.loadView("login", new LoginController(db), getStage());
-            } catch (Exception e ) {
-                Utils.showErrorAlert("Error Logging Out: " + e);
+            Optional<ButtonType> result = Utils.showAlert(Alert.AlertType.CONFIRMATION, "Logout", "Are you sure you want to logout of your account?");
+            if (result.isPresent()) {
+                ButtonType buttonClicked = result.get();
+                if (buttonClicked == ButtonType.OK) {
+                    try {
+                        Utils.loadView("login", new LoginController(db), getStage());
+                    } catch (Exception e ) {
+                        Utils.showErrorAlert("Error Logging Out: " + e);
+                    }
+                }
             }
         });
     }

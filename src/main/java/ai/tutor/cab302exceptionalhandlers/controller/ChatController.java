@@ -35,7 +35,6 @@ import javafx.scene.input.KeyCode;
 public class ChatController {
     // Chat Window
     @FXML private ListView<Chat> chatsListView;
-    @FXML private ListView<Message> messagesListView;
     @FXML private Button editChatName;
     @FXML private Button addNewChat;
     @FXML private Button confirmEditChatName;
