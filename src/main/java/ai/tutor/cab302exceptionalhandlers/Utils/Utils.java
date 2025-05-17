@@ -1,14 +1,25 @@
-package ai.tutor.cab302exceptionalhandlers.model;
+package ai.tutor.cab302exceptionalhandlers.Utils;
 
 import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 
 public final class Utils {
+    // Generic function that loads fxml page and controller class
+    public static void loadView(String viewName, Object controller, Stage stage) throws IOException, NullPointerException {
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                QuizWhizApplication.class.getResource( viewName + "-view.fxml")
+        );
+        fxmlLoader.setController(controller);
+
+        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+
     // Generic function that loads fxml page and controller class
     // TODO: Move to accessible place
     public static <T> void loadPage(String fileName, Class<T> controllerClass, Stage stage, Object[] params) {

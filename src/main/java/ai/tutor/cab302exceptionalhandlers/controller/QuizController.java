@@ -1,5 +1,6 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
