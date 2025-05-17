@@ -61,7 +61,7 @@ public class ChatController {
     private boolean isQuiz;
     private final AIController aiController;
 
-    public ChatController(SQLiteConnection db, User authenticatedUser) throws RuntimeException, SQLException, IOException {
+    public ChatController(SQLiteConnection db, User authenticatedUser) throws IOException, RuntimeException, SQLException {
         if (authenticatedUser == null) {
             throw new IllegalStateException("No user was authenticated");
         }
@@ -94,6 +94,10 @@ public class ChatController {
         setupUserDetailsButton();
     }
 
+    private Stage getStage() {
+        return (Stage) chatsListView.getScene().getWindow();
+    }
+
     // Problem: ChatController is very dependant on AIController, should that be the case?
     public boolean isOllamaRunning() {
         return aiController.isOllamaRunning();
@@ -116,13 +120,6 @@ public class ChatController {
      *                          FXML UI Controllers
      * =========================================================================
      */
-
-    public void showErrorAlert (String message){
-        // Create error alert object
-        Alert alert = new Alert(Alert.AlertType.ERROR, message);
-        alert.showAndWait();
-        System.err.println("Error: " + message);
-    }
 
     private void setupChatListView(){
         chatsListView.setCellFactory(listView -> new ListCell<Chat>() {
@@ -166,7 +163,7 @@ public class ChatController {
                                 chatDAO.deleteChat(chat);
                                 refreshChatListView();
                             } catch (SQLException e) {
-                                showErrorAlert("Failed to delete chat" + e.getMessage());
+                                Utils.showErrorAlert("Failed to delete chat" + e.getMessage());
                             }
                         }
                     }
@@ -247,7 +244,7 @@ public class ChatController {
                 toggleGreetingVisibility();
             }
         } catch (SQLException e) {
-            showErrorAlert("Failed to load chats: " + e.getMessage());
+            Utils.showErrorAlert("Failed to load chats: " + e.getMessage());
         }
     }
 
@@ -264,7 +261,7 @@ public class ChatController {
             // Scroll to bottom after all messages are added
             Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
         } catch (SQLException e) {
-            showErrorAlert("Failed to load messages: " + e.getMessage());
+            Utils.showErrorAlert("Failed to load messages: " + e.getMessage());
         }
     }
 
@@ -329,7 +326,13 @@ public class ChatController {
         Button takeQuizButton = new Button("Take Quiz");
         takeQuizButton.getStyleClass().add("takeQuizButton");
         VBox.setMargin(takeQuizButton, new Insets(6, 0, 0, 0));
-        takeQuizButton.setOnAction(event -> handleTakeQuiz(event, message));
+        takeQuizButton.setOnAction(event -> {
+            try {
+                handleTakeQuiz(event, message);
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading Quiz: " + e);
+            }
+        });
         verticalContainer.getChildren().add(takeQuizButton);
     }
 
@@ -395,25 +398,10 @@ public class ChatController {
         return wrapper;
     }
 
-    private void handleTakeQuiz(ActionEvent actionEvent, Message message) {
+    private void handleTakeQuiz(ActionEvent actionEvent, Message message) throws IOException, RuntimeException, SQLException {
         // TODO: Implement logic for quiz action
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    QuizWhizApplication.class.getResource("quiz-view.fxml")
-            );
-
-            QuizController controller = new QuizController(db, quizDAO.getQuiz(message.getId()), currentUser);
-            fxmlLoader.setController(controller);
-
-            Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-
-            stage.setScene(scene);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Quiz currentQuiz = quizDAO.getQuiz(message.getId());
+        Utils.loadView("quiz", new QuizController(db, currentQuiz, currentUser), getStage());
     }
 
     public void setupSendAndReceiveMessage() {
@@ -421,20 +409,20 @@ public class ChatController {
             Chat selectedChat = getSelectedChat();
 
             if (!isOllamaRunning()) {
-                showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
+                Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
                 return;
             } else if (!hasModel()) {
-                showErrorAlert("Ollama model is not available. Please run: ollama pull " + getModelName());
+                Utils.showErrorAlert("Ollama model is not available. Please run: ollama pull " + getModelName());
                 return;
             }
 
             if (selectedChat == null) {
-                showErrorAlert("No chat selected");
+                Utils.showErrorAlert("No chat selected");
                 return;
             }
             String content = messageInputField.getText();
             if (content == null || content.trim().isEmpty()) {
-                showErrorAlert("Message cannot be empty");
+                Utils.showErrorAlert("Message cannot be empty");
                 return;
             }
             try {
@@ -461,14 +449,14 @@ public class ChatController {
                 });
 
                 aiResponseTask.setOnFailed(e -> {
-                    showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
+                    Utils.showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
                     chatMessagesVBox.getChildren().remove(thinkingNode);
                     messageInputField.setDisable(false);
                 });
 
                 new Thread(aiResponseTask).start();
             } catch (SQLException e) {
-                showErrorAlert("Failed to send message: " + e.getMessage());
+                Utils.showErrorAlert("Failed to send message: " + e.getMessage());
             }
         });
     }
@@ -478,7 +466,7 @@ public class ChatController {
             Chat selectedChat = getSelectedChat();
             String newName = chatNameField.getText();
             if (selectedChat == null) {
-                showErrorAlert("No chat selected");
+                Utils.showErrorAlert("No chat selected");
                 return;
             }
             updateChatName(selectedChat.getId(), newName); // Let updateChatName handle validation
@@ -489,7 +477,7 @@ public class ChatController {
             confirmEditChatName.setVisible(false);
             refreshChatListView();
         } catch (Exception e) {
-            showErrorAlert("Failed to update chat name " + e.getMessage());
+            Utils.showErrorAlert("Failed to update chat name " + e.getMessage());
         }
     }
 
@@ -516,16 +504,22 @@ public class ChatController {
     private void setupCreateChatButton() {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
         addNewChat.setOnAction(actionEvent -> {
-            loadChatSettings(actionEvent, "Create");
+            try {
+                loadChatSettings();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading Chat Setup: " + e);
+            }
         });
     }
 
-
-
-    // Loads settings of specfic chat
+    // Loads settings of specific chat
     private void setupChatSettingsButton() {
         chatSettingsButton.setOnAction(event -> {
-            loadChatSettings(event, "Update");
+            try {
+                loadChatSettings();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading Chat Setting: " + e);
+            }
         });
     }
 
@@ -533,19 +527,17 @@ public class ChatController {
         return chatsListView.getSelectionModel().getSelectedItem();
     }
 
-    private void loadChatSettings(ActionEvent actionEvent, String operation) {
-        Object[] params = {db, this, operation, getSelectedChat()};
-
-        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-        Utils.loadPage("chat-setup-view.fxml", ChatSetupController.class, stage, params);
+    private void loadChatSettings() throws IOException, RuntimeException, SQLException {
+        Utils.loadView("chat-setup", new ChatSetupController(db, currentUser, getSelectedChat()), getStage());
     }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            Object[] params = {db};
-
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            Utils.loadPage("login-view.fxml", LoginController.class, stage, params);
+            try {
+                Utils.loadView("login", new LoginController(db), getStage());
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Logging Out: " + e);
+            }
         });
     }
 
@@ -573,15 +565,14 @@ public class ChatController {
 
     private void setupUserDetailsButton() {
         userDetailsButton.setOnAction(actionEvent -> {
-            System.out.println("=================User Details================");
-
-            Object[] params = {db, currentUser};
-
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            Utils.loadPage("user-settings-view.fxml", UserSettingsController.class, stage, params);
-
+            try {
+                Utils.loadView("user-settings", new UserSettingsController(db, currentUser), getStage());
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading User Settings: " + e);
+            }
         });
     }
+
 
     /*
      * =========================================================================
@@ -590,23 +581,24 @@ public class ChatController {
      */
 
     // Create a new Chat record using UI user input
+    // TODO: Remove as it's in ChatSetup
     public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
-        if (validateNullOrEmpty(name)) {
-            showErrorAlert("Chat name cannot be empty");
+        if (Utils.validateNullOrEmpty(name)) {
+            Utils.showErrorAlert("Chat name cannot be empty");
             throw new IllegalArgumentException("Chat name difficulty cannot be empty");
         }
-        if (validateNullOrEmpty(responseAttitude)) {
-            showErrorAlert("Chat response attitude cannot be empty");
+        if (Utils.validateNullOrEmpty(responseAttitude)) {
+            Utils.showErrorAlert("Chat response attitude cannot be empty");
             throw new IllegalArgumentException("Chat name response cannot be empty");
         }
-        if (validateNullOrEmpty(quizDifficulty)) {
-            showErrorAlert("Chat quiz difficulty cannot be empty");
+        if (Utils.validateNullOrEmpty(quizDifficulty)) {
+            Utils.showErrorAlert("Chat quiz difficulty cannot be empty");
             throw new IllegalArgumentException("Chat quiz difficulty cannot be empty");
 
         }
 
-        if (validateNullOrEmpty(educationLevel)) { educationLevel = null; }
-        if (validateNullOrEmpty(studyArea)) { studyArea = null; }
+        if (Utils.validateNullOrEmpty(educationLevel)) { educationLevel = null; }
+        if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
 
         // Create and Add Chat to database
         Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
@@ -643,20 +635,21 @@ public class ChatController {
     }
 
     // Update the details of a specific Chat record
+    // TODO: Remove as it's in ChatSetup
     public void updateChatDetails(int chatId, String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, NoSuchElementException, SQLException {
-        if (validateNullOrEmpty(name)) {
+        if (Utils.validateNullOrEmpty(name)) {
             throw new IllegalArgumentException("Chat name attitude cannot be empty");
         }
 
-        if (validateNullOrEmpty(responseAttitude)) {
+        if (Utils.validateNullOrEmpty(responseAttitude)) {
             throw new IllegalArgumentException("Chat response attitude cannot be empty");
         }
-        if (validateNullOrEmpty(quizDifficulty)) {
+        if (Utils.validateNullOrEmpty(quizDifficulty)) {
             throw new IllegalArgumentException("Chat quiz difficulty cannot be empty");
         }
 
-        if (validateNullOrEmpty(educationLevel)) { educationLevel = null; }
-        if (validateNullOrEmpty(studyArea)) { studyArea = null; }
+        if (Utils.validateNullOrEmpty(educationLevel)) { educationLevel = null; }
+        if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
 
 
         Chat currentChat = getChat(chatId);
@@ -670,7 +663,7 @@ public class ChatController {
 
     // Update the name of a specific Chat record
     public void updateChatName(int chatId, String newName) throws IllegalArgumentException, NoSuchElementException, SQLException {
-        if (validateNullOrEmpty(newName)) {
+        if (Utils.validateNullOrEmpty(newName)) {
             throw new IllegalArgumentException("Chat name cannot be empty");
         }
 
@@ -682,7 +675,7 @@ public class ChatController {
 
     // Create a Message object using UI user input
     public Message createNewChatMessage(int chatId, String content, boolean fromUser, boolean isQuiz) throws NoSuchElementException, SQLException {
-        if (validateNullOrEmpty(content)) {
+        if (Utils.validateNullOrEmpty(content)) {
             throw new IllegalArgumentException("Message content cannot be empty");
         }
 
@@ -770,7 +763,7 @@ public class ChatController {
             throw new IllegalArgumentException("Question must be for a quiz");
         }
 
-        if (validateNullOrEmpty(questionContent)) {
+        if (Utils.validateNullOrEmpty(questionContent)) {
             throw new IllegalArgumentException("Question content cannot be empty");
         }
 
@@ -790,11 +783,11 @@ public class ChatController {
             throw new IllegalArgumentException("Answer option must be for a quiz question");
         }
 
-        if (validateNullOrEmpty(option.getOptionLetter())) {
+        if (Utils.validateNullOrEmpty(option.getOptionLetter())) {
             throw new IllegalArgumentException("Answer option letter cannot be empty");
         }
 
-        if (validateNullOrEmpty(option.getOptionText())) {
+        if (Utils.validateNullOrEmpty(option.getOptionText())) {
             throw new IllegalArgumentException("Answer option text cannot be empty");
         }
 
@@ -823,9 +816,4 @@ public class ChatController {
         }
         return quiz;
     }
-
-    private boolean validateNullOrEmpty(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
 }

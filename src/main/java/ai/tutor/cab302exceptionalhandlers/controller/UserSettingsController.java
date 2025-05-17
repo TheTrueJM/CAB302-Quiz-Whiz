@@ -13,7 +13,6 @@ public class UserSettingsController {
     private UserDAO userDAO;
     private SQLiteConnection db;
     private User currentUser;
-    private Stage stage;
 
     @FXML private Button saveButton;
     @FXML private Button logoutButton;
@@ -34,9 +33,8 @@ public class UserSettingsController {
         userDAO = new UserDAO(db);
     }
 
-    public UserSettingsController() throws SQLException {
-        db = new SQLiteConnection();
-        userDAO = new UserDAO(db);
+    private Stage getStage() {
+        return (Stage) saveButton.getScene().getWindow();
     }
 
     @FXML
@@ -107,24 +105,31 @@ public class UserSettingsController {
                 e.printStackTrace();
             }
 
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            Utils.loadPage("login-view.fxml", LoginController.class, stage, new Object[]{db});
+            try {
+                Utils.loadView("login", new LoginController(db), getStage());
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Logging Out: " + e);
+            }
         });
     }
 
     private void setupLogoutButton(){
         logoutButton.setOnAction(actionEvent -> {
-            currentUser = null;
-
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            Utils.loadPage("login-view.fxml", LoginController.class, stage, new Object[]{db});
+            try {
+                Utils.loadView("login", new LoginController(db), getStage());
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Logging Out: " + e);
+            }
         });
     }
 
     private void setupBackButton(){
         backButton.setOnAction(actionEvent -> {
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            Utils.loadPage("chat-view.fxml", ChatController.class, stage, new Object[]{db, currentUser});
+            try {
+                Utils.loadView("chat", new ChatController(db, currentUser), getStage());
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Returning To Chat: " + e);
+            }
         });
     }
 }

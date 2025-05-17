@@ -48,9 +48,9 @@ public abstract class AuthController {
 
 
     /*
-     * =========================
-     *    FXML UI Controllers
-     * =========================
+     * =======================
+     *    FXML UI Functions
+     * =======================
      */
 
     @FXML
@@ -76,6 +76,7 @@ public abstract class AuthController {
 
     @FXML
     protected abstract void switchLayout() throws IOException, RuntimeException, SQLException;
+
 
     /*
      * =====================
