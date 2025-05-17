@@ -142,7 +142,7 @@ public class UserSettingsController {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                Utils.showAlert(Alert.AlertType.INFORMATION, "Failed to logout: ", e.getMessage());
             }
 
             try {
