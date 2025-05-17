@@ -1,6 +1,5 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 import ai.tutor.cab302exceptionalhandlers.model.*;
@@ -14,11 +13,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -70,8 +67,6 @@ public class ChatController {
     private boolean isThinking;
     private int thinkingChatId;
     private final AIController aiController;
-    private boolean isThinking = false;
-    private int thinkingChatId = -1;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws IOException, RuntimeException, SQLException {
         if (authenticatedUser == null) {
@@ -615,7 +610,11 @@ public class ChatController {
         });
 
         addNewChatMain.setOnAction(actionEvent -> {
-            loadChatSettings(actionEvent, "Create");
+            try {
+                loadChatSettings();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading Chat Setup: " + e);
+            }
         });
     }
 
