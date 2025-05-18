@@ -1,6 +1,5 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 import ai.tutor.cab302exceptionalhandlers.model.*;
@@ -8,26 +7,30 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Arrays;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
+import javafx.scene.input.KeyCode;
+
 
 public class ChatController {
     // Chat Window
@@ -37,7 +40,7 @@ public class ChatController {
     @FXML private Button addNewChat;
     @FXML private Button confirmEditChatName;
     @FXML private TextField chatNameField;
-    @FXML private TextField messageInputField;
+    @FXML private TextArea messageInputField;
     @FXML private TextField noChatsField;
     @FXML private Button addNewChatMain;
     @FXML private TextField welcomeTitle;
@@ -49,6 +52,8 @@ public class ChatController {
     @FXML private Button userDetailsButton;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesVBox;
+    @FXML private Button sendMessage;
+    @FXML private HBox messageContainer;
 
     private final SQLiteConnection db;
     private final User currentUser;
@@ -59,6 +64,8 @@ public class ChatController {
     private final QuizQuestionDAO quizQuestionDAO;
     private final AnswerOptionDAO answerOptionDAO;
     private boolean isQuiz;
+    private boolean isThinking;
+    private int thinkingChatId;
     private final AIController aiController;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws IOException, RuntimeException, SQLException {
@@ -74,6 +81,8 @@ public class ChatController {
         this.quizQuestionDAO = new QuizQuestionDAO(db);
         this.answerOptionDAO = new AnswerOptionDAO(db);
         this.isQuiz = false;
+        this.isThinking = false;
+        this.thinkingChatId = -1;
         this.aiController = new AIController();
     }
 
@@ -85,7 +94,8 @@ public class ChatController {
         refreshChatListView();
         setupEditChatNameButton();
         setupActivateEdit();
-        setupSendAndReceiveMessage();
+        setupMessageSendActions();
+        setupExpandingMessageInput();
         setupCreateChatButton();
         setupChatSettingsButton();
         setupToggleChatMode();
@@ -211,6 +221,9 @@ public class ChatController {
             greetingContainer.setVisible(true);
             greetingContainer.setManaged(true);
             greetingContainer.setMouseTransparent(false);
+            messageInputField.setDisable(true);
+            sendMessage.setDisable(true);
+
         } else {
             editChatName.setVisible(true);
             chatSettingsButton.setVisible(true);
@@ -219,6 +232,8 @@ public class ChatController {
             greetingContainer.setVisible(false);
             greetingContainer.setManaged(false);
             greetingContainer.setMouseTransparent(true);
+            messageInputField.setDisable(false);
+            sendMessage.setDisable(false);
         }
     }
 
@@ -258,6 +273,15 @@ public class ChatController {
                 chatMessagesVBox.getChildren().add(messageNode);
             }
 
+            // Re-add the thinking node if a task is still running for this chat
+            if (isThinking && thinkingChatId == selectedChat.getId()) {
+                Node thinkingNode = createThinkingNode();
+                chatMessagesVBox.getChildren().add(thinkingNode);
+            }
+
+            messageInputField.setDisable(isThinking);
+            sendMessage.setDisable(isThinking);
+
             // Scroll to bottom after all messages are added
             Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
         } catch (SQLException e) {
@@ -270,7 +294,6 @@ public class ChatController {
         chatsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldChat, newChat) -> {
             if (newChat != null) {
                 chatNameField.setText(newChat.getName());
-                // No try-except here as refreshMessageList() will handle it
                 refreshMessageList(newChat);
             } else {
                 chatNameField.setText("");
@@ -304,6 +327,7 @@ public class ChatController {
         HBox.setMargin(horizontalContainer, new Insets(7, 0, 0, 7));
         return wrapper;
     }
+
 
     private void addUserMessage(HBox wrapper, HBox horizontalContainer) {
         wrapper.setAlignment(Pos.CENTER_RIGHT);
@@ -359,9 +383,7 @@ public class ChatController {
         chatMessagesVBox.heightProperty().addListener(heightListener);
 
         Platform.runLater(() -> {
-            Platform.runLater(() -> {
-                 chatScrollPane.setVvalue(1.0);
-            });
+            chatScrollPane.setVvalue(1.0);
             chatMessagesVBox.heightProperty().removeListener(heightListener);
         });
     }
@@ -404,9 +426,8 @@ public class ChatController {
         Utils.loadView("quiz", new QuizController(db, currentQuiz, currentUser), getStage());
     }
 
-    public void setupSendAndReceiveMessage() {
-        messageInputField.setOnAction(event -> {
-            Chat selectedChat = getSelectedChat();
+    public void SendAndReceiveMessage() {
+        Chat selectedChat = getSelectedChat();
 
             if (!isOllamaRunning()) {
                 Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
@@ -430,36 +451,115 @@ public class ChatController {
                 messageInputField.clear();
                 addMessage(userMessage);
 
-                Node thinkingNode = createThinkingNode();
-                chatMessagesVBox.getChildren().add(thinkingNode);
-                messageInputField.setDisable(true);
+            messageInputField.setDisable(true);
+            sendMessage.setDisable(true);
 
-                Task<Message> aiResponseTask = new Task<Message>() {
-                    @Override
-                    protected Message call() throws Exception {
-                        return generateAIResponse(userMessage);
-                    }
-                };
+            isThinking = true;
+            thinkingChatId = selectedChat.getId();
+            Node thinkingNode = createThinkingNode();
+            chatMessagesVBox.getChildren().add(thinkingNode);
+            messageInputField.setDisable(true);
 
-                aiResponseTask.setOnSucceeded(e -> {
-                    Message aiResponse = aiResponseTask.getValue();
-                    chatMessagesVBox.getChildren().remove(thinkingNode);
-                    addMessage(aiResponse);
-                    messageInputField.setDisable(false);
-                });
+            Task<Message> aiResponseTask = new Task<Message>() {
+                @Override
+                protected Message call() throws Exception {
+                    return generateAIResponse(userMessage);
+                }
+            };
 
-                aiResponseTask.setOnFailed(e -> {
-                    Utils.showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
-                    chatMessagesVBox.getChildren().remove(thinkingNode);
-                    messageInputField.setDisable(false);
-                });
+            aiResponseTask.setOnSucceeded(e -> {
+                Message aiResponse = aiResponseTask.getValue();
+                chatMessagesVBox.getChildren().removeLast();
+                addMessage(aiResponse);
+                isThinking = false;
+                thinkingChatId = -1;
+                messageInputField.setDisable(false);
+                sendMessage.setDisable(false);
+            });
 
-                new Thread(aiResponseTask).start();
-            } catch (SQLException e) {
+            aiResponseTask.setOnFailed(e -> {
+                Utils.showErrorAlert("Failed to generate AI response: " + aiResponseTask.getException().getMessage());
+                chatMessagesVBox.getChildren().removeLast();
+                isThinking = false;
+                thinkingChatId = -1;
+                messageInputField.setDisable(false);
+                sendMessage.setDisable(false);
+            });
+
+            new Thread(aiResponseTask).start();
+        } catch (SQLException e) {
                 Utils.showErrorAlert("Failed to send message: " + e.getMessage());
+        }
+    }
+
+    private void setupMessageSendActions() {
+        messageInputField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                event.consume();
+                SendAndReceiveMessage();
             }
         });
+        sendMessage.setOnAction(event -> SendAndReceiveMessage());
     }
+
+    private void setupExpandingMessageInput() {
+        final double maxHeight = 200;
+
+        // Adjust height dynamically
+        messageInputField.textProperty().addListener((obs, oldText, newText) -> {
+            Platform.runLater(() -> adjustTextAreaHeight(maxHeight));
+        });
+
+        Platform.runLater(() -> adjustTextAreaHeight(maxHeight));
+    }
+
+    private void adjustTextAreaHeight(double maxHeight) {
+        String text = messageInputField.getText();
+        Font font = messageInputField.getFont();
+        double lineHeight = font.getSize() * 1.4;
+        double padding = 15;
+
+        TextFlow localTextFlow = new TextFlow();
+        Text textNode = new Text(text);
+        textNode.setFont(font);
+
+        double currentMessageInputFieldWidth = messageInputField.getWidth();
+        double calculationMaxWidth = currentMessageInputFieldWidth - 10;
+
+        localTextFlow.setMaxWidth(calculationMaxWidth);
+        localTextFlow.getChildren().add(textNode);
+
+        // Calculate lines
+        String[] linesArray = text.isEmpty() ? new String[]{""} : text.split("\r\n|\n|\r");
+        int explicitLines = (int) Arrays.stream(linesArray)
+                .filter(line -> !line.trim().isEmpty())
+                .count();
+        explicitLines = Math.max(explicitLines, 1);
+
+        double contentWidthForWrapping = localTextFlow.getMaxWidth();
+        double actualTextWidthUnwrapped = textNode.getLayoutBounds().getWidth();
+
+        int wrappedLines;
+        if (text.isEmpty()) {
+            wrappedLines = 1;
+        } else if (contentWidthForWrapping > 0 && actualTextWidthUnwrapped > 0) {
+            wrappedLines = (int) Math.ceil(actualTextWidthUnwrapped / contentWidthForWrapping);
+        } else {
+            wrappedLines = 1;
+        }
+        wrappedLines = Math.max(wrappedLines, 1);
+
+        int lineCount = Math.max(explicitLines, wrappedLines);
+
+        // Calculate and set height
+        double newHeight = lineCount * lineHeight + padding;
+        newHeight = Math.min(newHeight, maxHeight);
+
+        // Update heights
+        messageInputField.setPrefHeight(newHeight);
+        messageContainer.setPrefHeight(newHeight);
+    }
+
 
     private void editChatNameAction() {
         try {
@@ -486,13 +586,11 @@ public class ChatController {
        // Update chat name with button or text field confirm
        confirmEditChatName.setOnAction(event -> editChatNameAction());
        chatNameField.setOnAction(event -> editChatNameAction());
-
     }
 
     // Set up button that activates the ability to edit the chat name
     private void setupActivateEdit() {
         editChatName.setOnAction(actionEvent ->  {
-            // TODO: Refactor these into class in ChatStyles.css and change the css class instead
             editChatName.setVisible(false);
             chatNameField.setOpacity(0.8);
             chatNameField.setEditable(true);
@@ -504,6 +602,14 @@ public class ChatController {
     private void setupCreateChatButton() {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
         addNewChat.setOnAction(actionEvent -> {
+            try {
+                loadChatSettings();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading Chat Setup: " + e);
+            }
+        });
+
+        addNewChatMain.setOnAction(actionEvent -> {
             try {
                 loadChatSettings();
             } catch (Exception e ) {
@@ -572,7 +678,6 @@ public class ChatController {
             }
         });
     }
-
 
     /*
      * =========================================================================

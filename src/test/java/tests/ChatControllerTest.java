@@ -477,7 +477,7 @@ public class ChatControllerTest {
         assertEquals(userMessage.getIsQuiz(), responseMessage.getIsQuiz());
     }
 
-    @Disabled
+    @Test
     public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
@@ -504,7 +504,6 @@ public class ChatControllerTest {
         assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
         assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
 }
-
 
     @Test
     public void testGenerateChatMessageResponseInvalidFromAI() throws IllegalArgumentException, NoSuchElementException, SQLException {

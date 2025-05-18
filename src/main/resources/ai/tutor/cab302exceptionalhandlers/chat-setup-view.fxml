@@ -3,32 +3,32 @@
 <?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.collections.FXCollections?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.image.*?>
-
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
-<StackPane fx:id="rootPane" alignment="TOP_CENTER" prefHeight="540.0" prefWidth="956.0" styleClass="setup-dialog" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+
+<StackPane fx:id="rootPane" alignment="TOP_CENTER" prefHeight="540.0" prefWidth="956.0" styleClass="setup-dialog" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@ChatStyles.css" />
     </stylesheets>
-    <Pane fx:id="backgroundOverlay" style="-fx-background-color: #535353;" styleClass="translucent-background">
-      <children>
-         <ImageView fitHeight="540.0" fitWidth="1009.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.7;">
-            <image>
-               <Image url="@images/chat-setup-background.PNG" />
-            </image>
-         </ImageView>
-      </children>
-   </Pane>
-    <VBox alignment="TOP_CENTER" maxHeight="491.0" maxWidth="822.0" prefHeight="475.0" prefWidth="820.0" style="-fx-background-color: white; -fx-border-radius: 60; -fx-background-radius: 60;" styleClass="setup-form" StackPane.alignment="CENTER">
+    <Pane fx:id="backgroundOverlay" styleClass="background" />
+    <VBox alignment="TOP_CENTER" maxHeight="491.0" maxWidth="822.0" prefHeight="475.0" prefWidth="820.0" style="-fx-background-color: white; -fx-border-radius: 60; -fx-background-radius: 60; -fx-border-color: grey;" styleClass="setup-form" StackPane.alignment="CENTER">
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-radius: 60 60 0 0; -fx-background-color: #213355; -fx-border-radius: 60 60 0 0;">
          <children>
               <Label fx:id="settingsTitle" alignment="CENTER" prefHeight="53.0" prefWidth="294.0" style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold;" styleClass="setup-header" text="Chat Setup" />
             <Region prefHeight="100.0" prefWidth="183.0" />
 
-             <Button fx:id="downloadButton" styleClass="download-button" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;" onAction="#downloadChat">
+             <Button fx:id="downloadButton" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" onAction="#downloadChat" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;" styleClass="download-button">
                  <graphic>
                      <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                          <image>
@@ -41,7 +41,7 @@
                  </HBox.margin>
              </Button>
 
-            <Button fx:id="exitButton" styleClass="exit-button" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;">
+            <Button fx:id="exitButton" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;" styleClass="exit-button">
                <graphic>
                   <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                      <image>

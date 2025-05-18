@@ -124,8 +124,19 @@
     -fx-background-color: white;
 }
 
+.message-area .viewport,
+.message-area .scroll-pane,
+.message-area .content {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-border-color: white;
+}
 
-
+.background {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, #CBD6FF 0%, #6C95DF 100%);
+}
 
 
 
