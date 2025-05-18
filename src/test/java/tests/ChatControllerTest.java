@@ -325,31 +325,7 @@ public class ChatControllerTest {
     public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
-        int chatId = 1;
-
-        /* First User Message */
-        Message firstUserMessage = chatController.createNewChatMessage(chatId, "My favourite number is 5, remember that.", true, false);
-
-        /* First AI Response */
-        Message firstResponse = chatController.generateChatMessageResponse(firstUserMessage);
-
-        /* Second User Message */
-        Message secondUserMessage = chatController.createNewChatMessage(chatId, "So what is my favourite number?", true, false);
-
-        /* Second AI Response */
-        Message secondResponse = chatController.generateChatMessageResponse(secondUserMessage);
-
-        assertEquals(firstUserMessage.getChatId(), secondResponse.getChatId());
-        assertEquals(firstUserMessage.getId() + 1, firstResponse.getId());
-        assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
-        assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
-}
-
-    @Test
-    public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
-        Chat chat = Chats.get("chat1");
+        Chat chat = Chats[0];
         Chat newChat = chatController.createNewChat(
                 chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
         );
@@ -371,36 +347,6 @@ public class ChatControllerTest {
         assertEquals(firstUserMessage.getId() + 1, firstResponse.getId());
         assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
         assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
-}
-
-    @Test
-    public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        assumeTrue(isOllamaRunning, "Ollama is not running");
-
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-            chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
-        Message firstUserMessage = chatController.createNewChatMessage(
-            newChat.getId(), Messages.get("messageUser").getContent(), Messages.get("messageUser").getFromUser(), Messages.get("messageUser").getIsQuiz()
-        );
-        assertNotNull(firstUserMessage);
-        Message firstResponse = chatController.generateChatMessageResponse(firstUserMessage);
-        assertNotNull(firstResponse);
-
-        Message secondUserMessage = chatController.createNewChatMessage(
-            newChat.getId(), "This is a follow-up question", true, false
-        );
-        assertNotNull(secondUserMessage);
-        assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
-
-        Message secondResponse = chatController.generateChatMessageResponse(secondUserMessage);
-        assertNotNull(secondResponse);
-        assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
-        assertEquals(newChat.getId(), secondResponse.getChatId());
-        assertFalse(secondResponse.getFromUser());
-        assertNotNull(secondResponse.getContent());
     }
 
     @Test

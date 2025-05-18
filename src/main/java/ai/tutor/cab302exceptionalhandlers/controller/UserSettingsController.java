@@ -25,15 +25,21 @@ public class UserSettingsController {
     @FXML private ComboBox educationLevelCombo;
     @FXML private Label usernameFeedback;
     @FXML private Label passwordFeedback;
+    @FXML private Label newPasswordFeedback;
 
     // User stats widgets
     @FXML private Label quizzesTakenLabel;
     @FXML private Label averageScoreLabel;
 
+    private boolean usernameChanged;
+    private boolean passwordChanged;
+
     public UserSettingsController(SQLiteConnection connection, User user) throws SQLException {
         db = connection;
         currentUser = user;
         userDAO = new UserDAO(db);
+        this.usernameChanged = false;
+        this.passwordChanged = false;
     }
 
     private Stage getStage() {
@@ -62,71 +68,34 @@ public class UserSettingsController {
 
     private void setupSaveButton(){
         saveButton.setOnAction(actionEvent -> {
-            try {
-                usernameFeedback.setText(null);
-                passwordFeedback.setText(null);
+            usernameFeedback.setText(null);
+            passwordFeedback.setText(null);
+            newPasswordFeedback.setText(null);
 
-                String passwordText = passwordField.getText();
-                String newPasswordText = newPasswordField.getText();
-                String usernameText = usernameField.getText();
+            String currentPasswordText = passwordField.getText();
+            String newPasswordText = newPasswordField.getText();
+            String usernameText = usernameField.getText();
 
-                String originalUsername = currentUser.getUsername();
+            usernameChanged = false;
+            passwordChanged = false;
 
-                boolean usernameChanged = false;
-                boolean passwordChanged = false;
+            handleUsernameInput(usernameText);
+            handlePasswordInput(newPasswordText, currentPasswordText);
 
-                if (!User.validUsername(usernameText)){
-                    usernameFeedback.setText("Invalid username, try again");
-                    return;
-                }
+            String successMessage = null;
 
-                if (!originalUsername.equals(usernameField.getText())) {
-                    for (User user : userDAO.getAllUsers()) {
-                        if (user.getUsername().equals(usernameText)) {
-                            usernameFeedback.setText("Username already exists");
-                            return;
-                        }
-                    }
-                    currentUser.setUsername(usernameField.getText());
-                    usernameChanged = true;
-                }
+            if (usernameChanged && passwordChanged) {
+                successMessage = "Username & Password updated";
+            } else if (usernameChanged) {
+                successMessage = "Username updated";
+            } else if (passwordChanged) {
+                successMessage = "Password updated";
+            }
 
-
-                if (!Utils.validateNullOrEmpty(newPasswordText)) {
-                    if (!User.validPassword(passwordText)) {
-                        passwordFeedback.setText("Invalid password, try again");
-                        return;
-                    }
-
-                    if (!currentUser.verifyPassword(passwordText)){
-                        passwordFeedback.setText("Wrong Password");
-                        return;
-                    }
-
-                    String newPasswordHash = User.hashPassword(newPasswordText);
-                    currentUser.setPasswordHash(newPasswordHash);
-                    passwordChanged = true;
-                }
-
-                String successMessage = null;
-
-                if (usernameChanged && passwordChanged) {
-                    successMessage = "Username & Password updated";
-                } else if (usernameChanged) {
-                    successMessage = "Username updated";
-                } else if (passwordChanged) {
-                    successMessage = "Password updated";
-                }
-
-                if (successMessage != null) {
-                    userDAO.updateUser(currentUser);
-                    Utils.showConfirmAlert(successMessage);
-                    passwordField.setText(null);
-                    newPasswordField.setText(null);
-                }
-
-            } catch (SQLException e) {
-                    Utils.showErrorAlert("Failed to update details");
+            if (successMessage != null) {
+                Utils.showInfoAlert(successMessage);
+                passwordField.setText(null);
+                newPasswordField.setText(null);
             }
         });
     }
@@ -179,6 +148,37 @@ public class UserSettingsController {
         });
     }
 
+    private void handlePasswordInput(String newPassword, String currentPasswordText) {
+        try {
+            updatePassword(newPassword, currentPasswordText);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("null or empty")) {
+                newPasswordFeedback.setText("Enter new password");
+            } else if (e.getMessage().contains("invalid")) {
+                passwordFeedback.setText("Invalid password, try again");
+            }
+        } catch (SecurityException e) {
+            passwordFeedback.setText("Incorrect password");
+        }
+        catch (SQLException e) {
+            Utils.showErrorAlert("Failed to change password");
+        }
+    }
+
+    private void handleUsernameInput(String username) {
+        try {
+            updateUsername(username);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("already taken")) {
+                usernameFeedback.setText("Username already taken");
+            } else if (e.getMessage().contains("invalid")) {
+                usernameFeedback.setText("Invalid username, try again");
+            }
+        } catch (SQLException e) {
+            Utils.showErrorAlert("Failed to change username");
+        }
+    }
+
 
     /*
      * =========================
@@ -187,31 +187,38 @@ public class UserSettingsController {
      */
 
     public void updateUsername(String newUsername) throws IllegalArgumentException, SQLException {
-        if (!User.validUsername(newUsername)) {
+        if (!User.validUsername(newUsername)){
             throw new IllegalArgumentException("Username is invalid");
         }
 
-        if (!newUsername.equals(currentUser.getUsername())) {
+        if (!currentUser.getUsername().equals(newUsername)) {
             User existingUser = userDAO.getUser(newUsername);
             if (existingUser != null) {
                 throw new IllegalArgumentException("Username is already taken");
             }
+            currentUser.setUsername(newUsername);
+            userDAO.updateUser(currentUser);
+            usernameChanged = true;
         }
-
-        currentUser.setUsername(newUsername);
-        userDAO.updateUser(currentUser);
     }
 
     public void updatePassword(String newPassword, String currentPassword) throws IllegalArgumentException, SecurityException, SQLException {
-        if (!User.validPassword(newPassword)) {
-            throw new IllegalArgumentException("Password is invalid");
-        }
-        if (!currentUser.verifyPassword(currentPassword != null ? currentPassword : "")) {
-            throw new SecurityException("Incorrect Password");
-        }
+        if (!Utils.validateNullOrEmpty(newPassword) || !Utils.validateNullOrEmpty(currentPassword)) {
+            if (!Utils.validateNullOrEmpty(currentPassword) && Utils.validateNullOrEmpty(newPassword) ) {
+                throw new IllegalArgumentException("New password is null or empty");
+            }
 
-        String hashedNewPassword = User.hashPassword(newPassword);
-        currentUser.setPasswordHash(hashedNewPassword);
-        userDAO.updateUser(currentUser);
+            if (!User.validPassword(currentPassword)) {
+                throw new IllegalArgumentException("Password is invalid");
+            }
+
+            if (!currentUser.verifyPassword(currentPassword)){
+                throw new SecurityException("Incorrect Password");
+            }
+            String newPasswordHash = User.hashPassword(newPassword);
+            currentUser.setPasswordHash(newPasswordHash);
+            userDAO.updateUser(currentUser);
+            passwordChanged = true;
+        }
     }
 }

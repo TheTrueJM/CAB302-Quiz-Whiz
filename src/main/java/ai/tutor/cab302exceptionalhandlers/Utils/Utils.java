@@ -30,10 +30,10 @@ public final class Utils {
 
 
     private static Optional<ButtonType> showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type, message);
-//        alert.setTitle(title);
-//        alert.setHeaderText(null);
-//        alert.setContentText(message);
+        Alert alert = new Alert(type);
+        alert.setTitle("Alert");
+        alert.setHeaderText(message);
+        alert.setContentText(null);
         return alert.showAndWait();
     }
 
