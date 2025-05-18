@@ -634,7 +634,14 @@ public class ChatController {
     }
 
     private void loadChatSettings() throws IOException, RuntimeException, SQLException {
-        Utils.loadView("chat-setup", new ChatSetupController(db, currentUser, getSelectedChat()), getStage());
+        ChatSetupController controller;
+        if (getSelectedChat() == null) {
+            controller = new ChatCreateController(db, currentUser);
+        } else {
+            controller = new ChatUpdateController(db, currentUser, getSelectedChat());
+        }
+
+        Utils.loadView("chat-setup", controller, getStage());
     }
 
     private void setupLogoutButton() {
