@@ -31,8 +31,8 @@ public class ChatSetupController {
 
 
     private final SQLiteConnection db;
-    private final Chat currentChat;
     private final User currentUser;
+    private final Chat currentChat;
 
     private final UserDAO userDAO;
     private final ChatDAO chatDAO;
@@ -43,6 +43,16 @@ public class ChatSetupController {
         this.db = db;
         this.currentUser = currentUser;
         this.currentChat = currentChat;
+
+        this.userDAO = new UserDAO(db);
+        this.chatDAO = new ChatDAO(db);
+        this.messageDAO = new MessageDAO(db);
+    }
+
+    public ChatSetupController(SQLiteConnection db, User currentUser) throws RuntimeException, SQLException {
+        this.db = db;
+        this.currentUser = currentUser;
+        this.currentChat = null;
 
         this.userDAO = new UserDAO(db);
         this.chatDAO = new ChatDAO(db);
@@ -229,7 +239,7 @@ public class ChatSetupController {
         currentChat.setName(name);
         currentChat.setResponseAttitude(responseAttitude);
         currentChat.setQuizDifficulty(quizDifficulty);
-        currentChat.setResponseAttitude(educationLevel);
+        currentChat.setEducationLevel(educationLevel);
         currentChat.setStudyArea(studyArea);
         chatDAO.updateChat(currentChat);
     }
