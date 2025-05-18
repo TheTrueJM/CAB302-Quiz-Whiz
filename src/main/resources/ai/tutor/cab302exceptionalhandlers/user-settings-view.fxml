@@ -11,7 +11,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
@@ -23,7 +22,7 @@
          <Label alignment="CENTER" prefHeight="69.0" prefWidth="431.0" style="-fx-font-weight: bold; -fx-font-size: 36;" text="User Details" textFill="WHITE" />
       </children>
    </HBox>
-   <VBox alignment="TOP_CENTER" prefHeight="406.0" prefWidth="232.0" style="-fx-background-color: #949494;" AnchorPane.bottomAnchor="135.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+   <VBox alignment="TOP_CENTER" prefHeight="453.0" prefWidth="232.0" style="-fx-background-color: #949494;" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
          <Button fx:id="backButton" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" style="-fx-background-color: white; -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 0;" styleClass="returnButton" text="Back to Chat">
             <graphic>
@@ -34,7 +33,7 @@
                </ImageView>
             </graphic>
             <VBox.margin>
-               <Insets bottom="30.0" />
+               <Insets bottom="20.0" />
             </VBox.margin>
          </Button>
          <ImageView fitHeight="217.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
@@ -45,9 +44,27 @@
                <Image url="@images/logo-green.png" />
             </image>
          </ImageView>
-         <Button fx:id="logoutButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="201.0" style="-fx-background-color: #D73234; -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 0; -fx-background-radius: 15; -fx-border-radius: 15;" styleClass="logoutButton" text="Logout">
+         <VBox alignment="CENTER" prefHeight="80.0" prefWidth="202.0" style="-fx-background-color: #6C95DF; -fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 5;">
+            <children>
+               <Label alignment="CENTER" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;" text="Average Score" />
+               <Label fx:id="averageScoreLabel" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="0%" />
+            </children>
             <VBox.margin>
-               <Insets top="30.0" />
+               <Insets top="25.0" />
+            </VBox.margin>
+         </VBox>
+         <VBox alignment="CENTER" prefHeight="66.0" prefWidth="202.0" style="-fx-background-color: #6C95DF; -fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 5;">
+            <children>
+               <Label alignment="CENTER" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;" text="Quizzes Taken" />
+               <Label fx:id="quizzesTakenLabel" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="0" />
+            </children>
+            <VBox.margin>
+               <Insets top="15.0" />
+            </VBox.margin>
+         </VBox>
+         <Button fx:id="logoutButton" mnemonicParsing="false" prefHeight="43.0" prefWidth="201.0" style="-fx-background-color: #D73234; -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 15; -fx-border-radius: 15;" styleClass="logoutButton" text="Logout">
+            <VBox.margin>
+               <Insets top="20.0" />
             </VBox.margin>
             <graphic>
                <ImageView fitHeight="35.0" fitWidth="34.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
@@ -57,7 +74,6 @@
                </ImageView>
             </graphic>
          </Button>
-         <Region prefHeight="97.0" prefWidth="202.0" />
       </children>
       <padding>
          <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -127,7 +143,7 @@
          <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
       </padding>
    </VBox>
-   <VBox alignment="TOP_CENTER" layoutY="405.0" prefHeight="138.0" prefWidth="231.0" style="-fx-background-color: #757575;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="405.0">
+   <VBox alignment="BOTTOM_CENTER" layoutY="451.0" prefHeight="108.0" prefWidth="231.0" style="-fx-background-color: #757575;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
       <children>
          <Label alignment="CENTER" prefHeight="51.0" prefWidth="201.0" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="Delete Account" />
          <Button fx:id="deleteUserButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="211.0" style="-fx-background-color: #ef6a62; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" styleClass="terminateButton" text="Terminate">
@@ -140,5 +156,8 @@
             </graphic>
          </Button>
       </children>
+      <padding>
+         <Insets bottom="20.0" />
+      </padding>
    </VBox>
 </AnchorPane>
