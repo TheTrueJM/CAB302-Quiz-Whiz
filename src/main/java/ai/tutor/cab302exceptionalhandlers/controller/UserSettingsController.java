@@ -19,7 +19,9 @@ public class UserSettingsController {
     @FXML private Button backButton;
     @FXML private Button deleteUserButton;
     @FXML private TextField usernameField;
-    @FXML private TextField passwordField;
+    @FXML private TextField currentPasswordField;
+    @FXML private TextField newPasswordField;
+    @FXML private TextField confirmPasswordField;
     @FXML private TextField studyArea;
     @FXML private ComboBox educationLevelCombo;
 
@@ -44,7 +46,6 @@ public class UserSettingsController {
         setupLogoutButton();
         setupSaveButton();
         setupUsernameField();
-        setupPasswordField();
     }
 
     /*
@@ -57,39 +58,28 @@ public class UserSettingsController {
         usernameField.setText(currentUser.getUsername());
     }
 
-    private void setupPasswordField(){
-        passwordField.setText(currentUser.getPasswordHash());
-    }
 
+    // TODO: Add separate buttons for change username and password
     private void setupSaveButton(){
         saveButton.setOnAction(actionEvent -> {
             try {
-                String passwordText = passwordField.getText();
-                String usernameText = usernameField.getText();
+                String username = usernameField.getText();
+                String currentPassword = currentPasswordField.getText();
+                String newPassword = newPasswordField.getText();
+                String confirmPassword = confirmPasswordField.getText();
 
-                if(!User.validUsername(usernameText)){
-                    System.err.println("Invalid username...");
-                    return;
+                if (!newPassword.equals(confirmPassword)) {
+                    throw new SecurityException("Passwords do not match");
                 }
 
-                currentUser.setUsername(usernameField.getText());
-
-                // Only update if different
-                if(!passwordText.equals(currentUser.getPasswordHash())){
-                    if(!User.validPassword(passwordText)){
-                        System.err.println("Invalid password...");
-                        return;
-                    }
-
-                    String newPasswordHash = User.hashPassword(passwordText);
-                    currentUser.setPasswordHash(newPasswordHash);
+                if (Utils.validateNullOrEmpty(currentPassword) && Utils.validateNullOrEmpty(newPassword)) {
+                    updateUsername(username);
+                } else {
+                    updatePassword(newPassword, currentPassword);
                 }
-
-                userDAO.updateUser(currentUser);
-                System.out.println("User updated.");
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+                Utils.showInfoAlert("User details updated");
+            } catch (Exception e) {
+                Utils.showErrorAlert(e.getMessage());
             }
         });
     }
@@ -134,7 +124,38 @@ public class UserSettingsController {
     }
 
 
-    // TODO: Implement
-    public void updateDetails(String newUsername, String newPassword, String currentPassword) {
+    /*
+     * =========================
+     *    FXML UI Controllers
+     * =========================
+     */
+
+    public void updateUsername(String newUsername) throws IllegalArgumentException, SQLException {
+        if (!User.validUsername(newUsername)) {
+            throw new IllegalArgumentException("Username is invalid");
+        }
+
+        if (!newUsername.equals(currentUser.getUsername())) {
+            User existingUser = userDAO.getUser(newUsername);
+            if (existingUser != null) {
+                throw new IllegalArgumentException("Username is already taken");
+            }
+        }
+
+        currentUser.setUsername(newUsername);
+        userDAO.updateUser(currentUser);
+    }
+
+    public void updatePassword(String newPassword, String currentPassword) throws IllegalArgumentException, SecurityException, SQLException {
+        if (!User.validPassword(newPassword)) {
+            throw new IllegalArgumentException("Password is invalid");
+        }
+        if (!currentUser.verifyPassword(currentPassword != null ? currentPassword : "")) {
+            throw new SecurityException("Incorrect Password");
+        }
+
+        String hashedNewPassword = User.hashPassword(newPassword);
+        currentUser.setPasswordHash(hashedNewPassword);
+        userDAO.updateUser(currentUser);
     }
 }

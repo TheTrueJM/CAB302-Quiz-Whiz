@@ -64,15 +64,14 @@ public class UserSettingsTest {
 
 
     @Test
-    public void testValidUpdateDetails() throws IllegalStateException, IllegalArgumentException, SQLException {
-        userSettingsController.updateDetails(UpdatedUser.get("username"), UpdatedUser.get("Password"), UserPassword);
+    public void testValidUpdateUsername() throws IllegalStateException, IllegalArgumentException, SQLException {
+        userSettingsController.updateUsername(UpdatedUser.get("username"));
 
         User updatedUser = userDAO.getUser(UserId);
 
         assertNotNull(updatedUser);
         assertEquals(UserId, updatedUser.getId());
         assertEquals(UpdatedUser.get("username"), updatedUser.getUsername());
-        assertTrue(updatedUser.verifyPassword(UpdatedUser.get("password")));
     }
 
 
@@ -81,7 +80,7 @@ public class UserSettingsTest {
         String existingUsername = Users[(UserId - 1) + 1].getUsername();
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updateDetails(existingUsername, UpdatedUser.get("Password"), UserPassword)
+                () -> userSettingsController.updateUsername(existingUsername)
         );
 
         User originalUser = userDAO.getUser(UserId);
@@ -93,7 +92,7 @@ public class UserSettingsTest {
     public void testUpdateEmptyUsername() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updateDetails("", UpdatedUser.get("Password"), UserPassword)
+                () -> userSettingsController.updateUsername("")
         );
 
         User originalUser = userDAO.getUser(UserId);
@@ -105,7 +104,7 @@ public class UserSettingsTest {
     public void testUpdateNullUsername() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updateDetails(null, UpdatedUser.get("Password"), UserPassword)
+                () -> userSettingsController.updateUsername(null)
         );
 
         User originalUser = userDAO.getUser(UserId);
@@ -115,13 +114,25 @@ public class UserSettingsTest {
 
 
     @Test
+    public void testValidUpdatePassword() throws IllegalStateException, IllegalArgumentException, SQLException {
+        userSettingsController.updatePassword(UpdatedUser.get("password"), UserPassword);
+
+        User updatedUser = userDAO.getUser(UserId);
+
+        assertNotNull(updatedUser);
+        assertEquals(UserId, updatedUser.getId());
+        assertTrue(updatedUser.verifyPassword(UpdatedUser.get("password")));
+    }
+
+    @Test
     public void testUpdateWrongPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
-                IllegalArgumentException.class,
-                () -> userSettingsController.updateDetails(UpdatedUser.get("username"), UpdatedUser.get("Password"), "WrongPassword")
+                SecurityException.class,
+                () -> userSettingsController.updatePassword(UpdatedUser.get("password"), "WrongPassword")
         );
 
         User originalUser = userDAO.getUser(UserId);
+
         assertNotNull(originalUser);
         assertEquals(Users[UserId - 1].getPasswordHash(), originalUser.getPasswordHash());
     }
@@ -130,10 +141,11 @@ public class UserSettingsTest {
     public void testUpdateEmptyPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updateDetails(UpdatedUser.get("username"), "", UserPassword)
+                () -> userSettingsController.updatePassword("", UserPassword)
         );
 
         User originalUser = userDAO.getUser(UserId);
+
         assertNotNull(originalUser);
         assertEquals(Users[UserId - 1].getPasswordHash(), originalUser.getPasswordHash());
     }
@@ -142,10 +154,11 @@ public class UserSettingsTest {
     public void testUpdateNullPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updateDetails(UpdatedUser.get("username"), null, UserPassword)
+                () -> userSettingsController.updatePassword(null, UserPassword)
         );
 
         User originalUser = userDAO.getUser(UserId);
+
         assertNotNull(originalUser);
         assertEquals(Users[UserId - 1].getPasswordHash(), originalUser.getPasswordHash());
     }

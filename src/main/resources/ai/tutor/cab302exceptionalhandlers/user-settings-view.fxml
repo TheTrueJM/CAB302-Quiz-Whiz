@@ -10,10 +10,12 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <Button fx:id="saveButton" text="Save" />
-    <Button fx:id="logoutButton" text="Logout" />
     <Button fx:id="backButton" text="Back" />
-    <Button fx:id="deleteUserButton" text="Delete" />
-    <TextField fx:id="passwordField" />
+    <Button fx:id="logoutButton" text="Logout" />
     <TextField fx:id="usernameField" />
+    <TextField fx:id="currentPasswordField" />
+    <TextField fx:id="newPasswordField" />
+    <TextField fx:id="confirmPasswordField" />
+    <Button fx:id="saveButton" text="Save" />
+    <Button fx:id="deleteUserButton" text="Delete" />
 </VBox>
