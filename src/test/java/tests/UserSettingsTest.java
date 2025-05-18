@@ -111,7 +111,7 @@ public class UserSettingsTest {
 
 
     @Test
-    public void testValidUpdatePassword() throws IllegalStateException, IllegalArgumentException, SQLException {
+    public void testValidUpdatePassword() throws SecurityException, IllegalArgumentException, SQLException {
         userSettingsController.updatePassword(UpdatedUser.get("password"), UserPassword);
 
         User updatedUser = userDAO.getUser(UserId);
