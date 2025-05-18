@@ -640,7 +640,7 @@ public class ChatController {
         } else {
             controller = new ChatUpdateController(db, currentUser, getSelectedChat());
         }
-        
+
         Utils.loadView("chat-setup", controller, getStage());
     }
 

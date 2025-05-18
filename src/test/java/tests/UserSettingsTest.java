@@ -1,9 +1,6 @@
 package tests;
 
-import ai.tutor.cab302exceptionalhandlers.controller.LoginController;
-import ai.tutor.cab302exceptionalhandlers.controller.SignUpController;
 import ai.tutor.cab302exceptionalhandlers.controller.UserSettingsController;
-import ai.tutor.cab302exceptionalhandlers.model.Chat;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 import ai.tutor.cab302exceptionalhandlers.model.UserDAO;
@@ -132,7 +129,6 @@ public class UserSettingsTest {
         );
 
         User originalUser = userDAO.getUser(UserId);
-
         assertNotNull(originalUser);
         assertEquals(Users[UserId - 1].getPasswordHash(), originalUser.getPasswordHash());
     }
@@ -145,7 +141,6 @@ public class UserSettingsTest {
         );
 
         User originalUser = userDAO.getUser(UserId);
-
         assertNotNull(originalUser);
         assertEquals(Users[UserId - 1].getPasswordHash(), originalUser.getPasswordHash());
     }
@@ -158,7 +153,6 @@ public class UserSettingsTest {
         );
 
         User originalUser = userDAO.getUser(UserId);
-
         assertNotNull(originalUser);
         assertEquals(Users[UserId - 1].getPasswordHash(), originalUser.getPasswordHash());
     }
