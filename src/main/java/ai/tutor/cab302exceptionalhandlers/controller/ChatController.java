@@ -35,7 +35,6 @@ import javafx.scene.input.KeyCode;
 public class ChatController {
     // Chat Window
     @FXML private ListView<Chat> chatsListView;
-    @FXML private ListView<Message> messagesListView;
     @FXML private Button editChatName;
     @FXML private Button addNewChat;
     @FXML private Button confirmEditChatName;
@@ -602,6 +601,14 @@ public class ChatController {
     private void setupCreateChatButton() {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
         addNewChat.setOnAction(actionEvent -> {
+            try {
+                loadChatSettings();
+            } catch (Exception e ) {
+                Utils.showErrorAlert("Error Loading Chat Setup: " + e);
+            }
+        });
+
+        addNewChatMain.setOnAction(actionEvent -> {
             try {
                 loadChatSettings();
             } catch (Exception e ) {
