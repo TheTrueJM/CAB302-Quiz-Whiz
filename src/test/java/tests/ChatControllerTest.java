@@ -31,12 +31,11 @@ public class ChatControllerTest {
             "TestUser", User.hashPassword("password")
     );
 
-    private static final Map<Integer, Chat> Chats = new HashMap<>();
-    static {
-        Chats.put(1, new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"));
-        Chats.put(2, new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"));
-        Chats.put(3, new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT"));
-    }
+    private static final Chat[] Chats = {
+        new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"),
+        new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"),
+        new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT")
+    };
 
     private static final Map<String, Message> Messages = new HashMap<>();
     static {
@@ -123,7 +122,7 @@ public class ChatControllerTest {
         userDAO.createUser(CurrentUser);
 
         ChatDAO chatDAO = new ChatDAO(db);
-        for (Chat chat : Chats.values()) {
+        for (Chat chat : Chats) {
             chatDAO.createChat(chat);
         }
 
@@ -151,7 +150,7 @@ public class ChatControllerTest {
     public void testGetUserChats() throws IllegalArgumentException, SQLException {
         List<Chat> userChats = chatController.getUserChats();
         assertNotNull(userChats);
-        assertEquals(Chats.size(), userChats.size());
+        assertEquals(Chats.length, userChats.size());
     }
 
     @Disabled
@@ -165,7 +164,7 @@ public class ChatControllerTest {
     @Test
     public void testGetUserChat() throws IllegalArgumentException, NoSuchElementException, SQLException {
         int chatId = 1;
-        Chat findChat = Chats.get(chatId);
+        Chat findChat = Chats[chatId - 1];
         Chat userChat = chatController.getChat(chatId);
         assertNotNull(userChat);
         assertEquals(findChat.getId(), userChat.getId());
@@ -175,7 +174,7 @@ public class ChatControllerTest {
     public void testGetUserChatInvalidId() {
         assertThrows(
                 NoSuchElementException.class,
-                () -> chatController.getChat(Chats.size() + 1)
+                () -> chatController.getChat(Chats.length + 1)
         );
     }
 
@@ -201,7 +200,7 @@ public class ChatControllerTest {
     @Test
     public void testUpdateChatNameEmpty() throws IllegalArgumentException, NoSuchElementException, SQLException {
         int chatId = 1;
-        Chat chat = Chats.get(chatId);
+        Chat chat = Chats[chatId - 1];
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -217,7 +216,7 @@ public class ChatControllerTest {
     @Test
     public void testUpdateChatNameNull() throws IllegalArgumentException, NoSuchElementException, SQLException {
         int chatId = 1;
-        Chat chat = Chats.get(chatId);
+        Chat chat = Chats[chatId - 1];
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -233,7 +232,7 @@ public class ChatControllerTest {
     public void testUpdateChatNameInvalidId() {
         assertThrows(
                 NoSuchElementException.class,
-                () -> chatController.updateChatName(Chats.size() + 1, "New Chat Name")
+                () -> chatController.updateChatName(Chats.length + 1, "New Chat Name")
         );
     }
 
@@ -265,7 +264,7 @@ public class ChatControllerTest {
         assertThrows(
                 NoSuchElementException.class,
                 () -> chatController.createNewChatMessage(
-                        Chats.size() + 1, message.getContent(), message.getFromUser(), message.getIsQuiz()
+                        Chats.length + 1, message.getContent(), message.getFromUser(), message.getIsQuiz()
                 )
         );
     }
@@ -388,7 +387,7 @@ public class ChatControllerTest {
     public void testGetChatMessagesInvalidChatId() {
         assertThrows(
                 NoSuchElementException.class,
-                () -> chatController.getChatMessages(Chats.size() + 1)
+                () -> chatController.getChatMessages(Chats.length + 1)
         );
     }
 

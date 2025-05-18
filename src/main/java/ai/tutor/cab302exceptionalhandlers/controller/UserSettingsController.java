@@ -132,4 +132,9 @@ public class UserSettingsController {
             }
         });
     }
+
+
+    // TODO: Implement
+    public void updateDetails(String newUsername, String newPassword, String currentPassword) {
+    }
 }
