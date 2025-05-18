@@ -30,7 +30,7 @@
                   <graphic>
                      <ImageView fitHeight="38.0" fitWidth="55.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
                         <image>
-                           <Image url="@images/logout.PNG" />
+                           <Image url="@images/logout.png" />
                         </image>
                      </ImageView>
                   </graphic>
