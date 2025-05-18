@@ -34,6 +34,7 @@ public class AuthControllerTest {
         System.out.println("Running test: " + testInfo.getDisplayName());
         db = new SQLiteConnection(true);
         connection = db.getInstance();
+
         signUpController = new SignUpController(db);
         loginController = new LoginController(db);
     }
