@@ -3,11 +3,11 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class UserSettingsController {
     private UserDAO userDAO;
@@ -72,8 +72,8 @@ public class UserSettingsController {
 
                 String originalUsername = currentUser.getUsername();
 
-                Boolean usernameChanged = false;
-                Boolean passwordChanged = false;
+                boolean usernameChanged = false;
+                boolean passwordChanged = false;
 
                 if (!User.validUsername(usernameText)){
                     usernameFeedback.setText("Invalid username, try again");
@@ -92,7 +92,7 @@ public class UserSettingsController {
                 }
 
 
-                if (Utils.validateNullOrEmpty(newPasswordText)) {
+                if (!Utils.validateNullOrEmpty(newPasswordText)) {
                     if (!User.validPassword(passwordText)) {
                         passwordFeedback.setText("Invalid password, try again");
                         return;
@@ -120,13 +120,13 @@ public class UserSettingsController {
 
                 if (successMessage != null) {
                     userDAO.updateUser(currentUser);
-                    Utils.showAlert(Alert.AlertType.INFORMATION, "Success", successMessage);
+                    Utils.showConfirmAlert(successMessage);
                     passwordField.setText(null);
                     newPasswordField.setText(null);
                 }
 
             } catch (SQLException e) {
-                    Utils.showAlert(Alert.AlertType.INFORMATION, "Failed to update details: ", e.getMessage());
+                    Utils.showErrorAlert("Failed to update details");
             }
         });
     }
@@ -134,7 +134,7 @@ public class UserSettingsController {
     private void setupDeleteButton(){
         deleteUserButton.setOnAction(actionEvent -> {
             try {
-                Optional<ButtonType> result = Utils.showAlert(Alert.AlertType.CONFIRMATION, "Logout", "Are you sure you want to logout of your account?");
+                Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout of your account?");
                 if (result.isPresent()) {
                     ButtonType buttonClicked = result.get();
                     if (buttonClicked == ButtonType.OK) {
@@ -142,27 +142,27 @@ public class UserSettingsController {
                     }
                 }
             } catch (SQLException e) {
-                Utils.showAlert(Alert.AlertType.INFORMATION, "Failed to logout: ", e.getMessage());
+                Utils.showErrorAlert("Failed to logout");
             }
 
             try {
                 Utils.loadView("login", new LoginController(db), getStage());
             } catch (Exception e ) {
-                Utils.showErrorAlert("Error Logging Out: " + e);
+                Utils.showErrorAlert("Error Logging Out");
             }
         });
     }
 
     private void setupLogoutButton(){
         logoutButton.setOnAction(actionEvent -> {
-            Optional<ButtonType> result = Utils.showAlert(Alert.AlertType.CONFIRMATION, "Logout", "Are you sure you want to logout of your account?");
+            Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout?");
             if (result.isPresent()) {
                 ButtonType buttonClicked = result.get();
                 if (buttonClicked == ButtonType.OK) {
                     try {
                         Utils.loadView("login", new LoginController(db), getStage());
                     } catch (Exception e ) {
-                        Utils.showErrorAlert("Error Logging Out: " + e);
+                        Utils.showErrorAlert("Error Logging Out");
                     }
                 }
             }
@@ -174,7 +174,7 @@ public class UserSettingsController {
             try {
                 Utils.loadView("chat", new ChatController(db, currentUser), getStage());
             } catch (Exception e ) {
-                Utils.showErrorAlert("Error Returning To Chat: " + e);
+                Utils.showErrorAlert("Error Returning To Chat");
             }
         });
     }
