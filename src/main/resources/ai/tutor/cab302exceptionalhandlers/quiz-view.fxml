@@ -75,7 +75,7 @@
     <!-- Center Region (Chat Area) -->
     <center>
         <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
-                 <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type?">
+                 <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type? In python, which of these is NOT a variable type? In python, which of these is NOT a variable type? In python, which of these is NOT a variable type" wrapText="true">
             <padding>
                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
             </padding></Label>
@@ -85,15 +85,15 @@
                     <ScrollPane fx:id="quizScrollPane" fitToWidth="true" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
                         <content>
       
-                            <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" prefHeight="298.0" prefWidth="367.0" spacing="10" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14;">
+                            <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" prefHeight="298.0" spacing="10" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14;">
                                 <Label style="-fx-background-color: #CBD6FF; -fx-font-size: 16; -fx-font-weight: bold;" text="Please select one of the options">
                            <VBox.margin>
                               <Insets top="7.0" />
                            </VBox.margin>
                         </Label>
-                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="258.0">
+                        <VBox alignment="CENTER_LEFT" prefHeight="200.0">
                            <children>
-                              <HBox alignment="CENTER" prefWidth="200.0">
+                              <HBox alignment="CENTER_LEFT">
                                  <children>
                                     <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
                                        <children>
@@ -103,14 +103,14 @@
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Pane>
-                                             <Button fx:id="answerA" prefHeight="42.0" prefWidth="181.0" styleClass="option-button" text="Placeholder">
+                                             <Button fx:id="answerA" prefHeight="42.0" styleClass="option-button" text="Placeholder">
                                        <HBox.margin>
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Button>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefWidth="200.0">
+                              <HBox alignment="CENTER_LEFT">
                                  <children>
                                     <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
                                        <children>
@@ -120,14 +120,14 @@
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Pane>
-                                    <Button fx:id="answerB" prefHeight="42.0" prefWidth="181.0" styleClass="option-button" text="Placeholder">
+                                    <Button fx:id="answerB" prefHeight="42.0" styleClass="option-button" text="Placeholder">
                                        <HBox.margin>
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Button>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefWidth="200.0">
+                              <HBox alignment="CENTER_LEFT">
                                  <children>
                                     <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
                                        <children>
@@ -137,14 +137,14 @@
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Pane>
-                                    <Button fx:id="answerC" prefHeight="42.0" prefWidth="181.0" styleClass="option-button" text="Placeholder">
+                                    <Button fx:id="answerC" prefHeight="42.0" styleClass="option-button" text="Placeholder">
                                        <HBox.margin>
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Button>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" prefWidth="200.0">
+                              <HBox alignment="CENTER_LEFT">
                                  <children>
                                     <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
                                        <children>
@@ -154,7 +154,7 @@
                                           <Insets bottom="16.0" />
                                        </HBox.margin>
                                     </Pane>
-                                    <Button fx:id="answerD" prefHeight="42.0" prefWidth="181.0" styleClass="option-button" text="Placeholder">
+                                    <Button fx:id="answerD" prefHeight="42.0" styleClass="option-button" text="Placeholder">
                                        <HBox.margin>
                                           <Insets bottom="16.0" />
                                        </HBox.margin>

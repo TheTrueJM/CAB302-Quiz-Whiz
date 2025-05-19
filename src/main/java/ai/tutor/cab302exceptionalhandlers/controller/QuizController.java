@@ -116,7 +116,7 @@ public class QuizController {
             {
                 // Configure HBox
                 container.setAlignment(Pos.CENTER_LEFT);
-                HBox.setHgrow(spacer, Priority.ALWAYS); // Spacer takes extra space
+                HBox.setHgrow(spacer, Priority.ALWAYS);
                 HBox.setMargin(toggleAnswered, new Insets(0, 5, 0, 10)); // Margin for toggle
                 HBox.setMargin(selectQuestion, new Insets(5, 0, 5, 5)); // Margin for button
 
