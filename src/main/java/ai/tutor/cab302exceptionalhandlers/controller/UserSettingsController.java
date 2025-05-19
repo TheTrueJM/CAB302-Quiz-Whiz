@@ -103,15 +103,18 @@ public class UserSettingsController {
     private void setupDeleteButton(){
         deleteUserButton.setOnAction(actionEvent -> {
             try {
-                Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout of your account?");
+                Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to permanently delete your account?");
                 if (result.isPresent()) {
                     ButtonType buttonClicked = result.get();
                     if (buttonClicked == ButtonType.OK) {
                         userDAO.deleteUser(currentUser);
                     }
+                    else {
+                        return;
+                    }
                 }
             } catch (SQLException e) {
-                Utils.showErrorAlert("Failed to logout");
+                Utils.showErrorAlert("Failed to delete account");
             }
 
             try {
