@@ -31,6 +31,7 @@ import javafx.concurrent.Task;
 import javafx.util.Duration;
 import javafx.scene.input.KeyCode;
 
+import one.jpro.platform.mdfx.MarkdownView;
 
 public class ChatController {
     // Chat Window
@@ -307,7 +308,10 @@ public class ChatController {
         messageLabel.setMaxWidth(450);
         messageLabel.setTextFill(Color.BLACK);
 
-        VBox verticalContainer = new VBox(messageLabel);
+        MarkdownView mdView = new MarkdownView();
+        mdView.mdStringProperty().bind(messageLabel.textProperty());
+
+        VBox verticalContainer = new VBox(mdView);
         verticalContainer.setAlignment(Pos.CENTER);
 
         HBox horizontalContainer = new HBox(verticalContainer);
