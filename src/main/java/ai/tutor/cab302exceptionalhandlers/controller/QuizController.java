@@ -75,7 +75,7 @@ public class QuizController {
         return (Stage) quizTitle.getScene().getWindow();
     }
 
-    // Intialisation for assets(currently none but might need this)
+    // Intialisation for assets
     @FXML
     public void initialize() {
         setupQuestions();
@@ -112,22 +112,12 @@ public class QuizController {
             private final ToggleButton toggleAnswered = new ToggleButton();
             private final Region spacer = new Region();
             private final HBox container = new HBox(selectQuestion, spacer, toggleAnswered);
-
             {
                 // Configure HBox
                 container.setAlignment(Pos.CENTER_LEFT);
                 HBox.setHgrow(spacer, Priority.ALWAYS);
                 HBox.setMargin(toggleAnswered, new Insets(0, 5, 0, 10)); // Margin for toggle
                 HBox.setMargin(selectQuestion, new Insets(5, 0, 5, 5)); // Margin for button
-
-                // Handle question selection
-                selectQuestion.setOnAction(event -> {
-                    QuizQuestion question = getItem();
-                    if (question != null) {
-                        questionNumber = getIndex() + 1;
-                        displayQuestion(questionNumber);
-                    }
-                });
             }
             @Override
             protected void updateItem(QuizQuestion item, boolean empty) {
@@ -167,6 +157,7 @@ public class QuizController {
                 }
             }
         });
+        // Handle question selection
         questionListView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             if (newItem != null) {
                 int index = questionListView.getItems().indexOf(newItem);
@@ -179,7 +170,6 @@ public class QuizController {
     }
 
     private void checkAnswer(ListCell<QuizQuestion> cell, HBox container) {
-        container.getStyleClass().setAll("");
         String userAnswer = questionAnswers.get(cell.getIndex() + 1);
         List<AnswerOption> options = answerOptions.get(cell.getIndex() + 1);
         if (userAnswer != null && options != null) {
@@ -188,10 +178,10 @@ public class QuizController {
                     .findFirst()
                     .orElse(null);
             if (correct != null) {
-                if (userAnswer.equals(correct.getOption())) {
-                    container.getStyleClass().add("correct-answer");
+                if (userAnswer.equals(correct.getOption().toUpperCase())) {
+                    container.getStyleClass().setAll("correct-answer");
                 } else {
-                    container.getStyleClass().add("incorrect-answer");
+                    container.getStyleClass().setAll("incorrect-answer");
                 }
             } else {
                 System.err.println("No correct answer found for question " + (cell.getIndex() + 1));
@@ -199,7 +189,7 @@ public class QuizController {
         }
     }
 
-    //Display the questions on the buttons, and sets up the event handler for the answer buttons
+    // Display the questions on the buttons, and sets up the event handler for the answer buttons
     private void displayQuestion(int questionNumber) {
         QuizQuestion question = quizQuestions.get(questionNumber - 1);
         quizQuestionLabel.setText(question.getQuestion());
@@ -316,8 +306,6 @@ public class QuizController {
         quizCompleted = true;
         try {
             saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
-            // Debug: Log saved answers
-            System.out.println("Saved answers: " + questionAnswers);
             questionListView.refresh();
         } catch (Exception e) {
             e.printStackTrace();

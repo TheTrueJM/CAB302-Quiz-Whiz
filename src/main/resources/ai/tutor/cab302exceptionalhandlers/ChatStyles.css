@@ -1,40 +1,40 @@
 .chat-selector {
     -fx-background-color: #FFFFFF;
     -fx-text-alignment: left;
-    -fx-border-radius: 8 0 0 8;
-    -fx-background-radius: 8 0 0 8;
-    -fx-border-width: 1;
+    -fx-border-radius: 8px 0px 0px 8px;
+    -fx-background-radius: 8px 0px 0px 8px;
+    -fx-border-width: 1px;
     -fx-border-style: solid;
     -fx-border-color: #D9D9D9;
-    -fx-padding: 12 14;
-    -fx-pref-width: 165;
-    -fx-pref-height: 40;
+    -fx-padding: 12px 14px;
+    -fx-pref-width: 165px;
+    -fx-pref-height: 40px;
 }
 
 .chat-selector-container {
     -fx-background-color: #535353;
-    -fx-padding: 5 4 5 0;
+    -fx-padding: 5px 4px 5px 0px;
 }
 
 .chat-list {
     -fx-background-color: #535353;
 }
 
-.form-slider .thumb{
+.form-slider .thumb {
     -fx-background-color: black;
 }
 
-.form-slider .track{
+.form-slider .track {
     -fx-background-color: #6C94DF;
 }
 
 .delete-button {
     -fx-background-color: #FFFFFF;
-    -fx-pref-height: 42.1;
-    -fx-pref-width: 15;
-    -fx-border-radius: 0 8 8 0;
-    -fx-background-radius: 0 8 8 0;
-    -fx-padding: 8;
+    -fx-pref-height: 42.1px;
+    -fx-pref-width: 15px;
+    -fx-border-radius: 0px 8px 8px 0px;
+    -fx-background-radius: 0px 8px 8px 0px;
+    -fx-padding: 8px;
 }
 
 .download-button {
@@ -46,33 +46,33 @@
 .chat-list .scroll-bar:horizontal .decrement-arrow,
 .chat-list .scroll-bar:horizontal .increment-button,
 .chat-list .scroll-bar:horizontal .decrement-button {
-    -fx-padding:0;
+    -fx-padding: 0px;
 }
 
 .chat-mode-active, .quiz-mode-active {
     -fx-background-color: #6C95DF;
     -fx-text-fill: white;
-    -fx-background-radius: 5;
+    -fx-background-radius: 5px;
     -fx-text-alignment: center;
-    -fx-padding: 5;
+    -fx-padding: 5px;
     -fx-border-color: black;
-    -fx-border-radius: 5;
+    -fx-border-radius: 5px;
 }
 
 .chat-mode-disabled, .quiz-mode-disabled {
     -fx-background-color: white;
     -fx-text-fill: black;
-    -fx-background-radius: 5;
+    -fx-background-radius: 5px;
     -fx-text-alignment: center;
-    -fx-padding: 5;
+    -fx-padding: 5px;
     -fx-border-color: grey;
-    -fx-border-radius: 5;
+    -fx-border-radius: 5px;
 }
 
-.chat-mode-active:hover, .chat-mode-disabled:hover .chat-mode-disabled:hover, .quiz-mode-disabled:hover,
- .return-button:hover, .search-button:hover, .addChatButton:hover, .confirmEdit:hover, .editName:hover,
- .userDetailsButton:hover, .logoutButton:hover, .setting-button:hover, .upload-button:hover, .chat-selector:hover,
- .button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover .download-button:hover{
+.chat-mode-active:hover, .chat-mode-disabled:hover, .quiz-mode-disabled:hover,
+.return-button:hover, .search-button:hover, .addChatButton:hover, .confirmEdit:hover, .editName:hover,
+.userDetailsButton:hover, .logoutButton:hover, .setting-button:hover, .upload-button:hover, .chat-selector:hover,
+.button:hover, .delete-button:hover, .createChat2:hover, .start-button:hover, .download-button:hover {
     -fx-opacity: 0.8;
     -fx-transition: opacity 0.2s ease-in-out;
     -fx-cursor: hand;
@@ -81,39 +81,39 @@
 .user-message {
     -fx-background-color: #CBD6FF;
     -fx-text-alignment: justify;
-    -fx-border-radius: 25;
-    -fx-background-radius: 25;
-    -fx-padding: 10, 15, 10, 15;
-    -fx-font-size: 14;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 15px 10px 15px;
+    -fx-font-size: 14px;
 }
 
 .ai-message {
     -fx-background-color: #98E4CF;
     -fx-text-alignment: justify;
-    -fx-border-radius: 25;
-    -fx-background-radius: 25;
-    -fx-padding: 10, 15, 10, 15;
-    -fx-font-size: 14;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 15px 10px 15px;
+    -fx-font-size: 14px;
 }
 
 .thinking-message {
-    -fx-background-color: #F5F5F5;;
+    -fx-background-color: #F5F5F5;
     -fx-text-alignment: justify;
-    -fx-border-radius: 25;
-    -fx-background-radius: 25;
-    -fx-padding: 10, 15, 10, 15;
-    -fx-font-size: 16;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-padding: 10px 15px 10px 15px;
+    -fx-font-size: 16px;
     -fx-font-style: italic;
 }
 
 .takeQuizButton {
     -fx-background-color: white;
     -fx-text-fill: black;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
     -fx-border-color: black;
-    -fx-border-width: 1;
-    -fx-padding: 8 15;
+    -fx-border-width: 1px;
+    -fx-padding: 8px 15px;
 }
 
 .chatScrollPane .viewport {
@@ -128,22 +128,12 @@
 .message-area .scroll-pane,
 .message-area .content {
     -fx-background-color: white;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-    -fx-border-width: 0;
+    -fx-background-insets: 0px;
+    -fx-padding: 0px;
+    -fx-border-width: 0px;
     -fx-border-color: white;
 }
 
 .background {
     -fx-background-color: radial-gradient(center 50% 50%, radius 100%, #CBD6FF 0%, #6C95DF 100%);
 }
-
-
-
-
-
-
-
-
-
-
