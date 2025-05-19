@@ -13,6 +13,7 @@ Important instructions:
 2. Use the conversation history to create relevant questions about topics already discussed.
 3. Do NOT explain or teach in this mode - only generate the quiz.
 4. If the conversation history is empty or insufficient, create questions relevant to the student's study area.
+5. Do NOT write math in latex, instead replace them with their ASCII alternatives
 
 Respond ONLY with a valid JSON object adhering to the following structure:
 

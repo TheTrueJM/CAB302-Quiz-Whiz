@@ -85,6 +85,7 @@
     -fx-background-radius: 25;
     -fx-padding: 10, 15, 10, 15;
     -fx-font-size: 14;
+    -fx-max-width: 300px;
 }
 
 .ai-message {
@@ -94,6 +95,7 @@
     -fx-background-radius: 25;
     -fx-padding: 10, 15, 10, 15;
     -fx-font-size: 14;
+    -fx-max-width: 500px;
 }
 
 .thinking-message {
@@ -137,13 +139,3 @@
 .background {
     -fx-background-color: radial-gradient(center 50% 50%, radius 100%, #CBD6FF 0%, #6C95DF 100%);
 }
-
-
-
-
-
-
-
-
-
-
