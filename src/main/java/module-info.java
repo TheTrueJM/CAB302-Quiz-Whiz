@@ -8,6 +8,7 @@ module ai.tutor.cab302exceptionalhandlers {
     requires ollama4j;
     requires java.net.http;
     requires com.google.gson;
+    requires one.jpro.platform.mdfx;
 
     opens ai.tutor.cab302exceptionalhandlers to javafx.fxml;
     opens ai.tutor.cab302exceptionalhandlers.controller to javafx.fxml, com.google.gson;
