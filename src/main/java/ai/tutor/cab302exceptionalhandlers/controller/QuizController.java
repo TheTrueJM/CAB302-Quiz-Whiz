@@ -4,7 +4,8 @@ import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -14,19 +15,10 @@ import java.util.*;
 
 public class QuizController {
     @FXML private Button returnButton;
-    @FXML private Button searchButton;
-    @FXML private Button quizSettingsButton;
-    @FXML private Button userDetailsButton;
     @FXML private Button answerA;
     @FXML private Button answerB;
     @FXML private Button answerC;
     @FXML private Button answerD;
-    @FXML private Button configureQuiz;
-    @FXML private Button chatModeButton;
-    @FXML private Button quizModeButton;
-    @FXML private TextField quizNameField;
-    @FXML private TextField noQuizField;
-    @FXML private TextField welcomeTitle;
     @FXML private ListView questionListView;
     @FXML private ScrollPane quizScrollPane;
     @FXML private VBox quizQuestion;
@@ -34,6 +26,7 @@ public class QuizController {
     @FXML private StackPane quizQuestionsContainer;
     @FXML private StackPane quizListContainer1;
     @FXML private Label quizQuestionLabel;
+    @FXML private Label quizTitle;
     @FXML private Button submitQuizButton;
 
     private SQLiteConnection db;
@@ -79,7 +72,7 @@ public class QuizController {
     }
 
     private Stage getStage() {
-        return (Stage) quizNameField.getScene().getWindow();
+        return (Stage) quizTitle.getScene().getWindow();
     }
 
     // Intialisation for assets(currently none but might need this)
@@ -112,20 +105,28 @@ public class QuizController {
         }
     }
 
-    // same way its done in the chat sidebar, just without the delete functionality
+    // Set up the ListView to display questions with a toggle indicating answered state
     private void setupQuizListView() {
         questionListView.setCellFactory(listView -> new ListCell<QuizQuestion>() {
             private final Button selectQuestion = new Button();
-            private final HBox container = new HBox(selectQuestion);
+            private final ToggleButton toggleAnswered = new ToggleButton();
+            private final Region spacer = new Region();
+            private final HBox container = new HBox(selectQuestion, spacer, toggleAnswered);
 
             {
+                // Configure HBox
+                container.setAlignment(Pos.CENTER_LEFT);
+                HBox.setHgrow(spacer, Priority.ALWAYS); // Spacer takes extra space
+                HBox.setMargin(toggleAnswered, new Insets(0, 5, 0, 10)); // Margin for toggle
+                HBox.setMargin(selectQuestion, new Insets(5, 0, 5, 5)); // Margin for button
+
+                // Handle question selection
                 selectQuestion.setOnAction(event -> {
                     QuizQuestion question = getItem();
                     if (question != null) {
                         questionNumber = getIndex() + 1;
                         displayQuestion(questionNumber);
                     }
-
                 });
             }
             @Override
@@ -133,12 +134,69 @@ public class QuizController {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);
+                    container.setStyle("");
+                    setStyle("-fx-background-color: #535353;");
                 } else {
+                    // Apply style classes
+                    getStyleClass().setAll("question-cell");
+                    container.getStyleClass().setAll("question-container");
+                    selectQuestion.getStyleClass().setAll("select-question");
+                    toggleAnswered.getStyleClass().setAll("toggle-answered");
+
+                    // Configure buttons
+                    selectQuestion.setAlignment(Pos.CENTER_LEFT);
+                    toggleAnswered.setAlignment(Pos.CENTER);
+                    toggleAnswered.setPrefSize(25, 25);
+
+                    // Set question text
                     selectQuestion.setText("Question " + (getIndex() + 1));
-                    setGraphic(selectQuestion);
+                    quizTitle.setText("Question " + (getIndex() + 1));
+
+                    // Set toggle state based on questionAnswers map
+                    toggleAnswered.setSelected(questionAnswers.containsKey(getIndex() + 1));
+                    toggleAnswered.setDisable(true);
+
+                    // Apply correct/incorrect styles if quiz is completed
+                    if (quizCompleted) {
+                        container.getChildren().remove(toggleAnswered);
+                        checkAnswer(this, container);
+                    }
+
+                    // Set the container as the cell's graphic
+                    setGraphic(container);
                 }
             }
         });
+        questionListView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
+            if (newItem != null) {
+                int index = questionListView.getItems().indexOf(newItem);
+                if (index >= 0) {
+                    questionNumber = index + 1;
+                    displayQuestion(questionNumber);
+                }
+            }
+        });
+    }
+
+    private void checkAnswer(ListCell<QuizQuestion> cell, HBox container) {
+        container.getStyleClass().setAll("");
+        String userAnswer = questionAnswers.get(cell.getIndex() + 1);
+        List<AnswerOption> options = answerOptions.get(cell.getIndex() + 1);
+        if (userAnswer != null && options != null) {
+            AnswerOption correct = options.stream()
+                    .filter(AnswerOption::getIsAnswer)
+                    .findFirst()
+                    .orElse(null);
+            if (correct != null) {
+                if (userAnswer.equals(correct.getOption())) {
+                    container.getStyleClass().add("correct-answer");
+                } else {
+                    container.getStyleClass().add("incorrect-answer");
+                }
+            } else {
+                System.err.println("No correct answer found for question " + (cell.getIndex() + 1));
+            }
+        }
     }
 
     //Display the questions on the buttons, and sets up the event handler for the answer buttons
@@ -162,7 +220,7 @@ public class QuizController {
         answerC.setText(options.get(2).getValue());
         answerD.setText(options.get(3).getValue());
 
-        if(quizCompleted == true){
+        if(quizCompleted){
             // Disable buttons
             answerA.setDisable(true);
             answerB.setDisable(true);
@@ -182,6 +240,7 @@ public class QuizController {
                 if (opt.getOption().equals("D")) targetButton = answerD;
 
                 if (targetButton != null) {
+                    targetButton.getStyleClass().removeAll("correct-answer", "incorrect-answer");
                     if (opt.getIsAnswer()) {
                         targetButton.getStyleClass().add("correct-answer");
                     } else if (opt.getOption().equals(selected)) {
@@ -246,16 +305,20 @@ public class QuizController {
             selectedButton.getStyleClass().remove("option-button");
             selectedButton.getStyleClass().add("option-button-toggled");
         }
+
+        questionListView.refresh();
     }
 
     //Submit Answers
-    private void submitAnswers(){
+    private void submitAnswers() {
         int messageId = currentQuiz.getMessageId();
-        int attempt = 1;  //Hardcoded until that system is explained
+        int attempt = 1;
         quizCompleted = true;
         try {
             saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
-            checkAnswers();
+            // Debug: Log saved answers
+            System.out.println("Saved answers: " + questionAnswers);
+            questionListView.refresh();
         } catch (Exception e) {
             e.printStackTrace();
             Utils.showErrorAlert("Failed to submit answers: " + e.getMessage());
@@ -277,41 +340,6 @@ public class QuizController {
 
         }
     }
-
-    //check the answers, restyle the list view
-    private void checkAnswers(){
-        questionListView.setCellFactory(lv -> new ListCell<QuizQuestion>() {
-            @Override
-            protected void updateItem(QuizQuestion item, boolean empty) {
-                super.updateItem(item, empty);
-                int qNumber = getIndex() + 1;
-                setText("Question " + qNumber);
-
-                // Clear previous style classes
-                getStyleClass().removeAll("correct-answer", "incorrect-answer");
-
-                // Get user's selected option and correct option
-                String userAnswer = questionAnswers.get(qNumber);
-                List<AnswerOption> options = answerOptions.get(qNumber);
-
-
-                if (userAnswer != null && options != null) {
-                    AnswerOption correct = options.stream()
-                            .filter(AnswerOption::getIsAnswer)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (correct != null) {
-                        if (userAnswer.equals(correct.getOption())) {
-                            getStyleClass().add("correct-answer");
-                        } else {
-                            getStyleClass().add("incorrect-answer");
-                        }
-                    }
-                }
-            }
-        })
-    ;}
 
     //Return to chat
     private void setupReturnButton() {
