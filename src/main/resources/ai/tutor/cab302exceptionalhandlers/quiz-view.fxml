@@ -22,7 +22,7 @@
     </stylesheets>
     <!-- Top Region -->
     <top>
-        <HBox maxHeight="65.0" maxWidth="960.0" prefHeight="65.0" prefWidth="956.0" spacing="10" style="-fx-background-color: #535353;">
+        <HBox maxHeight="65.0" prefHeight="65.0" spacing="10" style="-fx-background-color: #535353;">
             <!-- Pane to match sidebar width and color -->
             <Pane prefHeight="65.0" prefWidth="241.0" style="-fx-background-color: #535353;" HBox.hgrow="NEVER">
                 <children>
@@ -36,47 +36,47 @@
                         </graphic>
                     </Button>
                     <Button fx:id="searchButton" layoutX="190.0" layoutY="13.0" prefHeight="39.0" prefWidth="39.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand;" styleClass="search-button" />
-                      <ImageView fitHeight="34.0" fitWidth="35.0" layoutX="192.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
-                          <image>
-                              <Image url="@images/search.png" />
-                          </image>
-                      </ImageView>
-                </children></Pane>
+                    <ImageView fitHeight="34.0" fitWidth="35.0" layoutX="192.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@images/search.png" />
+                        </image>
+                    </ImageView>
+                </children>
+            </Pane>
             <!-- Pane for the top bar content -->
-            <Pane prefHeight="65.0" prefWidth="711.0" style="-fx-background-color: #213355;" HBox.hgrow="NEVER">
+            <HBox prefHeight="65.0" style="-fx-background-color: #213355;" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10">
                 <children>
-                    <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="62.0" prefWidth="690.0" spacing="10" style="-fx-padding: 0;" HBox.hgrow="NEVER">
-                        <ImageView fitHeight="29.0" fitWidth="3.0" nodeOrientation="INHERIT" HBox.hgrow="NEVER" />
-                        <TextField fx:id="quizNameField" editable="false" prefHeight="46.0" prefWidth="421.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@ChatStyles.css" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                            <children>
-                                <TextField prefHeight="31.0" prefWidth="127.0" promptText="Search..." style="-fx-background-radius: 10 0 0 10; -fx-padding: 7 0 7 8; -fx-background-color: white;" HBox.hgrow="NEVER" />
-                                <Button alignment="CENTER" prefHeight="30.0" prefWidth="35.0" style="-fx-background-color: white; -fx-border-radius: 0; -fx-background-radius: 0; -fx-cursor: hand;" HBox.hgrow="NEVER">
-                                    <graphic>
-                                        <ImageView fitHeight="13.0" fitWidth="14.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@images/search2.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
-                                <Button fx:id="quizSettingsButton" alignment="CENTER" prefHeight="30.0" prefWidth="35.0" style="-fx-background-color: white; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-border-radius: 0 10 10 0; -fx-background-radius: 0 8 8 0; -fx-cursor: hand;" styleClass="setting-button">
-                                    <graphic>
-                                        <ImageView fitHeight="29.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@images/settings.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
-                            </children>
-                        </HBox>
+                    <ImageView fitHeight="29.0" fitWidth="3.0" nodeOrientation="INHERIT" HBox.hgrow="NEVER" />
+                    <TextField fx:id="quizNameField" editable="false" prefHeight="46.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" stylesheets="@ChatStyles.css" text="Quiz Whiz" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                        <children>
+                            <TextField prefHeight="31.0" prefWidth="127.0" promptText="Search..." style="-fx-background-radius: 10 0 0 10; -fx-padding: 7 0 7 8; -fx-background-color: white;" HBox.hgrow="NEVER" />
+                            <Button alignment="CENTER" prefHeight="30.0" prefWidth="35.0" style="-fx-background-color: white; -fx-border-radius: 0; -fx-background-radius: 0; -fx-cursor: hand;" HBox.hgrow="NEVER">
+                                <graphic>
+                                    <ImageView fitHeight="13.0" fitWidth="14.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@images/search2.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="quizSettingsButton" alignment="CENTER" prefHeight="30.0" prefWidth="35.0" style="-fx-background-color: white; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-border-radius: 0 10 10 0; -fx-background-radius: 0 8 8 0; -fx-cursor: hand;" styleClass="setting-button">
+                                <graphic>
+                                    <ImageView fitHeight="29.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@images/settings.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </children>
                     </HBox>
                 </children>
                 <padding>
                     <Insets bottom="10" left="10" right="10" top="10" />
                 </padding>
-            </Pane>
+            </HBox>
         </HBox>
     </top>
 
@@ -84,12 +84,13 @@
     <left>
         <VBox alignment="CENTER" prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 5;" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
-            <StackPane fx:id="quizQuestionsContainer" prefWidth="230.0">
-                <TextField fx:id="noQuizField" alignment="TOP_CENTER" editable="false" prefHeight="404.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" />
-                <ListView fx:id="questionListView" prefHeight="380.0" prefWidth="264.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="quizQuestionsContainer" prefWidth="230.0" VBox.vgrow="ALWAYS">
+                <TextField fx:id="noQuizField" alignment="TOP_CENTER" editable="false" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
+                <ListView fx:id="questionListView" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
                     <StackPane.margin>
                         <Insets bottom="5.0" />
-                    </StackPane.margin></ListView>
+                    </StackPane.margin>
+                </ListView>
             </StackPane>
             <Button fx:id="submitQuizButton" prefHeight="35.0" prefWidth="208.0"  style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="Submit Quiz" />
         </VBox>
@@ -98,61 +99,63 @@
     <!-- Center Region (Chat Area) -->
     <center>
         <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
-                 <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type?">
-            <padding>
-               <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
-            </padding></Label>
-                <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" prefWidth="670.0" spacing="10" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <children>
+            <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type?">
+                <padding>
+                    <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                </padding>
+            </Label>
+            <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" spacing="10" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;">
+                <children>
                     <!-- Chat Section -->
                     <ScrollPane fx:id="quizScrollPane" fitToWidth="true" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
                         <content>
-
                             <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" spacing="10" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14;">
                                 <Label style="-fx-background-color: #CBD6FF; -fx-font-size: 16;" text="Please select one of the options">
-                           <VBox.margin>
-                              <Insets top="7.0" />
-                           </VBox.margin>
-                        </Label>
+                                    <VBox.margin>
+                                        <Insets top="7.0" />
+                                    </VBox.margin>
+                                </Label>
                                 <HBox alignment="CENTER">
                                     <Button fx:id="answerA" styleClass="option-button" text="A - Placeholder">
-                              <HBox.margin>
-                                 <Insets left="30.0" />
-                              </HBox.margin>
-                           </Button>
-                           <Region prefHeight="40.0" prefWidth="76.0" />
+                                        <HBox.margin>
+                                            <Insets left="30.0" />
+                                        </HBox.margin>
+                                    </Button>
+                                    <Region prefHeight="40.0" prefWidth="76.0" />
                                     <Button fx:id="answerB" styleClass="option-button" text="B - Placeholder">
-                              <HBox.margin>
-                                 <Insets right="30.0" />
-                              </HBox.margin></Button>
+                                        <HBox.margin>
+                                            <Insets right="30.0" />
+                                        </HBox.margin>
+                                    </Button>
                                 </HBox>
                                 <HBox alignment="CENTER">
                                     <Button fx:id="answerC" styleClass="option-button" text="C - Placeholder">
-                              <HBox.margin>
-                                 <Insets left="30.0" />
-                              </HBox.margin>
-                           </Button>
-                           <Region prefHeight="40.0" prefWidth="74.0" />
+                                        <HBox.margin>
+                                            <Insets left="30.0" />
+                                        </HBox.margin>
+                                    </Button>
+                                    <Region prefHeight="40.0" prefWidth="74.0" />
                                     <Button fx:id="answerD" styleClass="option-button" text="D - Placeholder">
-                              <HBox.margin>
-                                 <Insets right="30.0" />
-                              </HBox.margin></Button>
-                           <VBox.margin>
-                              <Insets bottom="20.0" top="6.0" />
-                           </VBox.margin>
+                                        <HBox.margin>
+                                            <Insets right="30.0" />
+                                        </HBox.margin>
+                                    </Button>
+                                    <VBox.margin>
+                                        <Insets bottom="20.0" top="6.0" />
+                                    </VBox.margin>
                                 </HBox>
-                        <padding>
-                           <Insets bottom="10.0" top="5.0" />
-                        </padding>
+                                <padding>
+                                    <Insets bottom="10.0" top="5.0" />
+                                </padding>
                             </VBox>
                         </content>
                     </ScrollPane>
-            </children>
-            <VBox.margin>
-               <Insets top="10.0" />
-            </VBox.margin>
-                </VBox>
-            <StackPane fx:id="quizListContainer1" maxHeight="1.0" prefHeight="0.0" prefWidth="670.0" VBox.vgrow="ALWAYS" />
+                </children>
+                <VBox.margin>
+                    <Insets top="10.0" />
+                </VBox.margin>
+            </VBox>
+            <StackPane fx:id="quizListContainer1" maxHeight="1.0" prefHeight="0.0" VBox.vgrow="ALWAYS" />
             <!-- Chat Input -->
             <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-padding: 10; -fx-border-color: #757575; -fx-border-radius: 8; -fx-background-color: white; -fx-border-width: 1; -fx-background-radius: 8;">
                 <HBox alignment="CENTER_LEFT" spacing="10">
@@ -160,7 +163,6 @@
                     <Button fx:id="quizModeButton" alignment="CENTER" prefHeight="27.0" prefWidth="55.0" style="-fx-cursor: hand;" styleClass="quiz-mode-active" text="Quiz" />
                 </HBox>
             </VBox>
-
         </VBox>
     </center>
 </BorderPane>
