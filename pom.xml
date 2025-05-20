@@ -25,6 +25,7 @@
     <slf4j.version>2.0.12</slf4j.version>
     <ollama4j.version>1.0.100</ollama4j.version>
     <gson.version>2.13.1</gson.version>
+    <mdfx.version>0.5.6</mdfx.version>
   </properties>
 
   <dependencies>
@@ -36,6 +37,11 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-web</artifactId>
       <version>${javafx.version}</version>
     </dependency>
     <dependency>
@@ -97,6 +103,11 @@
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>one.jpro.platform</groupId>
+        <artifactId>jpro-mdfx</artifactId>
+        <version>${mdfx.version}</version>
     </dependency>
   </dependencies>
 
