@@ -121,6 +121,7 @@
                         </content>
                     </ScrollPane>
             </children>
+                    <StackPane fx:id="quizListContainer1" maxHeight="1.0" prefHeight="0.0" prefWidth="670.0" VBox.vgrow="ALWAYS" />
             <VBox.margin>
                <Insets top="10.0" />
             </VBox.margin>

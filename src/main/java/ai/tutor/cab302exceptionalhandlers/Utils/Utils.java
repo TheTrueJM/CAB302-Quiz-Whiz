@@ -24,7 +24,9 @@ public final class Utils {
         );
         fxmlLoader.setController(controller);
 
-        Scene scene = new Scene(fxmlLoader.load(), QuizWhizApplication.WIDTH, QuizWhizApplication.HEIGHT);
+        double currentWidth = stage.getScene().getWidth();
+        double currentHeight = stage.getScene().getHeight();
+        Scene scene = new Scene(fxmlLoader.load(), currentWidth, currentHeight);
         stage.setScene(scene);
     }
 
