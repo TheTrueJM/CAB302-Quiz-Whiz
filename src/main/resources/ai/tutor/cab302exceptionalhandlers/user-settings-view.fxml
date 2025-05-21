@@ -17,7 +17,7 @@
     <stylesheets>
         <URL value="@SettingStyles.css" />
     </stylesheets>
-   <HBox alignment="CENTER" layoutX="232.0" prefHeight="69.0" prefWidth="729.0" style="-fx-background-color: #213355;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+   <HBox alignment="CENTER" prefHeight="69.0" style="-fx-background-color: #213355;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="232.0">
       <children>
          <Label alignment="CENTER" prefHeight="69.0" prefWidth="431.0" style="-fx-font-weight: bold; -fx-font-size: 36;" text="User Details" textFill="WHITE" />
       </children>
@@ -41,7 +41,7 @@
                <Insets />
             </VBox.margin>
             <image>
-               <Image url="@images/logo-green.png" />
+               <Image url="@images/logo-blue.png" />
             </image>
          </ImageView>
          <VBox alignment="CENTER" prefHeight="80.0" prefWidth="202.0" style="-fx-background-color: #6C95DF; -fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 5;">
@@ -79,21 +79,21 @@
          <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
       </padding>
    </VBox>
-   <VBox alignment="TOP_CENTER" layoutX="232.0" layoutY="68.0" prefHeight="473.0" prefWidth="729.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
+   <VBox alignment="TOP_CENTER" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="69.0">
       <children>
          <HBox maxWidth="546.0" prefHeight="47.0" prefWidth="546.0" style="-fx-background-color: #EDEDED; -fx-background-radius: 12; -fx-border-radius: 12;">
             <children>
                <ButtonBar prefHeight="20.0" prefWidth="117.0">
-                 <buttons>
-                   <Button maxHeight="29.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="87.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 5; -fx-border-radius: 5; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 0;" text="Profile Info" />
-                 </buttons>
+                  <buttons>
+                     <Button maxHeight="29.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="87.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 5; -fx-border-radius: 5; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 0;" text="Profile Info" />
+                  </buttons>
                </ButtonBar>
             </children>
          </HBox>
          <VBox maxHeight="99.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
             <children>
                <Label style="-fx-font-size: 16;" text="Username" />
-                <TextField fx:id="usernameField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
+                  <TextField fx:id="usernameField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
                <Label fx:id="usernameFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
             </children>
             <padding>
@@ -106,7 +106,7 @@
          <VBox maxHeight="95.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
             <children>
                <Label style="-fx-font-size: 16;" text="Current Password" />
-                <PasswordField fx:id="passwordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
+                  <PasswordField fx:id="passwordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
                <Label fx:id="passwordFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
             </children>
             <VBox.margin>
@@ -131,8 +131,7 @@
          </VBox>
          <HBox alignment="BOTTOM_RIGHT" maxWidth="384.0" prefHeight="51.0" prefWidth="384.0">
             <children>
-
-                <Button fx:id="saveButton" prefHeight="36.0" prefWidth="115.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-weight: bold; -fx-font-size: 14;" styleClass="saveButton" text="Save Change" />
+               <Button fx:id="saveButton" prefHeight="36.0" prefWidth="115.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-weight: bold; -fx-font-size: 14;" styleClass="saveButton" text="Save Change" />
             </children>
             <VBox.margin>
                <Insets top="8.0" />
