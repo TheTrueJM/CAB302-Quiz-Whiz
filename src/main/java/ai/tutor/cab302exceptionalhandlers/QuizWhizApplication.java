@@ -14,8 +14,8 @@ import java.sql.SQLException;
 
 public class QuizWhizApplication extends Application {
     public static final String TITLE = "Quiz Whiz";
-    public static final int WIDTH = 960;
-    public static final int HEIGHT = 540;
+    public static final int WIDTH = 1280;
+    public static final int HEIGHT = 720;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {

@@ -22,7 +22,7 @@
     </stylesheets>
     <!-- Top Region -->
     <top>
-        <HBox maxHeight="65.0" maxWidth="960.0" prefHeight="65.0" prefWidth="956.0" spacing="10" style="-fx-background-color: #535353;">
+        <HBox maxHeight="65.0" prefHeight="65.0" spacing="10" style="-fx-background-color: #535353;">
             <!-- Pane to match sidebar width and color -->
             <Pane prefHeight="65.0" prefWidth="241.0" style="-fx-background-color: #535353;" HBox.hgrow="NEVER">
                 <children>
@@ -37,7 +37,7 @@
                </Button>
                 </children></Pane>
             <!-- Pane for the top bar content -->
-            <Pane prefHeight="65.0" prefWidth="711.0" style="-fx-background-color: #213355;" HBox.hgrow="NEVER">
+            <HBox prefHeight="65.0" style="-fx-background-color: #213355;" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10">
                 <children>
                     <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="62.0" prefWidth="690.0" spacing="10" style="-fx-padding: 0;" HBox.hgrow="NEVER">
                         <Label fx:id="quizTitle" alignment="CENTER" prefHeight="46.0" prefWidth="516.0" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" text="Quiz Whiz" HBox.hgrow="ALWAYS">
@@ -53,7 +53,7 @@
                 <padding>
                     <Insets bottom="10" left="10" right="10" top="10" />
                 </padding>
-            </Pane>
+            </HBox>
         </HBox>
     </top>
 
@@ -61,14 +61,15 @@
     <left>
         <VBox alignment="CENTER" prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 5;" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
-            <StackPane fx:id="quizQuestionsContainer" prefWidth="230.0">
-                <TextField fx:id="noQuizField" alignment="TOP_CENTER" editable="false" prefHeight="404.0" prefWidth="230.0" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" />
-                <ListView fx:id="questionListView" prefHeight="380.0" prefWidth="264.0" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="quizQuestionsContainer" prefWidth="230.0" VBox.vgrow="ALWAYS">
+                <TextField fx:id="noQuizField" alignment="TOP_CENTER" editable="false" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
+                <ListView fx:id="questionListView" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
                     <StackPane.margin>
                         <Insets bottom="5.0" />
-                    </StackPane.margin></ListView>
+                    </StackPane.margin>
+                </ListView>
             </StackPane>
-            <Button fx:id="submitQuizButton" prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="Submit Quiz" />
+            <Button fx:id="submitQuizButton" prefHeight="35.0" prefWidth="208.0"  style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="Submit Quiz" />
         </VBox>
     </left>
 
@@ -84,7 +85,7 @@
                     <!-- Chat Section -->
                     <ScrollPane fx:id="quizScrollPane" fitToWidth="true" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
                         <content>
-      
+
                             <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" prefHeight="298.0" spacing="10" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14;">
                                 <Label style="-fx-background-color: #CBD6FF; -fx-font-size: 16; -fx-font-weight: bold;" text="Please select one of the options">
                            <VBox.margin>
