@@ -606,7 +606,7 @@ public class ChatController {
         // TODO: Create chat based on parameters extracted from UI elements and refresh page
         addNewChat.setOnAction(actionEvent -> {
             try {
-                loadChatSettings();
+                Utils.loadView("chat-setup", new ChatCreateController(db, currentUser), getStage());
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
@@ -614,15 +614,7 @@ public class ChatController {
 
         addNewChatMain.setOnAction(actionEvent -> {
             try {
-                loadChatSettings();
-            } catch (Exception e ) {
-                Utils.showErrorAlert("Error Loading Chat Setup: " + e);
-            }
-        });
-
-        addNewChatMain.setOnAction(actionEvent -> {
-            try {
-                loadChatSettings();
+                Utils.loadView("chat-setup", new ChatCreateController(db, currentUser), getStage());
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
@@ -633,7 +625,9 @@ public class ChatController {
     private void setupChatSettingsButton() {
         chatSettingsButton.setOnAction(event -> {
             try {
-                loadChatSettings();
+                if (getSelectedChat() == null) { throw new IllegalStateException("No chat selected"); }
+
+                Utils.loadView("chat-setup", new ChatUpdateController(db, currentUser, getSelectedChat()), getStage());
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setting: " + e);
             }
@@ -644,16 +638,6 @@ public class ChatController {
         return chatsListView.getSelectionModel().getSelectedItem();
     }
 
-    private void loadChatSettings() throws IOException, RuntimeException, SQLException {
-        ChatSetupController controller;
-        if (getSelectedChat() == null) {
-            controller = new ChatCreateController(db, currentUser);
-        } else {
-            controller = new ChatUpdateController(db, currentUser, getSelectedChat());
-        }
-
-        Utils.loadView("chat-setup", controller, getStage());
-    }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
