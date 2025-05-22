@@ -86,10 +86,17 @@ public class QuizController {
     // Intialisation for assets(currently none but might need this)
     @FXML
     public void initialize() {
+        setQuizNameField();
         setupQuestions();
         setupQuizListView();
         calculateCurrentAttempt();
         setupReturnButton();
+    }
+
+    //Short two lines to set the quiz name
+    private void setQuizNameField(){
+        String quizName = currentQuiz.getName();
+        quizNameField.setText(quizName);
     }
 
     //A function that places each question into a list to use later
@@ -344,12 +351,6 @@ public class QuizController {
             return -1; // This should trigger an exception when creating a new UserAnswer
         }
     }
-
-
-    // Calculate the current attempt number for a specific question
-//            private int calculateCurrentAttempt(int questionNumber) {
-//
-//            }
 
             // Retrieve a specific Quiz record
             public Quiz getQuiz() {
