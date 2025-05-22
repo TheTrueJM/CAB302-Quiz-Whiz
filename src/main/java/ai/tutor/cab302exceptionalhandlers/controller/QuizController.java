@@ -77,6 +77,8 @@ public class QuizController {
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
         }
+        //Calculate the attempt number
+        calculateCurrentAttempt();
     }
 
     private Stage getStage() {
@@ -89,7 +91,6 @@ public class QuizController {
         setQuizNameField();
         setupQuestions();
         setupQuizListView();
-        calculateCurrentAttempt();
         setupReturnButton();
     }
 
@@ -339,10 +340,7 @@ public class QuizController {
             //Creates the list using messageID, as that is the quiz identifier
             List<UserAnswer> pastQuizes = userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), 1);
             //Finds the highest previous attempt
-            int latestAttempt = pastQuizes.stream()
-                    .mapToInt(UserAnswer::getAttempt)
-                    .max()
-                    .orElse(0);
+            int latestAttempt = pastQuizes.size();
             //current attempt is 1 attempt after latest attempt
             currentAttempt = latestAttempt + 1;
             return currentAttempt;
