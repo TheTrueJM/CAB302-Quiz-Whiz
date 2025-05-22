@@ -54,6 +54,7 @@ public class QuizController {
     //For User Answers
     private final Map<Integer, String> questionAnswers = new HashMap<>();
     private boolean quizCompleted;
+    private int currentAttempt;
 
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException {
@@ -87,6 +88,7 @@ public class QuizController {
     public void initialize() {
         setupQuestions();
         setupQuizListView();
+        calculateCurrentAttempt();
         setupReturnButton();
     }
 
@@ -251,10 +253,9 @@ public class QuizController {
     //Submit Answers
     private void submitAnswers(){
         int messageId = currentQuiz.getMessageId();
-        int attempt = 1;  //Hardcoded until that system is explained
         quizCompleted = true;
         try {
-            saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
+            saveAnswers(messageId, currentAttempt, questionAnswers, userAnswerDAO);
             checkAnswers();
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,17 +325,31 @@ public class QuizController {
         });
     }
 
+    //Calculates the current attempt number quiz
+    private int calculateCurrentAttempt(){
+        try {
+            //Question number is 1, as all quizzes will have an answer for question 1, even if the answer is null
+            //Creates the list using messageID, as that is the quiz identifier
+            List<UserAnswer> pastQuizes = userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), 1);
+            //Finds the highest previous attempt
+            int latestAttempt = pastQuizes.stream()
+                    .mapToInt(UserAnswer::getAttempt)
+                    .max()
+                    .orElse(0);
+            //current attempt is 1 attempt after latest attempt
+            currentAttempt = latestAttempt + 1;
+            return currentAttempt;
+        } catch (SQLException e) {
+            System.err.println("Failed to calculate current attempt: " + e.getMessage());
+            return -1; // This should trigger an exception when creating a new UserAnswer
+        }
+    }
 
 
     // Calculate the current attempt number for a specific question
-            private int calculateCurrentAttempt(int questionNumber) {
-                try {
-                    return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
-                } catch (SQLException e) {
-                    System.err.println("Failed to calculate current attempt: " + e.getMessage());
-                    return -1; // This should trigger an exception when creating a new UserAnswer
-                }
-            }
+//            private int calculateCurrentAttempt(int questionNumber) {
+//
+//            }
 
             // Retrieve a specific Quiz record
             public Quiz getQuiz() {
@@ -389,7 +404,6 @@ public class QuizController {
             // Create a new User Answer record using UI user input
             public UserAnswer createNewUserAnswer(int questionNumber, String option) {
                 try {
-                    int currentAttempt = calculateCurrentAttempt(questionNumber);
                     AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
 
                     if (answerOption == null) {
