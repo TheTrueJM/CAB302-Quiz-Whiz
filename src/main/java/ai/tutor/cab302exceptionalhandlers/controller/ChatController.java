@@ -625,6 +625,8 @@ public class ChatController {
     private void setupChatSettingsButton() {
         chatSettingsButton.setOnAction(event -> {
             try {
+                if (getSelectedChat() == null) {throw new IllegalStateException("No chat selected"); }
+
                 Utils.loadView("chat-setup", new ChatUpdateController(db, currentUser, getSelectedChat()), getStage());
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setting: " + e);
