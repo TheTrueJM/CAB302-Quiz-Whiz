@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils;
 import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 
@@ -22,6 +23,7 @@ public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
     private ChatController chatController;
+    private AIUtils aiUtils;
     private boolean isOllamaRunning = false;
     private boolean hasCorrectModel = false;
 
@@ -127,13 +129,14 @@ public class ChatControllerTest {
         }
 
         chatController = new ChatController(db, CurrentUser);
-        isOllamaRunning = chatController.isOllamaRunning();
-        hasCorrectModel = chatController.hasModel();
-        chatController.setOllamaVerbose(true);
+        aiUtils = AIUtils.getInstance();
+        isOllamaRunning = aiUtils.isOllamaRunning();
+        hasCorrectModel = aiUtils.hasModel();
+        aiUtils.setVerbose(true);
 
         if (!hasCorrectModel && isOllamaRunning) {
                 fail(String.format(
-                        "You need to download the correct model by running `ollama pull %s'", chatController.getModelName()
+                        "You need to download the correct model by running `ollama pull %s'", aiUtils.getModelName()
                 ));
         }
     }
