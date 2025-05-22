@@ -13,8 +13,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
-import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 
 import com.google.gson.Gson;
 
