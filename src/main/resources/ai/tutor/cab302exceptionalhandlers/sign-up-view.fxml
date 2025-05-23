@@ -67,7 +67,7 @@
                </Button>
                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                   <children>
-                     <Label style="-fx-text-fill: black; -fx-font-size: 16; -fx-font-style: italic;" text="Don’t have an Account?">
+                     <Label style="-fx-text-fill: black; -fx-font-size: 16; -fx-font-style: italic;" text="Already have an Account?">
                         <HBox.margin>
                            <Insets right="6.0" />
                         </HBox.margin>

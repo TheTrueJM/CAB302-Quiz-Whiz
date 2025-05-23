@@ -112,7 +112,7 @@ public class UserSettingsTest {
 
     @Test
     public void testValidUpdatePassword() throws SecurityException, IllegalArgumentException, SQLException {
-        userSettingsController.updatePassword(UpdatedUser.get("password"), UserPassword);
+        userSettingsController.updatePassword(UserPassword, UpdatedUser.get("password"));
 
         User updatedUser = userDAO.getUser(UserId);
 
@@ -125,7 +125,7 @@ public class UserSettingsTest {
     public void testUpdateWrongPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 SecurityException.class,
-                () -> userSettingsController.updatePassword(UpdatedUser.get("password"), "WrongPassword")
+                () -> userSettingsController.updatePassword("WrongPassword", UpdatedUser.get("password"))
         );
 
         User originalUser = userDAO.getUser(UserId);
@@ -137,7 +137,7 @@ public class UserSettingsTest {
     public void testUpdateEmptyPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updatePassword("", UserPassword)
+                () -> userSettingsController.updatePassword(UserPassword, "")
         );
 
         User originalUser = userDAO.getUser(UserId);
@@ -149,7 +149,7 @@ public class UserSettingsTest {
     public void testUpdateNullPassword() throws IllegalStateException, IllegalArgumentException, SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> userSettingsController.updatePassword(null, UserPassword)
+                () -> userSettingsController.updatePassword(UserPassword, null)
         );
 
         User originalUser = userDAO.getUser(UserId);
