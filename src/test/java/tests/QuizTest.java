@@ -57,7 +57,7 @@ public class QuizTest {
 
 
     @Test
-    void invalidChatObjectNameLength() {
+    void invalidQuizObjectNameLength() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("validLength"), QuizDifficulties.get("valid"))
@@ -65,7 +65,7 @@ public class QuizTest {
     }
 
     @Test
-    void invalidChatObjectNameEmpty() {
+    void invalidQuizObjectNameEmpty() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("validEmpty"), QuizDifficulties.get("valid"))
@@ -73,7 +73,7 @@ public class QuizTest {
     }
 
     @Test
-    void invalidChatObjectNameNull() {
+    void invalidQuizObjectNameNull() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("validNull"), QuizDifficulties.get("valid"))
@@ -82,26 +82,26 @@ public class QuizTest {
 
 
     @Test
-    void invalidChatObjectResponseAttitudeLength() {
+    void invalidQuizObjectQuizDifficultyLength() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("validLength"), QuizDifficulties.get("valid"))
+                () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("valid"), QuizDifficulties.get("validLength"))
         );
     }
 
     @Test
-    void invalidChatObjectResponseAttitudeEmpty() {
+    void invalidQuizObjectQuizDifficultyEmpty() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("validEmpty"), QuizDifficulties.get("valid"))
+                () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("valid"), QuizDifficulties.get("validEmpty"))
         );
     }
 
     @Test
-    void invalidChatObjectResponseAttitudeNull() {
+    void invalidQuizObjectQuizDifficultyNull() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("validNull"), QuizDifficulties.get("valid"))
+                () -> new Quiz(QuizMessageIds.get("valid"), QuizNames.get("valid"), QuizDifficulties.get("validNull"))
         );
     }
 }

@@ -44,7 +44,7 @@ public class Chat {
 
     public void setName(String name) throws IllegalArgumentException {
         if (name == null || name.isEmpty() || 50 < name.length()) {
-            throw new IllegalArgumentException("Invalid Name: Must only contain 1-50 characters");
+            throw new IllegalArgumentException("Invalid Chat Name: Must only contain 1-50 characters");
         }
 
         this.name = name;

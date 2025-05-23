@@ -12,7 +12,7 @@ public class Message {
         if (chatId < 1) { throw new IllegalArgumentException("Invalid Chat Id: Must be greater than 1"); }
         this.chatId = chatId;
 
-        if (content == null || content.isEmpty()) { throw new IllegalArgumentException("Invalid Content: Cannot be empty"); }
+        if (content == null || content.isEmpty()) { throw new IllegalArgumentException("Invalid Message Content: Cannot be empty"); }
         this.content = content;
 
         this.fromUser = fromUser;
