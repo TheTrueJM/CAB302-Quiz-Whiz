@@ -37,7 +37,7 @@ public class ChatCreateController extends ChatSetupController {
     protected void setupConfirmChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), (int)quizLength.getValue(), educationLevel.getValue(), chatTopic.getText());
                 chatReturn();
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Creating Chat: " + e);
@@ -53,7 +53,7 @@ public class ChatCreateController extends ChatSetupController {
      */
 
     // Create a new Chat record using UI user input
-    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, int quizLength, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
         if (Utils.validateNullOrEmpty(name)) {
             throw new IllegalArgumentException("Chat name cannot be empty");
         }
@@ -68,7 +68,7 @@ public class ChatCreateController extends ChatSetupController {
         if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
 
         // Create and Add Chat to database
-        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea);
         chatDAO.createChat(newChat);
 
         return newChat;

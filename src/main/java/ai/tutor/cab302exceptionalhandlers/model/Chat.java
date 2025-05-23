@@ -1,21 +1,26 @@
 package ai.tutor.cab302exceptionalhandlers.model;
 
 public class Chat {
+    public static int MIN_QUIZ_LENGTH = 1;
+    public static int MAX_QUIZ_LENGTH = 10;
+
     private int id;
     private final int userId;
     private String name;
     private String responseAttitude;
     private String quizDifficulty;
+    private int quizLength;
     private String educationLevel;
     private String studyArea;
 
 
 
-    public Chat(int userId, String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) {
+    public Chat(int userId, String name, String responseAttitude, String quizDifficulty, int quizLength, String educationLevel, String studyArea) {
         this.userId = userId;
         this.name = name;
         this.responseAttitude = responseAttitude;
         this.quizDifficulty = quizDifficulty;
+        this.quizLength = quizLength;
         this.educationLevel = educationLevel;
         this.studyArea = studyArea;
     }
@@ -38,6 +43,10 @@ public class Chat {
     public String getQuizDifficulty() { return quizDifficulty; }
 
     public void setQuizDifficulty(String quizDifficulty) { this.quizDifficulty = quizDifficulty; }
+
+    public int getQuizLength() { return quizLength; }
+
+    public void setQuizLength(int quizLength) { this.quizLength = quizLength; }
 
     public String getEducationLevel() { return educationLevel; }
 

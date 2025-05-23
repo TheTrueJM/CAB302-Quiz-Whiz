@@ -26,15 +26,15 @@ public class ChatSetupControllerTest {
     );
 
     private static final Chat ExistingChat = new Chat(
-            1, "Existing Chat", "regular", "normal", "University", "IT"
+            1, "Existing Chat", "regular", "normal", 3, "University", "IT"
     );
 
     private static final Chat NewChat = new Chat(
-            1, "New Chat", "regular", "normal", "University", "IT"
+            1, "New Chat", "regular", "normal", 3, "University", "IT"
     );
 
     private static final Chat UpdatedChat = new Chat(
-            1, "Updated Chat", "casual", "hard", "High School", "Maths"
+            1, "Updated Chat", "casual", "hard", 3, "High School", "Maths"
     );
 
     static {
@@ -82,7 +82,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testCreateNewChat() throws IllegalArgumentException, SQLException {
         Chat newChat = chatCreateController.createNewChat(
-                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), NewChat.getStudyArea()
+                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
         );
         assertNotNull(newChat);
         assertEquals(NewChat.getId(), newChat.getId());
@@ -98,7 +98,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatCreateController.createNewChat(
-                        "", NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), NewChat.getStudyArea()
+                        "", NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
                 )
         );
     }
@@ -108,7 +108,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatCreateController.createNewChat(
-                        null, NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), NewChat.getStudyArea()
+                        null, NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
                 )
         );
     }
@@ -118,7 +118,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatCreateController.createNewChat(
-                        NewChat.getName(), "", NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), NewChat.getStudyArea()
+                        NewChat.getName(), "", NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
                 )
         );
     }
@@ -128,7 +128,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatCreateController.createNewChat(
-                        NewChat.getName(), null, NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), NewChat.getStudyArea()
+                        NewChat.getName(), null, NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
                 )
         );
     }
@@ -138,7 +138,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatCreateController.createNewChat(
-                        NewChat.getName(), NewChat.getResponseAttitude(), "", NewChat.getEducationLevel(), NewChat.getStudyArea()
+                        NewChat.getName(), NewChat.getResponseAttitude(), "", NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
                 )
         );
     }
@@ -148,7 +148,29 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatCreateController.createNewChat(
-                        NewChat.getName(), NewChat.getResponseAttitude(), null, NewChat.getEducationLevel(), NewChat.getStudyArea()
+                        NewChat.getName(), NewChat.getResponseAttitude(), null, NewChat.getQuizLength(), NewChat.getEducationLevel(), NewChat.getStudyArea()
+                )
+        );
+    }
+
+    @Test
+    @Disabled
+    public void testCreateNewChatTooLowLength() throws IllegalArgumentException, SQLException {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> chatCreateController.createNewChat(
+                        NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), Chat.MIN_QUIZ_LENGTH -1, NewChat.getEducationLevel(), NewChat.getStudyArea()
+                )
+        );
+    }
+
+    @Test
+    @Disabled
+    public void testCreateNewChatTooHighLength() throws IllegalArgumentException, SQLException {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> chatCreateController.createNewChat(
+                        NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), Chat.MAX_QUIZ_LENGTH + 1, NewChat.getEducationLevel(), NewChat.getStudyArea()
                 )
         );
     }
@@ -156,7 +178,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testCreateNewChatEmptyEducation() throws IllegalArgumentException, SQLException {
         Chat newChat = chatCreateController.createNewChat(
-                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), "", NewChat.getStudyArea()
+                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), "", NewChat.getStudyArea()
         );
         assertNotNull(newChat);
         assertNull(newChat.getEducationLevel());
@@ -165,7 +187,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testCreateNewChatNullEducation() throws IllegalArgumentException, SQLException {
         Chat newChat = chatCreateController.createNewChat(
-                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), null, NewChat.getStudyArea()
+                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), null, NewChat.getStudyArea()
         );
         assertNotNull(newChat);
         assertNull(newChat.getEducationLevel());
@@ -174,7 +196,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testCreateNewChatEmptyStudyArea() throws IllegalArgumentException, SQLException {
         Chat newChat = chatCreateController.createNewChat(
-                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), ""
+                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), ""
         );
         assertNotNull(newChat);
         assertNull(newChat.getStudyArea());
@@ -183,7 +205,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testCreateNewChatNullStudyArea() throws IllegalArgumentException, SQLException {
         Chat newChat = chatCreateController.createNewChat(
-                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getEducationLevel(), null
+                NewChat.getName(), NewChat.getResponseAttitude(), NewChat.getQuizDifficulty(), NewChat.getQuizLength(), NewChat.getEducationLevel(), null
         );
         assertNotNull(newChat);
         assertNull(newChat.getStudyArea());

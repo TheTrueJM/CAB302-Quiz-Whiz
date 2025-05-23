@@ -18,7 +18,7 @@ public class QuizControllerTest {
     private QuizController quizController;
 
     private static final User user = new User("TestUser", "password");
-    private static final Chat chat = new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT");
+    private static final Chat chat = new Chat(1, "Test Chat 1", "regular", "normal", 3, "University", "IT");
     private static final Message message = new Message(1, "Quiz Message from AI", false, true);
     private static final Quiz quiz = new Quiz(1, "Quiz 1", "normal");
 
