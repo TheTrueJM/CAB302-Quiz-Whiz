@@ -432,11 +432,15 @@ public class QuizController {
             // Create a new User Answer record using UI user input
             public UserAnswer createNewUserAnswer(int questionNumber, String option) {
                 try {
+                    if (questionNumber < 1) {
+                        throw new IllegalArgumentException("Invalid question number was given");
+                    }
+
                     int currentAttempt = calculateCurrentAttempt();
                     AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
 
                     if (answerOption == null) {
-                        throw new SQLException("Invalid answer option was given");
+                        throw new IllegalArgumentException("Invalid answer option was given");
                     }
 
                     UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
