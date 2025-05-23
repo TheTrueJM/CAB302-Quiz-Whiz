@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class SignUpController extends AuthController {
+    private boolean passwordCEmpty = true;
+
     @FXML
     private TextField confirmPasswordField;
-
-    private boolean passwordCEmpty = true;
 
 
     public SignUpController(SQLiteConnection db) throws RuntimeException, SQLException {
@@ -32,6 +32,7 @@ public class SignUpController extends AuthController {
      * =========================
      */
 
+    @Override
     @FXML
     protected void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField) e.getSource();
@@ -53,10 +54,12 @@ public class SignUpController extends AuthController {
         submitButtonToggle();
     }
 
+    @Override
     protected void submitButtonToggle() {
         submitButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
     }
 
+    @Override
     @FXML
     protected void onSubmit() throws IOException, RuntimeException, SQLException {
         resetErrorFeedback();
@@ -82,6 +85,7 @@ public class SignUpController extends AuthController {
     }
 
     // Open Login Page
+    @Override
     @FXML
     protected void switchLayout() throws IOException, RuntimeException, SQLException {
         Utils.loadView("login", new LoginController(db), getStage());
@@ -94,6 +98,7 @@ public class SignUpController extends AuthController {
      * =====================
      */
 
+    @Override
     public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
         if (!User.validUsername(username)) {
             throw new IllegalArgumentException("Username is invalid");

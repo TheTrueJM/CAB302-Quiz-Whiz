@@ -17,6 +17,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public abstract class AuthController {
+    protected final SQLiteConnection db;
+    protected final UserDAO userDAO;
+
+    protected boolean usernameEmpty = true;
+    protected boolean passwordEmpty = true;
+
     @FXML
     protected TextField usernameField;
     @FXML
@@ -30,17 +36,12 @@ public abstract class AuthController {
     @FXML
     protected Label passwordFeedback;
 
-    protected boolean usernameEmpty = true;
-    protected boolean passwordEmpty = true;
-
-    protected final SQLiteConnection db;
-    protected final UserDAO userDAO;
-
 
     public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
         this.db = db;
         this.userDAO = new UserDAO(db);
     }
+
 
     protected Stage getStage() {
         return (Stage) submitButton.getScene().getWindow();
