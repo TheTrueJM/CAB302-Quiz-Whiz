@@ -22,7 +22,7 @@ public class ChatDAO implements IChatDAO {
                     + "name VARCHAR NOT NULL,"
                     + "responseAttitude VARCHAR NOT NULL,"
                     + "quizDifficulty VARCHAR NOT NULL,"
-                    + "quizLength VARCHAR NOT NULL,"
+                    + "quizLength INTEGER NOT NULL,"
                     + "educationLevel VARCHAR,"
                     + "studyArea VARCHAR,"
                     + "FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE"
@@ -33,7 +33,7 @@ public class ChatDAO implements IChatDAO {
 
 
     @Override
-    public void createChat(Chat chat) throws SQLException {
+    public void createChat(Chat chat) throws IllegalArgumentException, SQLException {
         String sql = "INSERT INTO chats (userId, name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement createChat = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createChat.setInt(1, chat.getUserId());
@@ -89,7 +89,7 @@ public class ChatDAO implements IChatDAO {
     }
 
     @Override
-    public Chat getChat(int id) throws SQLException {
+    public Chat getChat(int id) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM chats WHERE id = ?";
         try (PreparedStatement readChat = connection.prepareStatement(sql)) {
             readChat.setInt(1, id);
@@ -112,7 +112,7 @@ public class ChatDAO implements IChatDAO {
     }
 
     @Override
-    public List<Chat> getAllUserChats(int userId) throws SQLException {
+    public List<Chat> getAllUserChats(int userId) throws IllegalArgumentException, SQLException {
         List<Chat> userChats = new ArrayList<>();
         String sql = "SELECT * FROM chats WHERE userId = ?";
         try (PreparedStatement readUserChats = connection.prepareStatement(sql)) {

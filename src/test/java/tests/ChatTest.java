@@ -290,7 +290,7 @@ public class ChatTest {
 
 
     @Test
-    void validUserSetId() {
+    void validChatSetId() {
         Chat chat = new Chat(ChatUserIds.get("valid"), ChatNames.get("valid"), ChatResponseAttitudes.get("valid"), ChatQuizDifficulties.get("valid"), ChatQuizLengths.get("valid"), ChatEducationLevels.get("valid"), ChatStudyAreas.get("valid"));
         assertNotNull(chat);
 
@@ -300,7 +300,7 @@ public class ChatTest {
     }
 
     @Test
-    void validUserSetIdInvalidLow() {
+    void validChatSetIdInvalidLow() {
         Chat chat = new Chat(ChatUserIds.get("valid"), ChatNames.get("valid"), ChatResponseAttitudes.get("valid"), ChatQuizDifficulties.get("valid"), ChatQuizLengths.get("valid"), ChatEducationLevels.get("valid"), ChatStudyAreas.get("valid"));
         assertNotNull(chat);
 

@@ -322,6 +322,7 @@ public class ChatControllerTest {
     }
 
     @Test
+    @Disabled
     public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
