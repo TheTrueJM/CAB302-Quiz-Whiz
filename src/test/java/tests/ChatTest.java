@@ -174,7 +174,7 @@ public class ChatTest {
     void invalidChatObjectUserIdLow() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Chat(ChatUserIds.get("invalidLow"), ChatNames.get("invalidLength"), ChatResponseAttitudes.get("valid"), ChatQuizDifficulties.get("valid"), ChatQuizLengths.get("valid"), ChatEducationLevels.get("valid"), ChatStudyAreas.get("valid"))
+                () -> new Chat(ChatUserIds.get("invalidLow"), ChatNames.get("valid"), ChatResponseAttitudes.get("valid"), ChatQuizDifficulties.get("valid"), ChatQuizLengths.get("valid"), ChatEducationLevels.get("valid"), ChatStudyAreas.get("valid"))
         );
     }
 

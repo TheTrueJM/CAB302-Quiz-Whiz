@@ -105,6 +105,15 @@ public class MessageTest {
 
 
     @Test
+    void invalidMessageObjectChatIdLow() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Message(MessageChatIds.get("invalidLow"), MessageContents.get("valid"), MessageFromUsers.get("validTrue"), MessageIsQuizzes.get("validTrue"))
+        );
+    }
+
+
+    @Test
     void invalidMessageObjectContentEmpty() {
         assertThrows(
                 IllegalArgumentException.class,
