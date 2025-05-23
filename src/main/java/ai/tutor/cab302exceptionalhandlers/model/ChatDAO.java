@@ -22,7 +22,7 @@ public class ChatDAO implements IChatDAO {
                     + "name VARCHAR NOT NULL,"
                     + "responseAttitude VARCHAR NOT NULL,"
                     + "quizDifficulty VARCHAR NOT NULL,"
-                    + "quizLength VARCHAR NOT NULL,"
+                    + "quizLength INTEGER NOT NULL,"
                     + "educationLevel VARCHAR,"
                     + "studyArea VARCHAR,"
                     + "FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE"
