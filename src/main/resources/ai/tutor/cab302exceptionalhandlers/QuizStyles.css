@@ -66,7 +66,7 @@
     -fx-cursor: hand;
 }
 
-.correct-answer {
+.correct-question {
     -fx-background-color: #c8f7c5;
     -fx-text-fill: #2e7d32;
     -fx-font-size: 14px;
@@ -75,13 +75,23 @@
     -fx-background-radius: 4px;
 }
 
-.incorrect-answer {
+.incorrect-question {
     -fx-background-color: #ffcdd2;
     -fx-text-fill: #c62828;
     -fx-font-size: 14px;
     -fx-padding: 5px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
+}
+
+.correct-answer {
+    -fx-background-color: #c8f7c5;
+    -fx-text-fill: #2e7d32;
+}
+
+.incorrect-answer {
+    -fx-background-color: #ffcdd2;
+    -fx-text-fill: #c62828;
 }
 
 .question-container {
