@@ -63,7 +63,7 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public User getUser(int id) throws SQLException {
+    public User getUser(int id) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM users WHERE id = ?";
         try (PreparedStatement readUser = connection.prepareStatement(sql)) {
             readUser.setInt(1, id);
@@ -81,7 +81,7 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public User getUser(String username) throws SQLException {
+    public User getUser(String username) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM users WHERE username = ?";
         try (PreparedStatement readUser = connection.prepareStatement(sql)) {
             readUser.setString(1, username);
@@ -99,7 +99,7 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers() throws IllegalArgumentException, SQLException {
         List<User> users = new ArrayList<>();
         try (Statement readUsers = connection.createStatement()) {
             ResultSet resultSet = readUsers.executeQuery(

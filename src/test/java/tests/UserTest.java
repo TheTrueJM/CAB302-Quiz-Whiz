@@ -1,7 +1,6 @@
 package tests;
 
 import ai.tutor.cab302exceptionalhandlers.model.User;
-import com.password4j.ScryptFunction;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -10,27 +9,38 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
-    private static final Map<String, String> UserDetails = new HashMap<>();
+    private static final Map<String, String> UserUsernames = new HashMap<>();
     static {
-        UserDetails.put("usernameValid", "TestUser1");
-        UserDetails.put("passwordValid", "password1");
+        UserUsernames.put("valid", "TestUser1");
+        UserUsernames.put("invalidCharacters", "Test User");
+        UserUsernames.put("invalidLength", "LongUsernameOver25Characters");
+        UserUsernames.put("invalidEmpty", "");
+        UserUsernames.put("invalidNull", null);
+    }
 
-        UserDetails.put("usernameInvalidCharacters", "Test User");
-        UserDetails.put("usernameInvalidLength", "LongUsernameOver25Characters");
-        UserDetails.put("usernameInvalidEmpty", "");
-        UserDetails.put("usernameInvalidNull", null);
+    private static final Map<String, String> UserPasswords = new HashMap<>();
+    static {
+        UserPasswords.put("valid", "password1");
+        UserPasswords.put("invalidEmpty", "");
+        UserPasswords.put("invalidNull", null);
+    }
 
-        UserDetails.put("passwordInvalidEmpty", "");
-        UserDetails.put("passwordInvalidNull", null);
+    private static final Map<String, String> UserPasswordHashes = new HashMap<>();
+    static {
+        UserPasswordHashes.put("invalidEmpty", "");
+        UserPasswordHashes.put("invalidNull", null);
+    }
 
-        UserDetails.put("passwordHashInvalidEmpty", "");
-        UserDetails.put("passwordHashInvalidNull", null);
+    private static final Map<String, Integer> UserIds = new HashMap<>();
+    static {
+        UserIds.put("valid", 1);
+        UserIds.put("invalidLow", 0);
     }
 
 
     @Test
     void validPasswordHash() {
-        String passwordHash = User.hashPassword(UserDetails.get("passwordValid"));
+        String passwordHash = User.hashPassword(UserPasswords.get("valid"));
 
         assertNotNull(passwordHash);
         assertFalse(passwordHash.isEmpty());
@@ -40,7 +50,7 @@ public class UserTest {
     void invalidPasswordHashPasswordEmpty() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> User.hashPassword(UserDetails.get("passwordInvalidEmpty"))
+                () -> User.hashPassword(UserPasswords.get("invalidEmpty"))
         );
     }
 
@@ -48,15 +58,15 @@ public class UserTest {
     void invalidPasswordHashPasswordNull() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> User.hashPassword(UserDetails.get("passwordInvalidNull"))
+                () -> User.hashPassword(UserPasswords.get("invalidNull"))
         );
     }
 
 
     @Test
     void validUserObject() {
-        String username = UserDetails.get("usernameValid");
-        String password = UserDetails.get("passwordValid");
+        String username = UserUsernames.get("valid");
+        String password = UserPasswords.get("valid");
         User user = new User(username, User.hashPassword(password));
 
         assertNotNull(user);
@@ -64,11 +74,12 @@ public class UserTest {
         assertTrue(user.verifyPassword(password));
     }
 
+
     @Test
     void invalidUserObjectUsernameCharacters() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(UserDetails.get("usernameInvalidCharacters"), User.hashPassword(UserDetails.get("passwordValid")))
+                () -> new User(UserUsernames.get("invalidCharacters"), User.hashPassword(UserPasswords.get("valid")))
         );
     }
 
@@ -76,7 +87,7 @@ public class UserTest {
     void invalidUserObjectUsernameLength() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(UserDetails.get("usernameInvalidLength"), User.hashPassword(UserDetails.get("passwordValid")))
+                () -> new User(UserUsernames.get("invalidLength"), User.hashPassword(UserPasswords.get("valid")))
         );
     }
 
@@ -84,7 +95,7 @@ public class UserTest {
     void invalidUserObjectUsernameEmpty() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(UserDetails.get("usernameInvalidEmpty"), User.hashPassword(UserDetails.get("passwordValid")))
+                () -> new User(UserUsernames.get("invalidEmpty"), User.hashPassword(UserPasswords.get("valid")))
         );
     }
 
@@ -92,7 +103,7 @@ public class UserTest {
     void invalidUserObjectUsernameNull() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(UserDetails.get("usernameInvalidNull"), User.hashPassword(UserDetails.get("passwordValid")))
+                () -> new User(UserUsernames.get("invalidNull"), User.hashPassword(UserPasswords.get("valid")))
         );
     }
 
@@ -101,7 +112,7 @@ public class UserTest {
     void invalidUserObjectPasswordHashEmpty() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(UserDetails.get("usernameValid"), User.hashPassword(UserDetails.get("passwordHashInvalidEmpty")))
+                () -> new User(UserUsernames.get("valid"), User.hashPassword(UserPasswordHashes.get("invalidEmpty")))
         );
     }
 
@@ -109,7 +120,29 @@ public class UserTest {
     void invalidUserObjectPasswordHashNull() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new User(UserDetails.get("usernameValid"), User.hashPassword(UserDetails.get("passwordHashInvalidNull")))
+                () -> new User(UserUsernames.get("valid"), User.hashPassword(UserPasswordHashes.get("invalidNull")))
+        );
+    }
+
+
+    @Test
+    void validUserSetId() {
+        User user = new User(UserUsernames.get("valid"), User.hashPassword(UserPasswords.get("valid")));
+        assertNotNull(user);
+
+        int id = UserIds.get("valid");
+        user.setId(id);
+        assertEquals(user.getId(), id);
+    }
+
+    @Test
+    void validUserSetIdInvalidLow() {
+        User user = new User(UserUsernames.get("valid"), User.hashPassword(UserPasswords.get("valid")));
+        assertNotNull(user);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> user.setId(UserIds.get("invalidLow"))
         );
     }
 }
