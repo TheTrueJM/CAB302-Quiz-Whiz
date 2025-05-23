@@ -47,6 +47,7 @@ public class QuizController {
     //For User Answers
     private final Map<Integer, String> questionAnswers = new HashMap<>();
     private boolean quizCompleted;
+    private int currentAttempt;
 
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException {
@@ -69,6 +70,8 @@ public class QuizController {
         } catch (SQLException | RuntimeException e) {
             System.err.println("SQL database connection error: " + e.getMessage());
         }
+        //Calculate the attempt number
+        calculateCurrentAttempt();
     }
 
     private Stage getStage() {
@@ -78,9 +81,16 @@ public class QuizController {
     // Intialisation for assets
     @FXML
     public void initialize() {
+        setQuizNameField();
         setupQuestions();
         setupQuizListView();
         setupReturnButton();
+    }
+
+    // Set the quiz name
+    private void setQuizNameField(){
+        String quizName = currentQuiz.getName();
+        quizTitle.setText(quizName);
     }
 
     //A function that places each question into a list to use later
@@ -230,7 +240,6 @@ public class QuizController {
                 if (opt.getOption().equals("D")) targetButton = answerD;
 
                 if (targetButton != null) {
-                    targetButton.getStyleClass().removeAll("correct-answer", "incorrect-answer");
                     if (opt.getIsAnswer()) {
                         targetButton.getStyleClass().add("correct-answer");
                     } else if (opt.getOption().equals(selected)) {
@@ -295,17 +304,15 @@ public class QuizController {
             selectedButton.getStyleClass().remove("option-button");
             selectedButton.getStyleClass().add("option-button-toggled");
         }
-
         questionListView.refresh();
     }
 
     //Submit Answers
     private void submitAnswers() {
         int messageId = currentQuiz.getMessageId();
-        int attempt = 1;
         quizCompleted = true;
         try {
-            saveAnswers(messageId, attempt, questionAnswers, userAnswerDAO);
+            saveAnswers(messageId, currentAttempt, questionAnswers, userAnswerDAO);
             questionListView.refresh();
         } catch (Exception e) {
             e.printStackTrace();
@@ -340,17 +347,22 @@ public class QuizController {
         });
     }
 
-
-
-    // Calculate the current attempt number for a specific question
-            private int calculateCurrentAttempt(int questionNumber) {
-                try {
-                    return userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), questionNumber).size() + 1;
-                } catch (SQLException e) {
-                    System.err.println("Failed to calculate current attempt: " + e.getMessage());
-                    return -1; // This should trigger an exception when creating a new UserAnswer
-                }
-            }
+    //Calculates the current attempt number quiz
+    private int calculateCurrentAttempt(){
+        try {
+            //Question number is 1, as all quizzes will have an answer for question 1, even if the answer is null
+            //Creates the list using messageID, as that is the quiz identifier
+            List<UserAnswer> pastQuizes = userAnswerDAO.getAllUserQuestionAttempts(currentQuiz.getMessageId(), 1);
+            //Finds the highest previous attempt
+            int latestAttempt = pastQuizes.size();
+            //current attempt is 1 attempt after latest attempt
+            currentAttempt = latestAttempt + 1;
+            return currentAttempt;
+        } catch (SQLException e) {
+            System.err.println("Failed to calculate current attempt: " + e.getMessage());
+            return -1; // This should trigger an exception when creating a new UserAnswer
+        }
+    }
 
             // Retrieve a specific Quiz record
             public Quiz getQuiz() {
