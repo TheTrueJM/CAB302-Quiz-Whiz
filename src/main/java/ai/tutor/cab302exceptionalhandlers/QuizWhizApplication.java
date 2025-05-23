@@ -1,16 +1,9 @@
 package ai.tutor.cab302exceptionalhandlers;
 
-import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
-import ai.tutor.cab302exceptionalhandlers.controller.SignUpController;
-import ai.tutor.cab302exceptionalhandlers.model.Message;
-import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
+import ai.tutor.cab302exceptionalhandlers.controller.*;
+import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 public class QuizWhizApplication extends Application {
     public static final String TITLE = "Quiz Whiz";
@@ -18,23 +11,24 @@ public class QuizWhizApplication extends Application {
     public static final int HEIGHT = 720;
 
     @Override
-    public void start(Stage stage) throws IOException, SQLException {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                QuizWhizApplication.class.getResource("sign-up-view.fxml")
-        );
+    public void start(Stage stage) {
+        try {
+            // In-Memory for developing
+            SQLiteConnection db = new SQLiteConnection();
+            ControllerFactory controllerFactory = new ControllerFactory(db);
+            SceneManager sceneManager = SceneManager.getInstance();
+            sceneManager.initialize(stage, controllerFactory);
 
-        // In-Memory for developing
-        SQLiteConnection db = new SQLiteConnection();
-        SignUpController controller = new SignUpController(db);
-        fxmlLoader.setController(controller);
-
-        Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
-        stage.setTitle(TITLE);
-        stage.setScene(scene);
-        stage.show();
+            stage.setTitle(TITLE);
+            sceneManager.navigateToAuth("signup");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to start application: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }

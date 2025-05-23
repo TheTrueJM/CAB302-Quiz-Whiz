@@ -2,6 +2,7 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -49,7 +50,6 @@ public class QuizController {
     private final Map<Integer, String> questionAnswers = new HashMap<>();
     private boolean quizCompleted;
     private int currentAttempt;
-
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException {
         if (chosenQuiz == null) {
@@ -355,8 +355,8 @@ public class QuizController {
     private void setupReturnButton() {
         returnButton.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("chat", new ChatController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                SceneManager.getInstance().navigateToChat(currentUser);
+            } catch (Exception e) {
                 Utils.showErrorAlert("Error Returning To Chat: " + e);
             }
         });

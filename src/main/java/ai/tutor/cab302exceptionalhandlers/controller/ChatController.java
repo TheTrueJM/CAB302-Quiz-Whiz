@@ -1,5 +1,6 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils;
 import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
@@ -86,7 +87,6 @@ public class ChatController {
         this.thinkingChatId = -1;
         this.aiUtils = AIUtils.getInstance();
     }
-
 
     @FXML
     public void initialize() {
@@ -408,9 +408,8 @@ public class ChatController {
     }
 
     private void handleTakeQuiz(ActionEvent actionEvent, Message message) throws IOException, RuntimeException, SQLException {
-        // TODO: Implement logic for quiz action
         Quiz currentQuiz = quizDAO.getQuiz(message.getId());
-        Utils.loadView("quiz", new QuizController(db, currentQuiz, currentUser), getStage());
+        SceneManager.getInstance().navigateToQuiz(currentQuiz, currentUser);
     }
 
     public void SendAndReceiveMessage() {
@@ -587,19 +586,18 @@ public class ChatController {
 
     // Loads chat setup window to take in inputs for new chat creation
     private void setupCreateChatButton() {
-        // TODO: Create chat based on parameters extracted from UI elements and refresh page
         addNewChat.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("chat-setup", new ChatCreateController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                loadChatSetup();
+            } catch (IOException | SQLException e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
 
         addNewChatMain.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("chat-setup", new ChatCreateController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                loadChatSetup();
+            } catch (IOException | SQLException e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
@@ -610,8 +608,7 @@ public class ChatController {
         chatSettingsButton.setOnAction(event -> {
             try {
                 if (getSelectedChat() == null) { throw new IllegalStateException("No chat selected"); }
-
-                Utils.loadView("chat-setup", new ChatUpdateController(db, currentUser, getSelectedChat()), getStage());
+                loadChatSetup();
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setting: " + e);
             }
@@ -622,14 +619,15 @@ public class ChatController {
         return chatsListView.getSelectionModel().getSelectedItem();
     }
 
+    private void loadChatSetup() throws IOException, RuntimeException, SQLException {
+        SceneManager.getInstance().navigateToChatSetup(currentUser,
+            getSelectedChat() == null ? "create" : "update",
+            getSelectedChat());
+    }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            try {
-                Utils.loadView("login", new LoginController(db), getStage());
-            } catch (Exception e ) {
-                Utils.showErrorAlert("Error Logging Out: " + e);
-            }
+            SceneManager.getInstance().navigateToAuth("login");
         });
     }
 
@@ -658,8 +656,8 @@ public class ChatController {
     private void setupUserDetailsButton() {
         userDetailsButton.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("user-settings", new UserSettingsController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                SceneManager.getInstance().navigateToUserSettings(currentUser);
+            } catch (Exception e) {
                 Utils.showErrorAlert("Error Loading User Settings: " + e);
             }
         });

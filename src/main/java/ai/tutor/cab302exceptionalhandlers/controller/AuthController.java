@@ -1,12 +1,9 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
-import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -36,12 +33,10 @@ public abstract class AuthController {
     @FXML
     protected Label passwordFeedback;
 
-
     public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
         this.db = db;
         this.userDAO = new UserDAO(db);
     }
-
 
     protected Stage getStage() {
         return (Stage) submitButton.getScene().getWindow();
@@ -72,11 +67,14 @@ public abstract class AuthController {
     protected abstract void onSubmit() throws IOException, SQLException;
 
     public void loadChat(User user) throws IOException, RuntimeException, SQLException {
-        Utils.loadView("chat", new ChatController(db, user), getStage());
+        SceneManager.getInstance().navigateToChat(user);
     }
 
     @FXML
-    protected abstract void switchLayout() throws IOException, RuntimeException, SQLException;
+    protected void switchLayout() throws IOException, RuntimeException, SQLException {
+        String targetType = this instanceof LoginController ? "signup" : "login";
+        SceneManager.getInstance().navigateToAuth(targetType);
+    }
 
 
     /*
