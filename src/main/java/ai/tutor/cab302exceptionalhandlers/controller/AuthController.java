@@ -42,6 +42,7 @@ public abstract class AuthController {
         this.userDAO = new UserDAO(db);
     }
 
+
     protected Stage getStage() {
         return (Stage) submitButton.getScene().getWindow();
     }

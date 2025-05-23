@@ -24,7 +24,7 @@
    </HBox>
    <VBox alignment="TOP_CENTER" prefHeight="453.0" prefWidth="232.0" style="-fx-background-color: #949494;" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-         <Button fx:id="backButton" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" style="-fx-background-color: white; -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 0;" styleClass="returnButton" text="Back to Chat">
+         <Button fx:id="backButton" onAction="#onBack" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" style="-fx-background-color: white; -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 0;" styleClass="returnButton" text="Back to Chat">
             <graphic>
                <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
                   <image>
@@ -62,7 +62,7 @@
                <Insets top="15.0" />
             </VBox.margin>
          </VBox>
-         <Button fx:id="logoutButton" mnemonicParsing="false" prefHeight="43.0" prefWidth="201.0" style="-fx-background-color: #D73234; -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 15; -fx-border-radius: 15;" styleClass="logoutButton" text="Logout">
+         <Button fx:id="logoutButton" onAction="#onLogout" mnemonicParsing="false" prefHeight="43.0" prefWidth="201.0" style="-fx-background-color: #D73234; -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 15; -fx-border-radius: 15;" styleClass="logoutButton" text="Logout">
             <VBox.margin>
                <Insets top="20.0" />
             </VBox.margin>
@@ -106,8 +106,8 @@
          <VBox maxHeight="95.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
             <children>
                <Label style="-fx-font-size: 16;" text="Current Password" />
-                  <PasswordField fx:id="passwordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
-               <Label fx:id="passwordFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
+                  <PasswordField fx:id="currentPasswordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
+               <Label fx:id="currentPasswordFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
             </children>
             <VBox.margin>
                <Insets top="30.0" />
@@ -129,9 +129,21 @@
                <Insets top="15.0" />
             </VBox.margin>
          </VBox>
+         <VBox maxHeight="112.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
+            <children>
+               <Label style="-fx-font-size: 16;" text="Confirm Password" />
+               <PasswordField fx:id="confirmPasswordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
+            </children>
+            <padding>
+               <Insets bottom="5.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+            <VBox.margin>
+               <Insets top="15.0" />
+            </VBox.margin>
+         </VBox>
          <HBox alignment="BOTTOM_RIGHT" maxWidth="384.0" prefHeight="51.0" prefWidth="384.0">
             <children>
-               <Button fx:id="saveButton" prefHeight="36.0" prefWidth="115.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-weight: bold; -fx-font-size: 14;" styleClass="saveButton" text="Save Change" />
+               <Button fx:id="saveButton" onAction="#onSave" prefHeight="36.0" prefWidth="115.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-weight: bold; -fx-font-size: 14;" styleClass="saveButton" text="Save Change" />
             </children>
             <VBox.margin>
                <Insets top="8.0" />
@@ -145,7 +157,7 @@
    <VBox alignment="BOTTOM_CENTER" layoutY="451.0" prefHeight="108.0" prefWidth="231.0" style="-fx-background-color: #757575;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
       <children>
          <Label alignment="CENTER" prefHeight="51.0" prefWidth="201.0" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="Delete Account" />
-         <Button fx:id="deleteUserButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="211.0" style="-fx-background-color: #ef6a62; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" styleClass="terminateButton" text="Terminate">
+         <Button fx:id="deleteUserButton" onAction="#onDelete" mnemonicParsing="false" prefHeight="45.0" prefWidth="211.0" style="-fx-background-color: #ef6a62; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" styleClass="terminateButton" text="Terminate">
             <graphic>
                <ImageView fitHeight="34.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
                   <image>
