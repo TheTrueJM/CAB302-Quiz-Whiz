@@ -2,7 +2,7 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import ai.tutor.cab302exceptionalhandlers.model.*;
-
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -72,7 +72,7 @@ public abstract class AuthController {
 
     @FXML
     protected void switchLayout() throws IOException, RuntimeException, SQLException {
-        String targetType = this instanceof LoginController ? "signup" : "login";
+        AuthType targetType = this instanceof LoginController ? AuthType.SIGNUP : AuthType.LOGIN;
         SceneManager.getInstance().navigateToAuth(targetType);
     }
 

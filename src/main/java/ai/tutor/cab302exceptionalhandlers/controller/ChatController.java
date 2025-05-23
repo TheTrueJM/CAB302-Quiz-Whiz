@@ -5,6 +5,9 @@ import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils;
 import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
+import ai.tutor.cab302exceptionalhandlers.types.ChatSetupType;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -620,14 +623,13 @@ public class ChatController {
     }
 
     private void loadChatSetup() throws IOException, RuntimeException, SQLException {
-        SceneManager.getInstance().navigateToChatSetup(currentUser,
-            getSelectedChat() == null ? "create" : "update",
-            getSelectedChat());
+        ChatSetupType setupType = getSelectedChat() == null ? ChatSetupType.CREATE : ChatSetupType.UPDATE;
+        SceneManager.getInstance().navigateToChatSetup(currentUser, setupType, getSelectedChat());
     }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            SceneManager.getInstance().navigateToAuth("login");
+            SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
         });
     }
 

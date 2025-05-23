@@ -1,7 +1,8 @@
 package ai.tutor.cab302exceptionalhandlers;
 
-import ai.tutor.cab302exceptionalhandlers.controller.*;
+import ai.tutor.cab302exceptionalhandlers.factories.ControllerFactory;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -20,7 +21,7 @@ public class QuizWhizApplication extends Application {
             sceneManager.initialize(stage, controllerFactory);
 
             stage.setTitle(TITLE);
-            sceneManager.navigateToAuth("signup");
+            sceneManager.navigateToAuth(AuthType.SIGNUP);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,6 +2,9 @@ package ai.tutor.cab302exceptionalhandlers;
 
 import ai.tutor.cab302exceptionalhandlers.controller.*;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.factories.ControllerFactory;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
+import ai.tutor.cab302exceptionalhandlers.types.ChatSetupType;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -29,10 +32,13 @@ public class SceneManager {
         this.controllerFactory = factory;
     }
 
-    public void navigateToAuth(String type) {
+    public void navigateToAuth(AuthType type) {
         try {
-            AuthController controller = controllerFactory.createAuthController(type);
-            String viewName = type.equals("login") ? "login-view.fxml" : "sign-up-view.fxml";
+            AuthController controller = controllerFactory.authController()
+                .type(type)
+                .build();
+
+            String viewName = type.equals(AuthType.LOGIN) ? "login-view.fxml" : "sign-up-view.fxml";
             loadView(viewName, controller);
         } catch (Exception e) {
             Utils.showErrorAlert("Failed to load auth view: " + e.getMessage());
@@ -41,16 +47,32 @@ public class SceneManager {
 
     public void navigateToChat(User user) {
         try {
-            ChatController controller = controllerFactory.createChatController(user);
+            ChatController controller = controllerFactory.chatController()
+                .currentUser(user)
+                .build();
+
             loadView("chat-view.fxml", controller);
         } catch (Exception e) {
             Utils.showErrorAlert("Failed to load chat: " + e.getMessage());
         }
     }
 
-    public void navigateToChatSetup(User user, String type, Chat chat) {
+    public void navigateToChatSetup(User user, ChatSetupType type, Chat chat) {
         try {
-            ChatSetupController controller = controllerFactory.createChatSetupController(user, type, chat);
+            ChatSetupController controller;
+            if (chat == null) {
+                controller = controllerFactory.chatSetupController()
+                    .currentUser(user)
+                    .type(type)
+                    .build();
+            } else {
+                controller = controllerFactory.chatSetupController()
+                    .currentUser(user)
+                    .type(type)
+                    .currentChat(chat)
+                    .build();
+            }
+
             loadView("chat-setup-view.fxml", controller);
         } catch (Exception e) {
             Utils.showErrorAlert("Failed to load chat setup: " + e.getMessage());
@@ -59,7 +81,10 @@ public class SceneManager {
 
     public void navigateToUserSettings(User user) {
         try {
-            UserSettingsController controller = controllerFactory.createUserSettingsController(user);
+            UserSettingsController controller = controllerFactory.userSettingsController()
+                .currentUser(user)
+                .build();
+
             loadView("user-settings-view.fxml", controller);
         } catch (Exception e) {
             Utils.showErrorAlert("Failed to load user settings: " + e.getMessage());
@@ -68,7 +93,11 @@ public class SceneManager {
 
     public void navigateToQuiz(Quiz quiz, User user) {
         try {
-            QuizController controller = controllerFactory.createQuizController(quiz, user);
+            QuizController controller = controllerFactory.quizController()
+                .quiz(quiz)
+                .currentUser(user)
+                .build();
+
             loadView("quiz-view.fxml", controller);
         } catch (Exception e) {
             Utils.showErrorAlert("Failed to load quiz: " + e.getMessage());

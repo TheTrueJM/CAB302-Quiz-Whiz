@@ -3,13 +3,13 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class UserSettingsController {
@@ -76,7 +76,7 @@ public class UserSettingsController {
         if (result.isPresent()) {
             ButtonType buttonClicked = result.get();
             if (buttonClicked == ButtonType.OK) {
-                SceneManager.getInstance().navigateToAuth("login");
+                SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
             }
         }
     }
@@ -122,7 +122,7 @@ public class UserSettingsController {
             if (buttonClicked == ButtonType.OK) {;
                 try {
                     userDAO.deleteUser(currentUser);
-                    SceneManager.getInstance().navigateToAuth("signup");
+                    SceneManager.getInstance().navigateToAuth(AuthType.SIGNUP);
                 } catch (SQLException e) {
                     Utils.showErrorAlert("Failed to delete account: " + e.getMessage());
                 }

@@ -18,4 +18,7 @@ module ai.tutor.cab302exceptionalhandlers {
     exports ai.tutor.cab302exceptionalhandlers.model;
     exports ai.tutor.cab302exceptionalhandlers.controller;
     exports ai.tutor.cab302exceptionalhandlers.Utils;
+    exports ai.tutor.cab302exceptionalhandlers.builders;
+    exports ai.tutor.cab302exceptionalhandlers.factories;
+    exports ai.tutor.cab302exceptionalhandlers.types;
 }
