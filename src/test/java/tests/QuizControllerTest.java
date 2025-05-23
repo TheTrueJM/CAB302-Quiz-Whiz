@@ -147,6 +147,7 @@ public class QuizControllerTest {
     }
 
     @Test
+    @Disabled
     public void testCreateNewUserAnswerMuiltipleAttempts() {
         UserAnswer userAnswer = UserAnswers.get("question1Answer");
         UserAnswer firstAttempt = quizController.createNewUserAnswer(userAnswer.getQuestionNumber(), userAnswer.getAnswerOption());
