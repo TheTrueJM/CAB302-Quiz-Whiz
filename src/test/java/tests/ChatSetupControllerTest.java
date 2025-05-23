@@ -89,6 +89,7 @@ public class ChatSetupControllerTest {
         assertEquals(NewChat.getName(), newChat.getName());
         assertEquals(NewChat.getResponseAttitude(), newChat.getResponseAttitude());
         assertEquals(NewChat.getQuizDifficulty(), newChat.getQuizDifficulty());
+        assertEquals(NewChat.getQuizLength(), newChat.getQuizLength());
         assertEquals(NewChat.getEducationLevel(), newChat.getEducationLevel());
         assertEquals(NewChat.getStudyArea(), newChat.getStudyArea());
     }
@@ -215,7 +216,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testUpdateChat() throws IllegalArgumentException, SQLException {
         chatUpdateController.updateChatDetails(
-                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
         );
 
         Chat updatedchat = chatDAO.getChat(UpdatedChat.getId());
@@ -225,6 +226,7 @@ public class ChatSetupControllerTest {
         assertEquals(UpdatedChat.getName(), updatedchat.getName());
         assertEquals(UpdatedChat.getResponseAttitude(), updatedchat.getResponseAttitude());
         assertEquals(UpdatedChat.getQuizDifficulty(), updatedchat.getQuizDifficulty());
+        assertEquals(UpdatedChat.getQuizLength(), updatedchat.getQuizLength());
         assertEquals(UpdatedChat.getEducationLevel(), updatedchat.getEducationLevel());
         assertEquals(UpdatedChat.getStudyArea(), updatedchat.getStudyArea());
     }
@@ -234,7 +236,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatUpdateController.updateChatDetails(
-                        "", UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                        "", UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
                 )
         );
 
@@ -245,6 +247,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), originalChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
     }
@@ -254,7 +257,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatUpdateController.updateChatDetails(
-                        null, UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                        null, UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
                 )
         );
 
@@ -265,6 +268,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), originalChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
     }
@@ -274,7 +278,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatUpdateController.updateChatDetails(
-                        UpdatedChat.getName(), "", UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                        UpdatedChat.getName(), "", UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
                 )
         );
 
@@ -285,6 +289,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), originalChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
     }
@@ -294,7 +299,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatUpdateController.updateChatDetails(
-                        UpdatedChat.getName(), null, UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                        UpdatedChat.getName(), null, UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
                 )
         );
 
@@ -305,6 +310,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), originalChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
     }
@@ -314,7 +320,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatUpdateController.updateChatDetails(
-                        UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), "", UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                        UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), "", UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
                 )
         );
 
@@ -325,6 +331,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), originalChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
     }
@@ -334,7 +341,7 @@ public class ChatSetupControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatUpdateController.updateChatDetails(
-                        UpdatedChat.getName(), UpdatedChat.getResponseAttitude(),null, UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                        UpdatedChat.getName(), UpdatedChat.getResponseAttitude(),null, UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
                 )
         );
 
@@ -345,14 +352,60 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), originalChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
     }
 
     @Test
+    @Disabled
+    public void testUpdateChatTooLowLength() throws SQLException {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> chatUpdateController.updateChatDetails(
+                        UpdatedChat.getName(), UpdatedChat.getResponseAttitude(),  UpdatedChat.getQuizDifficulty(), Chat.MIN_QUIZ_LENGTH - 1, UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                )
+        );
+
+        Chat originalChat = chatDAO.getChat(ExistingChat.getId());
+
+        assertNotNull(originalChat);
+        assertEquals(ExistingChat.getId(), originalChat.getId());
+        assertEquals(ExistingChat.getName(), originalChat.getName());
+        assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
+        assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
+        assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
+        assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
+    }
+
+    @Test
+    @Disabled
+    public void testUpdateChatTooHighLength() throws SQLException {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> chatUpdateController.updateChatDetails(
+                        UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), Chat.MAX_QUIZ_LENGTH + 1, UpdatedChat.getEducationLevel(), UpdatedChat.getStudyArea()
+                )
+        );
+
+        Chat originalChat = chatDAO.getChat(ExistingChat.getId());
+
+        assertNotNull(originalChat);
+        assertEquals(ExistingChat.getId(), originalChat.getId());
+        assertEquals(ExistingChat.getName(), originalChat.getName());
+        assertEquals(ExistingChat.getResponseAttitude(), originalChat.getResponseAttitude());
+        assertEquals(ExistingChat.getQuizDifficulty(), originalChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), originalChat.getQuizLength());
+        assertEquals(ExistingChat.getEducationLevel(), originalChat.getEducationLevel());
+        assertEquals(ExistingChat.getStudyArea(), originalChat.getStudyArea());
+    }
+
+
+    @Test
     public void testUpdateChatEmptyEducation() throws SQLException {
         chatUpdateController.updateChatDetails(
-                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), "", UpdatedChat.getStudyArea()
+                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), "", UpdatedChat.getStudyArea()
         );
 
         Chat updatedChat = chatDAO.getChat(UpdatedChat.getId());
@@ -362,6 +415,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), updatedChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), updatedChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), updatedChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), updatedChat.getQuizLength());
         assertNull(updatedChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), updatedChat.getStudyArea());
     }
@@ -369,7 +423,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testUpdateChatNullEducation() throws SQLException {
         chatUpdateController.updateChatDetails(
-                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), null, UpdatedChat.getStudyArea()
+                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), null, UpdatedChat.getStudyArea()
         );
 
         Chat updatedChat = chatDAO.getChat(UpdatedChat.getId());
@@ -379,6 +433,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), updatedChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), updatedChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), updatedChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), updatedChat.getQuizLength());
         assertNull(updatedChat.getEducationLevel());
         assertEquals(ExistingChat.getStudyArea(), updatedChat.getStudyArea());
     }
@@ -386,7 +441,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testUpdateChatEmptyStudyArea() throws SQLException {
         chatUpdateController.updateChatDetails(
-                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), ""
+                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), ""
         );
 
         Chat updatedChat = chatDAO.getChat(UpdatedChat.getId());
@@ -396,6 +451,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), updatedChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), updatedChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), updatedChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), updatedChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), updatedChat.getEducationLevel());
         assertNull(updatedChat.getStudyArea());
     }
@@ -403,7 +459,7 @@ public class ChatSetupControllerTest {
     @Test
     public void testUpdateChatNullStudyArea() throws SQLException {
         chatUpdateController.updateChatDetails(
-                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getEducationLevel(), null
+                UpdatedChat.getName(), UpdatedChat.getResponseAttitude(), UpdatedChat.getQuizDifficulty(), UpdatedChat.getQuizLength(), UpdatedChat.getEducationLevel(), null
         );
 
         Chat updatedChat = chatDAO.getChat(UpdatedChat.getId());
@@ -413,6 +469,7 @@ public class ChatSetupControllerTest {
         assertEquals(ExistingChat.getName(), updatedChat.getName());
         assertEquals(ExistingChat.getResponseAttitude(), updatedChat.getResponseAttitude());
         assertEquals(ExistingChat.getQuizDifficulty(), updatedChat.getQuizDifficulty());
+        assertEquals(ExistingChat.getQuizLength(), updatedChat.getQuizLength());
         assertEquals(ExistingChat.getEducationLevel(), updatedChat.getEducationLevel());
         assertNull(updatedChat.getStudyArea());
     }
