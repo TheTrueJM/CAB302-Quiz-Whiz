@@ -18,7 +18,7 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS quizQuestions ("
                     + "messageId INTEGER,"
-                    + "number INTEGER (number >= 1),"
+                    + "number INTEGER CHECK (number >= 1),"
                     + "question VARCHAR NOT NULL,"
                     + "PRIMARY KEY (messageId, number),"
                     + "FOREIGN KEY(messageId) REFERENCES quizzes(messageId) ON DELETE CASCADE"
