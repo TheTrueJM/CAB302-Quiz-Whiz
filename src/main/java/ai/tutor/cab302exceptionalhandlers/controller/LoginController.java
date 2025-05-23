@@ -25,6 +25,7 @@ public class LoginController extends AuthController {
      * =========================
      */
 
+    @Override
     @FXML
     protected void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField) e.getSource();
@@ -43,10 +44,12 @@ public class LoginController extends AuthController {
         submitButtonToggle();
     }
 
+    @Override
     protected void submitButtonToggle() {
         submitButton.setDisable(usernameEmpty || passwordEmpty);
     }
 
+    @Override
     @FXML
     protected void onSubmit() throws IOException, SQLException {
         resetErrorFeedback();
@@ -67,6 +70,7 @@ public class LoginController extends AuthController {
     }
 
     // Open Sign Up Page
+    @Override
     @FXML
     protected void switchLayout() throws IOException, RuntimeException, SQLException {
         Utils.loadView("sign-up", new SignUpController(db), getStage());
@@ -79,6 +83,7 @@ public class LoginController extends AuthController {
      * =====================
      */
 
+    @Override
     public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
         User existingUser = userDAO.getUser(username != null ? username : "");
         if (existingUser == null) {
