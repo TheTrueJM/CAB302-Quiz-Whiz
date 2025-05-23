@@ -3,8 +3,10 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -14,19 +16,10 @@ import java.util.*;
 
 public class QuizController {
     @FXML private Button returnButton;
-    @FXML private Button searchButton;
-    @FXML private Button quizSettingsButton;
-    @FXML private Button userDetailsButton;
     @FXML private Button answerA;
     @FXML private Button answerB;
     @FXML private Button answerC;
     @FXML private Button answerD;
-    @FXML private Button configureQuiz;
-    @FXML private Button chatModeButton;
-    @FXML private Button quizModeButton;
-    @FXML private TextField quizNameField;
-    @FXML private TextField noQuizField;
-    @FXML private TextField welcomeTitle;
     @FXML private ListView questionListView;
     @FXML private ScrollPane quizScrollPane;
     @FXML private VBox quizQuestion;
@@ -34,6 +27,7 @@ public class QuizController {
     @FXML private StackPane quizQuestionsContainer;
     @FXML private StackPane quizListContainer1;
     @FXML private Label quizQuestionLabel;
+    @FXML private Label quizTitle;
     @FXML private Button submitQuizButton;
 
     private SQLiteConnection db;
@@ -75,17 +69,17 @@ public class QuizController {
             this.currentUser = currentUser;
             quizCompleted = false;
         } catch (SQLException | RuntimeException e) {
-            System.err.println("SQL database connection error: " + e.getMessage());
+            Utils.showErrorAlert("SQL database connection error: " + e.getMessage());
         }
         //Calculate the attempt number
         calculateCurrentAttempt();
     }
 
     private Stage getStage() {
-        return (Stage) quizNameField.getScene().getWindow();
+        return (Stage) quizTitle.getScene().getWindow();
     }
 
-    // Intialisation for assets(currently none but might need this)
+    // Intialisation for assets
     @FXML
     public void initialize() {
         setQuizNameField();
@@ -94,10 +88,10 @@ public class QuizController {
         setupReturnButton();
     }
 
-    //Short two lines to set the quiz name
+    // Set the quiz name
     private void setQuizNameField(){
         String quizName = currentQuiz.getName();
-        quizNameField.setText(quizName);
+        quizTitle.setText(quizName);
     }
 
     //A function that places each question into a list to use later
@@ -122,96 +116,170 @@ public class QuizController {
         }
     }
 
-    // same way its done in the chat sidebar, just without the delete functionality
+    // Set up the ListView to display questions with a toggle indicating answered state
     private void setupQuizListView() {
         questionListView.setCellFactory(listView -> new ListCell<QuizQuestion>() {
             private final Button selectQuestion = new Button();
-            private final HBox container = new HBox(selectQuestion);
-
+            private final ToggleButton toggleAnswered = new ToggleButton();
+            private final Region spacer = new Region();
+            private final HBox container = new HBox(selectQuestion, spacer, toggleAnswered);
             {
-                selectQuestion.setOnAction(event -> {
-                    QuizQuestion question = getItem();
-                    if (question != null) {
-                        questionNumber = getIndex() + 1;
-                        displayQuestion(questionNumber);
-                    }
-
-                });
+                container.setAlignment(Pos.CENTER_LEFT);
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                HBox.setMargin(toggleAnswered, new Insets(0, 5, 0, 10));
+                HBox.setMargin(selectQuestion, new Insets(5, 0, 5, 5));
             }
             @Override
             protected void updateItem(QuizQuestion item, boolean empty) {
                 super.updateItem(item, empty);
+                // Clear previous styles and graphic
+                setGraphic(null);
+                container.getStyleClass().clear();
+                setStyle("-fx-background-color: #535353;");
+
                 if (empty || item == null) {
-                    setGraphic(null);
+                    return;
+                }
+
+                getStyleClass().setAll("question-cell");
+                container.getStyleClass().setAll("question-container");
+                selectQuestion.getStyleClass().setAll("select-question");
+                toggleAnswered.getStyleClass().setAll("toggle-answered");
+
+                selectQuestion.setAlignment(Pos.CENTER_LEFT);
+                toggleAnswered.setAlignment(Pos.CENTER);
+                toggleAnswered.setPrefSize(25, 25);
+
+                int questionIndex = getIndex() + 1;
+                selectQuestion.setText("Question " + questionIndex);
+
+                toggleAnswered.setSelected(questionAnswers.containsKey(questionIndex));
+                toggleAnswered.setDisable(true);
+
+                if (quizCompleted) {
+                    container.getChildren().remove(toggleAnswered);
+                    checkAnswer(this, container);
                 } else {
-                    selectQuestion.setText("Question " + (getIndex() + 1));
-                    setGraphic(selectQuestion);
+                    container.getChildren().setAll(selectQuestion, spacer, toggleAnswered);
+                }
+
+                setGraphic(container);
+            }
+        });
+
+        questionListView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
+            if (newItem != null) {
+                int index = questionListView.getItems().indexOf(newItem);
+                if (index >= 0) {
+                    questionNumber = index + 1;
+                    Platform.runLater(() -> displayQuestion(questionNumber));
                 }
             }
         });
     }
 
-    //Display the questions on the buttons, and sets up the event handler for the answer buttons
-    private void displayQuestion(int questionNumber) {
-        QuizQuestion question = quizQuestions.get(questionNumber - 1);
-        quizQuestionLabel.setText(question.getQuestion());
-
-        // Get the answer options
-        List<AnswerOption> options = answerOptions.get(questionNumber);
-        if (options == null || options.size() < 4) {
-            Utils.showErrorAlert("Answer options are missing");
+    private void checkAnswer(ListCell<QuizQuestion> cell, HBox container) {
+        int questionIndex = cell.getIndex() + 1;
+        if (questionIndex < 1 || questionIndex > quizQuestions.size()) {
+            container.getStyleClass().setAll("question-container");
             return;
         }
 
-        // Sort answer options
+        String userAnswer = questionAnswers.get(questionIndex);
+        List<AnswerOption> options = answerOptions.get(questionIndex);
+
+        // Clear all styles to prevent reuse issues
+        container.getStyleClass().clear();
+        container.getStyleClass().add("question-container");
+
+        if (userAnswer != null && options != null) {
+            AnswerOption correct = options.stream()
+                    .filter(AnswerOption::getIsAnswer)
+                    .findFirst()
+                    .orElse(null);
+            if (correct != null) {
+                if (userAnswer.equalsIgnoreCase(correct.getOption())) {
+                    container.getStyleClass().setAll("correct-question");
+                } else {
+                    container.getStyleClass().setAll("incorrect-question");
+                }
+            }
+        } else {
+            container.getStyleClass().setAll("incorrect-question");
+        }
+    }
+
+
+    // Display the questions on the buttons, and sets up the event handler for the answer buttons
+    private void displayQuestion(int questionNumber) {
+        if (questionNumber < 1 || questionNumber > quizQuestions.size()) {
+            Utils.showErrorAlert("Invalid question number: " + questionNumber);
+            return;
+        }
+        QuizQuestion question = quizQuestions.get(questionNumber - 1);
+        quizQuestionLabel.setText(question.getQuestion());
+
+        List<AnswerOption> options = answerOptions.get(questionNumber);
+        if (options == null || options.size() < 4) {
+            Utils.showErrorAlert("Answer options are missing for question " + questionNumber);
+            return;
+        }
+
         options.sort(Comparator.comparing(AnswerOption::getOption));
 
-        // Assign text
         answerA.setText(options.get(0).getValue());
         answerB.setText(options.get(1).getValue());
         answerC.setText(options.get(2).getValue());
         answerD.setText(options.get(3).getValue());
 
-        if(quizCompleted == true){
-            // Disable buttons
-            answerA.setDisable(true);
-            answerB.setDisable(true);
-            answerC.setDisable(true);
-            answerD.setDisable(true);
+        // Reset button styles
+        Button[] answerButtons = {answerA, answerB, answerC, answerD};
+        for (Button btn : answerButtons) {
+            btn.getStyleClass().clear();
+            btn.getStyleClass().add("option-button");
+            btn.setDisable(false);
+        }
+
+        if (quizCompleted) {
+            for (Button btn : answerButtons) {
+                btn.setDisable(true);
+                btn.setOpacity(0.8);
+            }
             submitQuizButton.setDisable(true);
 
-            // Get the user's selected answer
             String selected = questionAnswers.get(questionNumber);
 
-            // Apply correct/incorrect CSS classes
             for (AnswerOption opt : options) {
                 Button targetButton = null;
-                if (opt.getOption().equals("A")) targetButton = answerA;
-                if (opt.getOption().equals("B")) targetButton = answerB;
-                if (opt.getOption().equals("C")) targetButton = answerC;
-                if (opt.getOption().equals("D")) targetButton = answerD;
+                if (opt.getOption().equalsIgnoreCase("A")) targetButton = answerA;
+                if (opt.getOption().equalsIgnoreCase("B")) targetButton = answerB;
+                if (opt.getOption().equalsIgnoreCase("C")) targetButton = answerC;
+                if (opt.getOption().equalsIgnoreCase("D")) targetButton = answerD;
 
                 if (targetButton != null) {
+                    targetButton.getStyleClass().clear();
+                    targetButton.getStyleClass().add("option-button");
                     if (opt.getIsAnswer()) {
                         targetButton.getStyleClass().add("correct-answer");
-                    } else if (opt.getOption().equals(selected)) {
+                    } else if (selected != null && opt.getOption().equalsIgnoreCase(selected)) {
                         targetButton.getStyleClass().add("incorrect-answer");
                     }
                 }
             }
-
-        } else{
-            // Reset button styles
-            Button[] answerButtons = {answerA, answerB, answerC, answerD};
+        } else {
             for (Button btn : answerButtons) {
-                btn.getStyleClass().removeAll("option-button", "option-button-toggled");
-                btn.getStyleClass().add("option-button");
+                btn.setOnAction(null);
             }
 
-            // Restore toggled state if an answer was previously selected
+            final int currentQuestionNumber = questionNumber;
+            answerA.setOnAction(e -> registerAnswer(currentQuestionNumber, "A"));
+            answerB.setOnAction(e -> registerAnswer(currentQuestionNumber, "B"));
+            answerC.setOnAction(e -> registerAnswer(currentQuestionNumber, "C"));
+            answerD.setOnAction(e -> registerAnswer(currentQuestionNumber, "D"));
+
             String selectedAnswer = questionAnswers.get(questionNumber);
             if (selectedAnswer != null) {
-                Button selectedButton = switch (selectedAnswer) {
+                Button selectedButton = switch (selectedAnswer.toUpperCase()) {
                     case "A" -> answerA;
                     case "B" -> answerB;
                     case "C" -> answerC;
@@ -219,16 +287,11 @@ public class QuizController {
                     default -> null;
                 };
                 if (selectedButton != null) {
-                    selectedButton.getStyleClass().remove("option-button");
+                    selectedButton.getStyleClass().clear();
                     selectedButton.getStyleClass().add("option-button-toggled");
                 }
             }
 
-            answerA.setOnAction(e -> registerAnswer(questionNumber,"A"));
-            answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
-            answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
-            answerD.setOnAction(e -> registerAnswer(questionNumber, "D"));
-            //Activates the submit Button
             submitQuizButton.setOnAction(e -> submitAnswers());
         }
     }
@@ -256,15 +319,16 @@ public class QuizController {
             selectedButton.getStyleClass().remove("option-button");
             selectedButton.getStyleClass().add("option-button-toggled");
         }
+        questionListView.refresh();
     }
 
     //Submit Answers
-    private void submitAnswers(){
+    private void submitAnswers() {
         int messageId = currentQuiz.getMessageId();
         quizCompleted = true;
         try {
             saveAnswers(messageId, currentAttempt, questionAnswers, userAnswerDAO);
-            checkAnswers();
+            Platform.runLater(() -> questionListView.refresh());
         } catch (Exception e) {
             e.printStackTrace();
             Utils.showErrorAlert("Failed to submit answers: " + e.getMessage());
@@ -286,41 +350,6 @@ public class QuizController {
 
         }
     }
-
-    //check the answers, restyle the list view
-    private void checkAnswers(){
-        questionListView.setCellFactory(lv -> new ListCell<QuizQuestion>() {
-            @Override
-            protected void updateItem(QuizQuestion item, boolean empty) {
-                super.updateItem(item, empty);
-                int qNumber = getIndex() + 1;
-                setText("Question " + qNumber);
-
-                // Clear previous style classes
-                getStyleClass().removeAll("correct-answer", "incorrect-answer");
-
-                // Get user's selected option and correct option
-                String userAnswer = questionAnswers.get(qNumber);
-                List<AnswerOption> options = answerOptions.get(qNumber);
-
-
-                if (userAnswer != null && options != null) {
-                    AnswerOption correct = options.stream()
-                            .filter(AnswerOption::getIsAnswer)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (correct != null) {
-                        if (userAnswer.equals(correct.getOption())) {
-                            getStyleClass().add("correct-answer");
-                        } else {
-                            getStyleClass().add("incorrect-answer");
-                        }
-                    }
-                }
-            }
-        })
-    ;}
 
     //Return to chat
     private void setupReturnButton() {
@@ -345,7 +374,7 @@ public class QuizController {
             currentAttempt = latestAttempt + 1;
             return currentAttempt;
         } catch (SQLException e) {
-            System.err.println("Failed to calculate current attempt: " + e.getMessage());
+            Utils.showErrorAlert("Failed to calculate current attempt: " + e.getMessage());
             return -1; // This should trigger an exception when creating a new UserAnswer
         }
     }
@@ -355,7 +384,7 @@ public class QuizController {
                 try {
                     return quizDAO.getQuiz(currentQuiz.getMessageId());
                 } catch (SQLException e) {
-                    System.err.println("Failed to read quiz: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read quiz: " + e.getMessage());
                     return null;
                 }
             }
@@ -365,7 +394,7 @@ public class QuizController {
                 try {
                     return quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
                 } catch (SQLException e) {
-                    System.err.println("Failed to read quiz questions: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read quiz questions: " + e.getMessage());
                     return null;
                 }
             }
@@ -375,7 +404,7 @@ public class QuizController {
                 try {
                     return quizQuestionDAO.getQuizQuestion(currentQuiz.getMessageId(), questionNumber);
                 } catch (SQLException e) {
-                    System.err.println("Failed to read quiz question: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read quiz question: " + e.getMessage());
                     return null;
                 }
             }
@@ -385,7 +414,7 @@ public class QuizController {
                 try {
                     return answerOptionDAO.getAllQuestionAnswerOptions(currentQuiz.getMessageId(), questionNumber);
                 } catch (SQLException e) {
-                    System.err.println("Failed to read question answer options: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read question answer options: " + e.getMessage());
                     return null;
                 }
             }
@@ -395,7 +424,7 @@ public class QuizController {
                 try {
                     return answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
                 } catch (SQLException e) {
-                    System.err.println("Failed to read question answer option: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read question answer option: " + e.getMessage());
                     return null;
                 }
             }
@@ -403,17 +432,22 @@ public class QuizController {
             // Create a new User Answer record using UI user input
             public UserAnswer createNewUserAnswer(int questionNumber, String option) {
                 try {
+                    if (questionNumber < 1) {
+                        throw new IllegalArgumentException("Invalid question number was given");
+                    }
+
+                    int currentAttempt = calculateCurrentAttempt();
                     AnswerOption answerOption = answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
 
                     if (answerOption == null) {
-                        throw new SQLException("Invalid answer option was given");
+                        throw new IllegalArgumentException("Invalid answer option was given");
                     }
 
                     UserAnswer userAnswer = new UserAnswer(currentQuiz.getMessageId(), currentAttempt, questionNumber, option);
                     userAnswerDAO.createUserAnswer(userAnswer);
                     return userAnswer;
                 } catch (SQLException e) {
-                    System.err.println("Failed to create user answer: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to create user answer: " + e.getMessage());
                     return null;
                 }
             }
@@ -423,7 +457,7 @@ public class QuizController {
                 try {
                     return userAnswerDAO.getUserQuestionAnswer(currentQuiz.getMessageId(), attempt, questionNumber);
                 } catch (SQLException e) {
-                    System.err.println("Failed to read question user answer: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read question user answer: " + e.getMessage());
                     return null;
                 }
             }
@@ -433,7 +467,7 @@ public class QuizController {
                 try {
                     return userAnswerDAO.getAllUserQuizAnswers(currentQuiz.getMessageId(), attempt);
                 } catch (SQLException e) {
-                    System.err.println("Failed to read quiz user answers: " + e.getMessage());
+                    Utils.showErrorAlert("Failed to read quiz user answers: " + e.getMessage());
                     return null;
                 }
             }

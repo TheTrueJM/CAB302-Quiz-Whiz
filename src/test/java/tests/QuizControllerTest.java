@@ -162,19 +162,19 @@ public class QuizControllerTest {
     @Test
     public void testCreateNewUserAnswerInvalidQuestion() {
         UserAnswer userAnswer = UserAnswers.get("question1Answer");
-        UserAnswer newUserAnswer = quizController.createNewUserAnswer(
-                -1, userAnswer.getAnswerOption()
-        );
-        assertNull(newUserAnswer);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            quizController.createNewUserAnswer(-1, userAnswer.getAnswerOption());
+        }, "Expected IllegalArgumentException for invalid question number");
     }
 
     @Test
     public void testCreateNewUserAnswerInvalidOption() {
         UserAnswer userAnswer = UserAnswers.get("question1Answer");
-        UserAnswer newUserAnswer = quizController.createNewUserAnswer(
-                userAnswer.getQuestionNumber(), "WrongOption"
-        );
-        assertNull(newUserAnswer);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            quizController.createNewUserAnswer(userAnswer.getQuestionNumber(), "WrongOption");
+        }, "Expected IllegalArgumentException for invalid option");
     }
 
     @Test
