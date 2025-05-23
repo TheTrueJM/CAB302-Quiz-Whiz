@@ -49,7 +49,10 @@ public class User {
 
 
     public boolean verifyPassword(String passwordPlaintext) {
-        return Password.check(passwordPlaintext != null ? passwordPlaintext : "", this.passwordHash).with(scrypt);
+        if (passwordPlaintext == null || passwordPlaintext.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Password: Cannot be empty");
+        }
+        return Password.check(passwordPlaintext, this.passwordHash).with(scrypt);
     }
 
 

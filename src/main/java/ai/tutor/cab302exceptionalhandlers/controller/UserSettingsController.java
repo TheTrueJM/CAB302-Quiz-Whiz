@@ -182,7 +182,9 @@ public class UserSettingsController {
     }
 
     public void updatePassword(String currentPassword, String newPassword) throws IllegalArgumentException, SecurityException, SQLException {
-        if (!currentUser.verifyPassword(currentPassword)) {
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        } else if (!currentUser.verifyPassword(currentPassword)) {
             throw new SecurityException("Incorrect Password");
         }
 
