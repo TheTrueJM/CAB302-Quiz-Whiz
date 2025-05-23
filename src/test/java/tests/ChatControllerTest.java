@@ -32,9 +32,9 @@ public class ChatControllerTest {
     );
 
     private static final Chat[] Chats = {
-        new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"),
-        new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"),
-        new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT")
+        new Chat(1, "Test Chat 1", "regular", "normal", 3, "University", "IT"),
+        new Chat(1, "Test Chat 2", "regular", "normal", 3, "University", "IT"),
+        new Chat(1, "Test Chat 3", "regular", "normal", 3, "University", "IT")
     };
 
     private static final Map<String, Message> Messages = new HashMap<>();
@@ -327,7 +327,7 @@ public class ChatControllerTest {
 
         Chat chat = Chats[0];
         Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getQuizLength(), chat.getEducationLevel(), chat.getStudyArea()
         );
         int chatID = newChat.getId();
 

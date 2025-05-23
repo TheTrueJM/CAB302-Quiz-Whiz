@@ -55,6 +55,7 @@ public class ChatUpdateController extends ChatSetupController {
         chatNameInput.setText(currentChat.getName());
         responseAttitude.setValue(currentChat.getResponseAttitude());
         quizDifficulty.setValue(currentChat.getQuizDifficulty());
+        quizLength.setValue(currentChat.getQuizLength());
         educationLevel.setValue(currentChat.getEducationLevel());
         chatTopic.setText(currentChat.getStudyArea());
         startChatButton.setText("Update Chat");

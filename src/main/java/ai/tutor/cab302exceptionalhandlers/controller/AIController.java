@@ -249,6 +249,7 @@ public class AIController {
                 chatConfig.getName(),
                 chatConfig.getResponseAttitude(),
                 chatConfig.getQuizDifficulty(),
+                chatConfig.getQuizLength(),
                 chatConfig.getEducationLevel(),
                 chatConfig.getStudyArea()
             );

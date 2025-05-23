@@ -689,7 +689,7 @@ public class ChatController {
 
     // Create a new Chat record using UI user input
     // TODO: Remove as it's in ChatSetup
-    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, int quizLength, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
         if (Utils.validateNullOrEmpty(name)) {
             Utils.showErrorAlert("Chat name cannot be empty");
             throw new IllegalArgumentException("Chat name difficulty cannot be empty");
@@ -708,7 +708,7 @@ public class ChatController {
         if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
 
         // Create and Add Chat to database
-        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea);
         chatDAO.createChat(newChat);
 
         return newChat;

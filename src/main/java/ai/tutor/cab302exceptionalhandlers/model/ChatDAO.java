@@ -22,6 +22,7 @@ public class ChatDAO implements IChatDAO {
                     + "name VARCHAR NOT NULL,"
                     + "responseAttitude VARCHAR NOT NULL,"
                     + "quizDifficulty VARCHAR NOT NULL,"
+                    + "quizLength VARCHAR NOT NULL,"
                     + "educationLevel VARCHAR,"
                     + "studyArea VARCHAR,"
                     + "FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE"
@@ -33,14 +34,15 @@ public class ChatDAO implements IChatDAO {
 
     @Override
     public void createChat(Chat chat) throws SQLException {
-        String sql = "INSERT INTO chats (userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO chats (userId, name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement createChat = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             createChat.setInt(1, chat.getUserId());
             createChat.setString(2, chat.getName());
             createChat.setString(3, chat.getResponseAttitude());
             createChat.setString(4, chat.getQuizDifficulty());
-            createChat.setString(5, chat.getEducationLevel());
-            createChat.setString(6, chat.getStudyArea());
+            createChat.setInt(5, chat.getQuizLength());
+            createChat.setString(6, chat.getEducationLevel());
+            createChat.setString(7, chat.getStudyArea());
             createChat.executeUpdate();
 
             // Set the id of the new Chat
@@ -54,14 +56,15 @@ public class ChatDAO implements IChatDAO {
 
     @Override
     public void updateChat(Chat chat) throws SQLException {
-        String sql = "UPDATE chats SET name = ?, responseAttitude = ?, quizDifficulty = ?, educationLevel = ?, studyArea = ? WHERE id = ?";
+        String sql = "UPDATE chats SET name = ?, responseAttitude = ?, quizDifficulty = ?, quizLength = ?, educationLevel = ?, studyArea = ? WHERE id = ?";
         try (PreparedStatement updateChat = connection.prepareStatement(sql)) {
             updateChat.setString(1, chat.getName());
             updateChat.setString(2, chat.getResponseAttitude());
             updateChat.setString(3, chat.getQuizDifficulty());
-            updateChat.setString(4, chat.getEducationLevel());
-            updateChat.setString(5, chat.getStudyArea());
-            updateChat.setInt(6, chat.getId());
+            updateChat.setInt(4, chat.getQuizLength());
+            updateChat.setString(5, chat.getEducationLevel());
+            updateChat.setString(6, chat.getStudyArea());
+            updateChat.setInt(7, chat.getId());
             updateChat.executeUpdate();
         }
     }
@@ -97,9 +100,10 @@ public class ChatDAO implements IChatDAO {
                 String name = resultSet.getString("name");
                 String responseAttitude = resultSet.getString("responseAttitude");
                 String quizDifficulty = resultSet.getString("quizDifficulty");
+                int quizLength = resultSet.getInt("quizLength");
                 String educationLevel = resultSet.getString("educationLevel");
                 String studyArea = resultSet.getString("studyArea");
-                Chat chat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+                Chat chat = new Chat(userId, name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea);
                 chat.setId(id);
                 return chat;
             }
@@ -120,9 +124,10 @@ public class ChatDAO implements IChatDAO {
                 String name = resultSet.getString("name");
                 String responseAttitude = resultSet.getString("responseAttitude");
                 String quizDifficulty = resultSet.getString("quizDifficulty");
+                int quizLength = resultSet.getInt("quizLength");
                 String educationLevel = resultSet.getString("educationLevel");
                 String studyArea = resultSet.getString("studyArea");
-                Chat chat = new Chat(userId, name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+                Chat chat = new Chat(userId, name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea);
                 chat.setId(id);
                 userChats.add(chat);
             }
