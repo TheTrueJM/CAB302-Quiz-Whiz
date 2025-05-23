@@ -11,7 +11,7 @@ public class User {
     private static final ScryptFunction scrypt = ScryptFunction.getInstance(65536, 8, 1, 64);
 
 
-    public User(String username, String passwordHash) {
+    public User(String username, String passwordHash) throws IllegalArgumentException {
         setUsername(username);
         setPasswordHash(passwordHash);
     }
@@ -19,49 +19,42 @@ public class User {
 
     public int getId() { return id; }
 
-    public void setId(int id) throws IllegalStateException {
-        if (!validId(id)) { throw new IllegalArgumentException("Invalid Id: Must be greater than 1"); }
+    public void setId(int id) throws IllegalArgumentException {
+        if (id < 1) {
+            throw new IllegalArgumentException("Invalid Id: Must be greater than 1");
+        }
+
         this.id = id;
     }
 
     public String getUsername() { return username; }
 
-    public void setUsername(String username) throws IllegalStateException {
-        if (!validUsername(username)) { throw new IllegalArgumentException("Invalid Username: Must only contain 1-25 alphanumeric characters"); }
+    public void setUsername(String username) throws IllegalArgumentException {
+        if (username == null || !username.matches("^[a-zA-Z0-9]{1,25}$")) {
+            throw new IllegalArgumentException("Invalid Username: Must only contain 1-25 alphanumeric characters");
+        }
+
         this.username = username;
     }
 
     public String getPasswordHash() { return passwordHash; }
 
-    public void setPasswordHash(String passwordHash) throws IllegalStateException {
-        if (!validPasswordHash(passwordHash)) { throw new IllegalArgumentException("Invalid Password Hash: Cannot be empty"); }
+    public void setPasswordHash(String passwordHash) throws IllegalArgumentException {
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Password Hash: Cannot be empty");
+        }
+
         this.passwordHash = passwordHash;
     }
 
 
     public boolean verifyPassword(String passwordPlaintext) {
-        return Password.check(passwordPlaintext, this.passwordHash).with(scrypt);
+        return Password.check(passwordPlaintext != null ? passwordPlaintext : "", this.passwordHash).with(scrypt);
     }
 
 
-    public static boolean validId(int id) {
-        return 1 <= id;
-    }
-
-    public static boolean validUsername(String username) {
-        return username != null && username.matches("^[a-zA-Z0-9]{1,25}$");
-    }
-
-    public static boolean validPassword(String password) {
-        return password != null && !password.isEmpty();
-    }
-
-    public static boolean validPasswordHash(String passwordHash) {
-        return passwordHash != null && !passwordHash.isEmpty();
-    }
-
-    public static String hashPassword(String passwordPlaintext) {
-        if (!validPassword(passwordPlaintext)) {
+    public static String hashPassword(String passwordPlaintext) throws IllegalArgumentException {
+        if (passwordPlaintext == null || passwordPlaintext.isEmpty()) {
             throw new IllegalArgumentException("Cannot hash invalid password");
         }
 

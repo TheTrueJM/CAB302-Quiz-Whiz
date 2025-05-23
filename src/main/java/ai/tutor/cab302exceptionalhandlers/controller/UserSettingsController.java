@@ -169,10 +169,6 @@ public class UserSettingsController {
      */
 
     public void updateUsername(String newUsername) throws IllegalArgumentException, SQLException {
-        if (!User.validUsername(newUsername)){
-            throw new IllegalArgumentException("Username is invalid");
-        }
-
         if (!currentUser.getUsername().equals(newUsername)) {
             User existingUser = userDAO.getUser(newUsername);
             if (existingUser != null) {
@@ -186,10 +182,7 @@ public class UserSettingsController {
     }
 
     public void updatePassword(String currentPassword, String newPassword) throws IllegalArgumentException, SecurityException, SQLException {
-        if (!User.validPassword(newPassword)) {
-            throw new IllegalArgumentException("New password is invalid");
-        }
-        if (!currentUser.verifyPassword(currentPassword != null ? currentPassword : "" )) {
+        if (!currentUser.verifyPassword(currentPassword)) {
             throw new SecurityException("Incorrect Password");
         }
 

@@ -84,7 +84,7 @@ public class AuthControllerTest {
     @Test
     public void testSignUpEmptyPassword() {
         assertThrows(
-                SecurityException.class,
+                IllegalArgumentException.class,
                 () -> signUpController.authenticateUser(User.get("username"), "")
         );
     }
@@ -92,7 +92,7 @@ public class AuthControllerTest {
     @Test
     public void testSignUpNullPassword() {
         assertThrows(
-                SecurityException.class,
+                IllegalArgumentException.class,
                 () -> signUpController.authenticateUser(User.get("username"), null)
         );
     }
