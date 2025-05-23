@@ -44,7 +44,7 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     }
 
     @Override
-    public AnswerOption getQuestionAnswerOption(int messageId, int questionNumber, String option) throws SQLException {
+    public AnswerOption getQuestionAnswerOption(int messageId, int questionNumber, String option) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM answerOptions WHERE messageId = ? AND questionNumber = ? AND option = ?";
         try (PreparedStatement readQuestionAnswerOption = connection.prepareStatement(sql)) {
             readQuestionAnswerOption.setInt(1, messageId);
@@ -62,7 +62,7 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     }
 
     @Override
-    public List<AnswerOption> getAllQuestionAnswerOptions(int messageId, int questionNumber) throws SQLException {
+    public List<AnswerOption> getAllQuestionAnswerOptions(int messageId, int questionNumber) throws IllegalArgumentException, SQLException {
         List<AnswerOption> questionAnswerOptions = new ArrayList<>();
         String sql = "SELECT * FROM answerOptions WHERE messageId = ? AND questionNumber = ?";
         try (PreparedStatement readQuestionAnswerOptions = connection.prepareStatement(sql)) {
