@@ -432,27 +432,27 @@ public class ChatController {
     public void SendAndReceiveMessage() {
         Chat selectedChat = getSelectedChat();
 
-            if (!isOllamaRunning()) {
-                Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
-                return;
-            } else if (!hasModel()) {
-                Utils.showErrorAlert("Ollama model is not available. Please run: ollama pull " + getModelName());
-                return;
-            }
+        if (!isOllamaRunning()) {
+            Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
+            return;
+        } else if (!hasModel()) {
+            Utils.showErrorAlert("Ollama model is not available. Please run: ollama pull " + getModelName());
+            return;
+        }
 
-            if (selectedChat == null) {
-                Utils.showErrorAlert("No chat selected");
-                return;
-            }
-            String content = messageInputField.getText();
-            if (content == null || content.trim().isEmpty()) {
-                Utils.showErrorAlert("Message cannot be empty");
-                return;
-            }
-            try {
-                Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
-                messageInputField.clear();
-                addMessage(userMessage);
+        if (selectedChat == null) {
+            Utils.showErrorAlert("No chat selected");
+            return;
+        }
+        String content = messageInputField.getText();
+        if (content == null || content.trim().isEmpty()) {
+            Utils.showErrorAlert("Message cannot be empty");
+            return;
+        }
+        try {
+            Message userMessage = createNewChatMessage(selectedChat.getId(), content, true, isQuiz);
+            messageInputField.clear();
+            addMessage(userMessage);
 
             messageInputField.setDisable(true);
             sendMessage.setDisable(true);
@@ -491,7 +491,7 @@ public class ChatController {
 
             new Thread(aiResponseTask).start();
         } catch (SQLException e) {
-                Utils.showErrorAlert("Failed to send message: " + e.getMessage());
+            Utils.showErrorAlert("Failed to send message: " + e.getMessage());
         }
     }
 
@@ -586,9 +586,9 @@ public class ChatController {
 
     // Sets up button and text field to update the chat name on confirmation
     private void setupEditChatNameButton() {
-       // Update chat name with button or text field confirm
-       confirmEditChatName.setOnAction(event -> editChatNameAction());
-       chatNameField.setOnAction(event -> editChatNameAction());
+        // Update chat name with button or text field confirm
+        confirmEditChatName.setOnAction(event -> editChatNameAction());
+        chatNameField.setOnAction(event -> editChatNameAction());
     }
 
     // Set up button that activates the ability to edit the chat name

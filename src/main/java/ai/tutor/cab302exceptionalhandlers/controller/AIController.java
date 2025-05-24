@@ -140,7 +140,7 @@ public class AIController {
     }
 
     public AIController() throws IOException {
-        this.ollamaAPI = new OllamaAPI("http://127.0.0.1:11434/");
+        this.ollamaAPI = new OllamaAPI("https://ollama.jushbjj.com/");
         this.ollamaAPI.setVerbose(false);
         loadPrompts();
     }
