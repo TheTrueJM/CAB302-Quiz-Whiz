@@ -1,23 +1,4 @@
-/* Top Bar */
-.top-bar {
-    -fx-background-color: -fx-sidebar-color;
-}
-
-.sidebar-pane {
-    -fx-background-color: -fx-sidebar-color;
-}
-
-.top-bar-content {
-    -fx-background-color: -fx-topbar-color;
-    -fx-padding: 10px;
-}
-
 /* Sidebar */
-.sidebar {
-    -fx-background-color: -fx-sidebar-color;
-    -fx-padding: 5px;
-}
-
 .quiz-selector-container {
     -fx-background-color: -fx-sidebar-color;
     -fx-padding: 5px 4px 5px 0px;

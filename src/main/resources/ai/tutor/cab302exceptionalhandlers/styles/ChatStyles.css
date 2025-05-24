@@ -13,11 +13,6 @@
 }
 
 /* Sidebar */
-.sidebar {
-    -fx-background-color: -fx-sidebar-color;
-    -fx-padding: 5px;
-}
-
 .chat-selector-container {
     -fx-background-color: -fx-sidebar-color;
     -fx-padding: 5px 4px 5px 0px;

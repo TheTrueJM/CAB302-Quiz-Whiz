@@ -17,8 +17,8 @@
 
 <BorderPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
-        <URL value="@MainStyles.css" />
-        <URL value="@QuizStyles.css" />
+        <URL value="@styles/MainStyles.css" />
+        <URL value="@styles/QuizStyles.css" />
     </stylesheets>
     <!-- Top Region -->
     <top>

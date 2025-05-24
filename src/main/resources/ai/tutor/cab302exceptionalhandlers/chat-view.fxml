@@ -18,8 +18,8 @@
 
 <BorderPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
-      <URL value="@MainStyles.css" />
-      <URL value="@ChatStyles.css" />
+      <URL value="@styles/MainStyles.css" />
+      <URL value="@styles/ChatStyles.css" />
    </stylesheets>
    <!-- Top Region -->
    <top>
@@ -71,7 +71,7 @@
                         </Button>
                      </children>
                   </StackPane>
-                  <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" promptText="Enter chat name" styleClass="chat-name-field" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER_RIGHT" nodeOrientation="LEFT_TO_RIGHT">
                      <children>
                         <Button fx:id="chatSettingsButton" alignment="CENTER" contentDisplay="RIGHT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="34.0" prefWidth="120.0" styleClass="settings-button" text="Settings">
@@ -94,7 +94,7 @@
          <VBox alignment="CENTER" prefWidth="250.0" styleClass="sidebar" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
             <StackPane fx:id="chatListContainer" alignment="TOP_CENTER" prefWidth="230.0" VBox.vgrow="ALWAYS">
-               <TextField fx:id="noChatsField" styleClass="no-chats-field" alignment="TOP_CENTER" editable="false" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
+               <TextField fx:id="noChatsField" alignment="TOP_CENTER" editable="false" styleClass="no-chats-field" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
                <ListView fx:id="chatsListView" styleClass="chat-list" VBox.vgrow="ALWAYS">
                <StackPane.margin>
                   <Insets bottom="5.0" />
