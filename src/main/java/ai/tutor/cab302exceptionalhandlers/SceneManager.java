@@ -12,6 +12,19 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Manages scene navigation and controller instantiation for the application.
+ * <p>
+ * Scene Manager is a singleton providing a centralized point
+ * for switching between different views in the JavaFX application.
+ * It uses a {@link ControllerFactory} to create controllers for each view.
+ *
+ * <h1>Usage Example:</h1>
+ * <pre>
+ * SceneManager.getInstance().initialize(primaryStage, controllerFactory);
+ * SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
+ * </pre>
+ */
 public class SceneManager {
     private static SceneManager instance;
     private Stage stage;
@@ -20,6 +33,11 @@ public class SceneManager {
 
     private SceneManager() {}
 
+    /**
+     * Gets the singleton instance of {@code SceneManager}.
+     *
+     * @return The singleton instance.
+     */
     public static SceneManager getInstance() {
         if (instance == null) {
             instance = new SceneManager();
@@ -27,11 +45,23 @@ public class SceneManager {
         return instance;
     }
 
+    /**
+     * Initializes the SceneManager with the primary stage and controller factory.
+     * This method must be called only once at application startup.
+     *
+     * @param stage The primary {@link Stage} of the application.
+     * @param factory The {@link ControllerFactory} used to create controllers.
+     */
     public void initialize(Stage stage, ControllerFactory factory) {
         this.stage = stage;
         this.controllerFactory = factory;
     }
 
+    /**
+     * Navigates to the authentication view (Login or Sign Up).
+     *
+     * @param type The {@link AuthType} specifying whether to show the Login or Sign Up view.
+     */
     public void navigateToAuth(AuthType type) {
         try {
             AuthController controller = controllerFactory.authController()
@@ -45,6 +75,11 @@ public class SceneManager {
         }
     }
 
+    /**
+     * Navigates to the main chat view.
+     *
+     * @param user The currently authenticated {@link User}.
+     */
     public void navigateToChat(User user) {
         try {
             ChatController controller = controllerFactory.chatController()
@@ -57,6 +92,13 @@ public class SceneManager {
         }
     }
 
+    /**
+     * Navigates to the chat setup view for creating or updating a chat.
+     *
+     * @param user The currently authenticated {@link User}.
+     * @param type The {@link ChatSetupType} (CREATE or UPDATE).
+     * @param chat The {@link Chat} to be updated, or null if creating a new chat.
+     */
     public void navigateToChatSetup(User user, ChatSetupType type, Chat chat) {
         try {
             ChatSetupController controller;
@@ -79,6 +121,11 @@ public class SceneManager {
         }
     }
 
+    /**
+     * Navigates to the user settings view.
+     *
+     * @param user The currently authenticated {@link User}.
+     */
     public void navigateToUserSettings(User user) {
         try {
             UserSettingsController controller = controllerFactory.userSettingsController()
@@ -91,6 +138,12 @@ public class SceneManager {
         }
     }
 
+    /**
+     * Navigates to the quiz view.
+     *
+     * @param quiz The {@link Quiz} to be displayed.
+     * @param user The currently authenticated {@link User}.
+     */
     public void navigateToQuiz(Quiz quiz, User user) {
         try {
             QuizController controller = controllerFactory.quizController()
@@ -104,6 +157,15 @@ public class SceneManager {
         }
     }
 
+    /**
+     * Loads an FXML file, sets its controller, and displays it on the main stage.
+     * <p>
+     * This method sets the default window width and height only once at startup. But
+     * stays the same size after first run.
+     *
+     * @param fxmlFile The name of the FXML file to load (e.g., "login-view.fxml").
+     * @param controller The controller instance for the view.
+     */
     private void loadView(String fxmlFile, Object controller) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlFile));
