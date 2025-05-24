@@ -33,6 +33,12 @@ public class SignUpController extends AuthController {
      */
 
     @Override
+    public void initialize() {
+        super.initialize();
+        setupConfirmPasswordField();
+    }
+
+    @Override
     @FXML
     protected void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField) e.getSource();
@@ -52,6 +58,13 @@ public class SignUpController extends AuthController {
         }
 
         submitButtonToggle();
+    }
+
+    @FXML
+    protected  void setupConfirmPasswordField() {
+        if (confirmPasswordField != null) {
+            confirmPasswordField.setOnKeyReleased(this::onFieldChanged);
+        }
     }
 
     @Override

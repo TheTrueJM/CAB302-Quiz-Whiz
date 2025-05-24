@@ -1,0 +1,43 @@
+.root {
+    -fx-primary-color: #6C95DF; /* Buttons, containers */
+    -fx-secondary-color: #336699; /* Auth buttons, banners */
+    -fx-sidebar-color: #535353; /* Sidebars */
+    -fx-topbar-color: #213355; /* Top bars */
+    -fx-background-light: #CBD6FF; /* Containers */
+    -fx-border-gray: #757575;
+}
+
+/* Top Bar */
+.top-bar {
+    -fx-background-color: -fx-sidebar-color;
+}
+
+.sidebar-pane {
+    -fx-background-color: -fx-sidebar-color;
+}
+
+.top-bar-content {
+    -fx-background-color: -fx-topbar-color;
+    -fx-padding: 10px;
+}
+
+/* Side Bar */
+.sidebar {
+    -fx-background-color: -fx-sidebar-color;
+    -fx-padding: 10px;
+}
+
+/* Shared Button Styles */
+.return-button {
+    -fx-background-color: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 0px;
+}
+
+/* Hover Effects */
+.submit-button:hover, .return-button:hover, .download-button:hover, .exit-button:hover, .dropdown-field:hover {
+    -fx-opacity: 0.8;
+    -fx-transition: opacity 0.2s ease-in-out;
+    -fx-cursor: hand;
+}
