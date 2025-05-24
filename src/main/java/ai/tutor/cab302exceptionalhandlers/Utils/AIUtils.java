@@ -1,4 +1,4 @@
-package ai.tutor.cab302exceptionalhandlers.controller;
+package ai.tutor.cab302exceptionalhandlers.Utils;
 
 import ai.tutor.cab302exceptionalhandlers.model.Chat;
 import ai.tutor.cab302exceptionalhandlers.model.Message;
@@ -17,7 +17,9 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 
-public class AIController {
+public class AIUtils {
+    private static AIUtils instance;
+
     private final OllamaAPI ollamaAPI;
     private final String modelName = "qwen3:4b";
     private final OllamaChatRequestBuilder ollamaBuilder = OllamaChatRequestBuilder.getInstance(modelName);
@@ -139,10 +141,21 @@ public class AIController {
         }
     }
 
-    public AIController() throws IOException {
+    private AIUtils() throws IOException {
         this.ollamaAPI = new OllamaAPI("http://127.0.0.1:11434/");
         this.ollamaAPI.setVerbose(false);
         loadPrompts();
+    }
+
+    public static AIUtils getInstance() {
+        if (instance == null) {
+            try {
+                instance = new AIUtils();
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to initialize AIUtils: " + e.getMessage(), e);
+            }
+        }
+        return instance;
     }
 
     public static boolean validateQuizResponse(ModelResponseFormat response) {
@@ -227,7 +240,7 @@ public class AIController {
     }
 
     private String loadPromptFromFile(String resourcePath) throws IOException {
-        try (InputStream is = AIController.class.getResourceAsStream(resourcePath)) {
+        try (InputStream is = AIUtils.class.getResourceAsStream(resourcePath)) {
             if (is == null) {
                 throw new IOException("Prompt file not found in classpath: " + resourcePath);
             }

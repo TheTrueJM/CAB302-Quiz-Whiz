@@ -1,14 +1,15 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class UserSettingsController {
@@ -36,7 +37,6 @@ public class UserSettingsController {
     // User stats widgets
     @FXML private Label quizzesTakenLabel;
     @FXML private Label averageScoreLabel;
-
 
     public UserSettingsController(SQLiteConnection connection, User user) throws SQLException {
         db = connection;
@@ -67,7 +67,7 @@ public class UserSettingsController {
 
     @FXML
     private void onBack() throws IOException, RuntimeException, SQLException {
-        Utils.loadView("chat", new ChatController(db, currentUser), getStage());
+        SceneManager.getInstance().navigateToChat(currentUser);
     }
 
     @FXML
@@ -76,7 +76,7 @@ public class UserSettingsController {
         if (result.isPresent()) {
             ButtonType buttonClicked = result.get();
             if (buttonClicked == ButtonType.OK) {
-                Utils.loadView("login", new LoginController(db), getStage());
+                SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
             }
         }
     }
@@ -119,20 +119,16 @@ public class UserSettingsController {
         Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to delete of your account?");
         if (result.isPresent()) {
             ButtonType buttonClicked = result.get();
-            if (buttonClicked == ButtonType.OK) {
-                boolean delete = true;
+            if (buttonClicked == ButtonType.OK) {;
                 try {
                     userDAO.deleteUser(currentUser);
+                    SceneManager.getInstance().navigateToAuth(AuthType.SIGNUP);
                 } catch (SQLException e) {
-                    delete = false;
                     Utils.showErrorAlert("Failed to delete account: " + e.getMessage());
                 }
-
-                if (delete) { Utils.loadView("sign-up", new SignUpController(db), getStage()); }
             }
         }
     }
-
 
     private void handleUsernameUpdate(String username) {
         try {

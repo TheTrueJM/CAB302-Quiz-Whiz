@@ -1,8 +1,13 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
-import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
+import ai.tutor.cab302exceptionalhandlers.types.ChatSetupType;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -66,7 +71,7 @@ public class ChatController {
     private boolean isQuiz;
     private boolean isThinking;
     private int thinkingChatId;
-    private final AIController aiController;
+    private final AIUtils aiUtils;
 
     public ChatController(SQLiteConnection db, User authenticatedUser) throws IOException, RuntimeException, SQLException {
         if (authenticatedUser == null) {
@@ -83,9 +88,8 @@ public class ChatController {
         this.isQuiz = false;
         this.isThinking = false;
         this.thinkingChatId = -1;
-        this.aiController = new AIController();
+        this.aiUtils = AIUtils.getInstance();
     }
-
 
     @FXML
     public void initialize() {
@@ -106,23 +110,6 @@ public class ChatController {
 
     private Stage getStage() {
         return (Stage) chatsListView.getScene().getWindow();
-    }
-
-    // Problem: ChatController is very dependant on AIController, should that be the case?
-    public boolean isOllamaRunning() {
-        return aiController.isOllamaRunning();
-    }
-
-    public boolean hasModel() {
-        return aiController.hasModel();
-    }
-
-    public String getModelName() {
-        return aiController.getModelName();
-    }
-
-    public void setOllamaVerbose(boolean verbose) {
-        aiController.setVerbose(verbose);
     }
 
     /*
@@ -424,19 +411,18 @@ public class ChatController {
     }
 
     private void handleTakeQuiz(ActionEvent actionEvent, Message message) throws IOException, RuntimeException, SQLException {
-        // TODO: Implement logic for quiz action
         Quiz currentQuiz = quizDAO.getQuiz(message.getId());
-        Utils.loadView("quiz", new QuizController(db, currentQuiz, currentUser), getStage());
+        SceneManager.getInstance().navigateToQuiz(currentQuiz, currentUser);
     }
 
     public void SendAndReceiveMessage() {
         Chat selectedChat = getSelectedChat();
 
-            if (!isOllamaRunning()) {
-                Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + getModelName());
+            if (!aiUtils.isOllamaRunning()) {
+                Utils.showErrorAlert("Ollama is not running. Please install Ollama and pull the model: " + aiUtils.getModelName());
                 return;
-            } else if (!hasModel()) {
-                Utils.showErrorAlert("Ollama model is not available. Please run: ollama pull " + getModelName());
+            } else if (!aiUtils.hasModel()) {
+                Utils.showErrorAlert("Ollama model is not available. Please run: ollama pull " + aiUtils.getModelName());
                 return;
             }
 
@@ -603,19 +589,18 @@ public class ChatController {
 
     // Loads chat setup window to take in inputs for new chat creation
     private void setupCreateChatButton() {
-        // TODO: Create chat based on parameters extracted from UI elements and refresh page
         addNewChat.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("chat-setup", new ChatCreateController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                loadChatSetup();
+            } catch (IOException | SQLException e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
 
         addNewChatMain.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("chat-setup", new ChatCreateController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                loadChatSetup();
+            } catch (IOException | SQLException e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
@@ -626,8 +611,7 @@ public class ChatController {
         chatSettingsButton.setOnAction(event -> {
             try {
                 if (getSelectedChat() == null) { throw new IllegalStateException("No chat selected"); }
-
-                Utils.loadView("chat-setup", new ChatUpdateController(db, currentUser, getSelectedChat()), getStage());
+                loadChatSetup();
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setting: " + e);
             }
@@ -638,14 +622,14 @@ public class ChatController {
         return chatsListView.getSelectionModel().getSelectedItem();
     }
 
+    private void loadChatSetup() throws IOException, RuntimeException, SQLException {
+        ChatSetupType setupType = getSelectedChat() == null ? ChatSetupType.CREATE : ChatSetupType.UPDATE;
+        SceneManager.getInstance().navigateToChatSetup(currentUser, setupType, getSelectedChat());
+    }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            try {
-                Utils.loadView("login", new LoginController(db), getStage());
-            } catch (Exception e ) {
-                Utils.showErrorAlert("Error Logging Out: " + e);
-            }
+            SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
         });
     }
 
@@ -674,8 +658,8 @@ public class ChatController {
     private void setupUserDetailsButton() {
         userDetailsButton.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("user-settings", new UserSettingsController(db, currentUser), getStage());
-            } catch (Exception e ) {
+                SceneManager.getInstance().navigateToUserSettings(currentUser);
+            } catch (Exception e) {
                 Utils.showErrorAlert("Error Loading User Settings: " + e);
             }
         });
@@ -815,7 +799,7 @@ public class ChatController {
         List<Message> chatHistory = getChatMessages(userMessage.getChatId());
 
         /* Generation */
-        ModelResponseFormat aiMessageContent = aiController.generateResponse(chatHistory, chatConfig, isQuiz);
+        ModelResponseFormat aiMessageContent = aiUtils.generateResponse(chatHistory, chatConfig, isQuiz);
         Message aiResponse = new Message(chatID, aiMessageContent.response, false, isQuiz);
 
         /* Automatically add message to database */
@@ -846,7 +830,7 @@ public class ChatController {
         if (responseMessage.getFromUser()){
             throw new IllegalArgumentException("Quiz cannot be for a user message");
         }
-        if (!AIController.validateQuizResponse(response) || response.getQuizTitle() == null) {
+        if (!AIUtils.validateQuizResponse(response) || response.getQuizTitle() == null) {
             throw new IllegalArgumentException("Invalid quiz content");
         }
 

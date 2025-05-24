@@ -2,18 +2,9 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import javafx.fxml.FXML;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 public class ChatCreateController extends ChatSetupController {
     public ChatCreateController(SQLiteConnection db, User currentUser) throws RuntimeException, SQLException {
