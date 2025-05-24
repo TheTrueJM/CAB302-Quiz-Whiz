@@ -11,67 +11,58 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" styleClass="main-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
       <URL value="@AuthStyles.css" />
    </stylesheets>
 
-   <!--The Header-->
-   <HBox alignment="TOP_CENTER" maxWidth="Infinity" style="-fx-background-color: #336699; -fx-padding: 10;">
-      <Label alignment="TOP_CENTER" style="-fx-text-fill: white; -fx-font-size: 26; -fx-font-weight: bold;" text="Welcome to Quiz Whiz" textAlignment="CENTER" />
+   <!--Top Banner Region-->
+   <HBox alignment="TOP_CENTER" maxWidth="Infinity" styleClass="banner">
+      <Label alignment="TOP_CENTER" styleClass="banner-title" text="Welcome to Quiz Whiz" textAlignment="CENTER" />
    </HBox>
+   <!--Main Container-->
    <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
-      <children>
-         <VBox alignment="CENTER" maxHeight="468.0" maxWidth="500.0" prefHeight="178.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 32; -fx-border-radius: 32;">
-            <children>
+      <!--Form Container-->
+         <VBox alignment="CENTER" maxHeight="468.0" maxWidth="500.0" prefHeight="178.0" styleClass="form-container">
                <VBox maxWidth="400.0" prefHeight="111.0">
-                  <children>
-                     <Label style="-fx-font-size: 26; -fx-font-weight: bold;" text="Username">
+                  <!-- The Fields for Login page-->
+                     <Label styleClass="input-label" text="Username">
                         <VBox.margin>
                            <Insets top="12.0" />
                         </VBox.margin>
                      </Label>
-                     <TextField fx:id="usernameField" onKeyReleased="#onFieldChanged" promptText="Username..." style="-fx-font-size: 17; -fx-background-radius: 8; -fx-border-radius: 8;" />
-                  </children>
+                     <TextField fx:id="usernameField" promptText="Username..." styleClass="input-field" />
                   <VBox.margin>
                      <Insets />
                   </VBox.margin>
                </VBox>
-               <Label fx:id="usernameFeedback" prefWidth="400.0" style="-fx-text-fill: red; -fx-font-size: 17; -fx-font-weight: normal; -fx-font-style: italic;" />
+               <Label fx:id="usernameFeedback" prefWidth="400.0" styleClass="feedback-label" />
                <VBox alignment="BOTTOM_LEFT" maxWidth="400.0" prefHeight="79.0">
-                  <children>
-                     <Label style="-fx-font-weight: bold; -fx-font-size: 26;" text="Password" />
-                        <PasswordField fx:id="passwordField" onKeyReleased="#onFieldChanged" promptText="Password..." style="-fx-font-size: 17; -fx-background-radius: 8; -fx-border-radius: 8;" />
-                  </children>
+                     <Label styleClass="input-label" text="Password" />
+                        <PasswordField fx:id="passwordField" promptText="Password..." styleClass="input-field" />
                </VBox>
-               <Label fx:id="passwordFeedback" prefWidth="400.0" style="-fx-text-fill: red; -fx-font-size: 17; -fx-font-weight: normal; -fx-font-style: italic;" />
-               <Button fx:id="submitButton" disable="true" onAction="#onSubmit" prefHeight="43.0" prefWidth="142.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 24; -fx-background-radius: 8; -fx-border-radius: 8;" styleClass="toggle-auth-submit" text="Login">
+               <Label fx:id="passwordFeedback" prefWidth="400.0" styleClass="feedback-label" />
+               <Button fx:id="submitButton" disable="true" prefHeight="43.0" prefWidth="142.0" styleClass="submit-button" text="Login">
                   <VBox.margin>
                      <Insets bottom="15.0" top="3.0" />
                   </VBox.margin>
                </Button>
                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                  <children>
-                     <Label style="-fx-text-fill: black; -fx-font-size: 16; -fx-font-style: italic;" text="Don’t have an Account?">
+                     <Label styleClass="switch-prompt" text="Don’t have an Account?">
                         <HBox.margin>
                            <Insets right="6.0" />
                         </HBox.margin>
                      </Label>
-                     <Button onAction="#switchLayout" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-signup" text="Sign Up" />
-                  </children>
+                     <Button fx:id="switchLayout" styleClass="switch-button" text="Sign Up" />
                </HBox>
 
-               <!-- Logo at the end of page -->
+               <!-- Bottom Form Logo -->
                <ImageView fitHeight="92.0" fitWidth="166.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
                      <Image url="@images/logo-blue.png" />
-                  </image>
                   <VBox.margin>
                      <Insets bottom="10.0" top="4.0" />
                   </VBox.margin>
                </ImageView>
-            </children>
          </VBox>
-      </children>
    </VBox>
 </VBox>

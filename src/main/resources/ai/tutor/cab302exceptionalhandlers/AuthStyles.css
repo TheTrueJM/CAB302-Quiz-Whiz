@@ -1,5 +1,75 @@
-.toggle-auth-submit:hover, .switch-signup:hover, .switch-login:hover {
-    -fx-opacity: 0.8;
-    -fx-transition: opacity 0.2s ease-in-out;
-    -fx-cursor: hand;
+ /*Main Auth Styles*/
+.main-container {
+    -fx-background-color: white;
 }
+
+.banner {
+    -fx-background-color: #336699;
+    -fx-padding: 10;
+}
+
+.banner-title {
+    -fx-text-fill: white;
+    -fx-font-size: 26;
+    -fx-font-weight: bold;
+}
+
+.form-container {
+    -fx-background-color: #CBD6FF;
+    -fx-background-radius: 32;
+    -fx-border-radius: 32;
+}
+
+.input-field {
+    -fx-font-size: 17;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.submit-button {
+    -fx-text-fill: white;
+    -fx-background-color: #336699;
+    -fx-font-weight: bold;
+    -fx-font-size: 24;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.switch-prompt {
+    -fx-text-fill: black;
+    -fx-font-size: 16;
+    -fx-font-style: italic;
+}
+
+.switch-button {
+    -fx-text-fill: white;
+    -fx-background-color: #336699;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-opacity: 0.9;
+    -fx-font-size: 14;
+}
+
+.feedback-label {
+    -fx-text-fill: red;
+    -fx-font-size: 16;
+    -fx-font-weight: normal;
+    -fx-font-style: italic;
+}
+
+.input-label {
+    -fx-font-size: 26;
+    -fx-font-weight: bold;
+}
+
+ .input-label-small {
+     -fx-font-size: 20;
+     -fx-font-weight: bold;
+ }
+
+ .submit-button:hover, .switch-button:hover {
+     -fx-opacity: 0.8;
+     -fx-transition: opacity 0.2s ease-in-out;
+     -fx-cursor: hand;
+ }
