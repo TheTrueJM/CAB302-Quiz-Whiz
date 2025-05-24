@@ -1,28 +1,31 @@
 .background {
-    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, #CBD6FF 0%, #6C95DF 100%);
+    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, -fx-background-light 0%, -fx-primary-color 100%);
 }
+
 .quiz-length {
     -fx-background-color: white;
     -fx-padding: 3px;
 }
 
 .quiz-length .thumb {
-    -fx-background-color: #ffffff;
+    -fx-background-color: white;
     -fx-background-radius: 50%;
     -fx-pref-width: 10px;
     -fx-pref-height: 10px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 1);
 }
+
 .quiz-length .thumb:hover {
     -fx-background-color: #e0e0e0;
 }
+
 .quiz-length .thumb:pressed {
     -fx-background-color: #a0a0a0;
 }
 
 .option-container {
     -fx-padding: 10px;
-    -fx-background-color: #CBD6FF;
+    -fx-background-color: -fx-background-light;
     -fx-background-radius: 7px;
     -fx-border-radius: 7px;
 }
@@ -32,7 +35,7 @@
 }
 
 .submit-button {
-    -fx-background-color: #6C95DF;
+    -fx-background-color: -fx-primary-color;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 5;
@@ -50,7 +53,7 @@
 
 .banner {
     -fx-background-radius: 60 60 0 0;
-    -fx-background-color: #213355;
+    -fx-background-color: -fx-topbar-color;
     -fx-border-radius: 60 60 0 0;
 }
 
@@ -58,7 +61,7 @@
     -fx-background-color: white;
     -fx-border-radius: 60;
     -fx-background-radius: 60;
-    -fx-border-color: grey;
+    -fx-border-color: #808080;
 }
 
 .download-button {

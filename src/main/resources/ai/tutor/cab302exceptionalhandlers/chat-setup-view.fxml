@@ -20,6 +20,7 @@
 
 <StackPane fx:id="rootPane" alignment="TOP_CENTER" prefHeight="540.0" prefWidth="956.0" styleClass="setup-dialog" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
+      <URL value="@MainStyles.css" />
       <URL value="@ChatSetupStyles.css" />
    </stylesheets>
    <!-- Background Region -->

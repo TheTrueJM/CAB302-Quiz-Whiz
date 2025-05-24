@@ -1,10 +1,9 @@
- /*Main Auth Styles*/
 .main-container {
     -fx-background-color: white;
 }
 
 .banner {
-    -fx-background-color: #336699;
+    -fx-background-color: -fx-secondary-color;
     -fx-padding: 10;
 }
 
@@ -15,7 +14,7 @@
 }
 
 .form-container {
-    -fx-background-color: #CBD6FF;
+    -fx-background-color: -fx-background-light;
     -fx-background-radius: 32;
     -fx-border-radius: 32;
 }
@@ -28,7 +27,7 @@
 
 .submit-button {
     -fx-text-fill: white;
-    -fx-background-color: #336699;
+    -fx-background-color: -fx-secondary-color;
     -fx-font-weight: bold;
     -fx-font-size: 24;
     -fx-background-radius: 8;
@@ -43,7 +42,7 @@
 
 .switch-button {
     -fx-text-fill: white;
-    -fx-background-color: #336699;
+    -fx-background-color: -fx-secondary-color;
     -fx-font-weight: bold;
     -fx-background-radius: 12;
     -fx-border-radius: 12;
@@ -63,13 +62,13 @@
     -fx-font-weight: bold;
 }
 
- .input-label-small {
-     -fx-font-size: 20;
-     -fx-font-weight: bold;
- }
+.input-label-small {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+}
 
- .submit-button:hover, .switch-button:hover {
-     -fx-opacity: 0.8;
-     -fx-transition: opacity 0.2s ease-in-out;
-     -fx-cursor: hand;
- }
+.submit-button:hover, .switch-button:hover {
+    -fx-opacity: 0.8;
+    -fx-transition: opacity 0.2s ease-in-out;
+    -fx-cursor: hand;
+}

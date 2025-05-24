@@ -13,6 +13,7 @@
 
 <VBox alignment="TOP_CENTER" maxHeight="540.0" prefHeight="540.0" prefWidth="960.0" spacing="10.0" styleClass="main-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
+       <URL value="@MainStyles.css" />
       <URL value="@AuthStyles.css" />
    </stylesheets>
    <!--Top Banner Region -->
