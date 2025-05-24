@@ -12,7 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.2</junit.version>
-    <javafx.version>21</javafx.version>
+    <javafx.version>23.0.1</javafx.version>
     <javafx.maven_plugin.version>0.0.8</javafx.maven_plugin.version>
     <testfx.version>4.0.18</testfx.version>
     <java.version>21</java.version>
