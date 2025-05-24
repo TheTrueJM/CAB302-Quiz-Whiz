@@ -73,10 +73,6 @@ public class AIUtils {
             this.quizzes = quizzes;
         }
 
-        /**
-         * Gets the title of the first quiz, if available.
-         * @return The quiz title, or null if no quizzes are present.
-         */
         public String getQuizTitle() {
             if (quizzes != null && quizzes.length > 0) {
                 return quizzes[0].getQuizTitle();
@@ -84,10 +80,6 @@ public class AIUtils {
             return null;
         }
 
-        /**
-         * Gets the questions of the first quiz, if available.
-         * @return A list of questions, or null if no quizzes are present.
-         */
         public List<Question> getQuizQuestions() {
             if (quizzes != null && quizzes.length > 0) {
                 return List.of(quizzes[0].questions);
