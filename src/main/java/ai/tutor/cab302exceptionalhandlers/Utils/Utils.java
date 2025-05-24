@@ -16,13 +16,6 @@ public final class Utils {
         return value == null || value.trim().isEmpty();
     }
 
-    /**
-     * loadView
-     *
-     * @param viewName
-     * @param controller
-     * @return foo
-     */
     // Generic function that loads fxml page and controller class
     public static void loadView(String viewName, Object controller, Stage stage) throws IOException, NullPointerException {
         FXMLLoader fxmlLoader = new FXMLLoader(
