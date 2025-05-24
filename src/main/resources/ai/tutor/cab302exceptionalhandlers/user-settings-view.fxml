@@ -13,24 +13,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@MainStyles.css" />
         <URL value="@SettingStyles.css" />
     </stylesheets>
-   <HBox alignment="CENTER" prefHeight="69.0" style="-fx-background-color: #213355;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="232.0">
-      <children>
-         <Label alignment="CENTER" prefHeight="69.0" prefWidth="431.0" style="-fx-font-weight: bold; -fx-font-size: 36;" text="User Details" textFill="WHITE" />
-      </children>
+   <HBox alignment="CENTER" prefHeight="69.0" styleClass="top-bar" AnchorPane.leftAnchor="232.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <Label alignment="CENTER" prefHeight="69.0" prefWidth="431.0" styleClass="settings-title" text="User Details"/>
    </HBox>
-   <VBox alignment="TOP_CENTER" prefHeight="453.0" prefWidth="232.0" style="-fx-background-color: #949494;" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <children>
-         <Button fx:id="backButton" onAction="#onBack" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" style="-fx-background-color: white; -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 0;" styleClass="returnButton" text="Back to Chat">
+   <VBox alignment="TOP_CENTER" prefHeight="453.0" prefWidth="232.0" styleClass="sidebar" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <Button fx:id="backButton" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" styleClass="return-button" text="Back to Chat">
             <graphic>
                <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
                      <Image url="@images/return.png" />
-                  </image>
                </ImageView>
             </graphic>
             <VBox.margin>
@@ -41,29 +36,23 @@
             <VBox.margin>
                <Insets />
             </VBox.margin>
-            <image>
                <Image url="@images/logo-blue.png" />
-            </image>
          </ImageView>
-         <VBox alignment="CENTER" prefHeight="80.0" prefWidth="202.0" style="-fx-background-color: #6C95DF; -fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 5;">
-            <children>
-               <Label alignment="CENTER" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;" text="Average Score" />
-               <Label fx:id="averageScoreLabel" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="0%" />
-            </children>
+         <VBox alignment="CENTER" prefHeight="80.0" prefWidth="202.0" styleClass="score-container">
+               <Label alignment="CENTER" styleClass="score-title" text="Average Score" />
+               <Label fx:id="averageScoreLabel" styleClass="score-value" text="0%" />
             <VBox.margin>
                <Insets top="25.0" />
             </VBox.margin>
          </VBox>
-         <VBox alignment="CENTER" prefHeight="66.0" prefWidth="202.0" style="-fx-background-color: #6C95DF; -fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 5;">
-            <children>
-               <Label alignment="CENTER" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;" text="Quizzes Taken" />
-               <Label fx:id="quizzesTakenLabel" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="0" />
-            </children>
+         <VBox alignment="CENTER" prefHeight="66.0" prefWidth="202.0" styleClass="quizzes-container">
+               <Label alignment="CENTER" styleClass="quizzes-title" text="Quizzes Taken" />
+               <Label fx:id="quizzesTakenLabel" styleClass="quizzes-value" text="0" />
             <VBox.margin>
                <Insets top="15.0" />
             </VBox.margin>
          </VBox>
-         <Button fx:id="logoutButton" onAction="#onLogout" mnemonicParsing="false" prefHeight="43.0" prefWidth="201.0" style="-fx-background-color: #D73234; -fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 5; -fx-background-radius: 15; -fx-border-radius: 15;" styleClass="logoutButton" text="Logout">
+         <Button fx:id="logoutButton" mnemonicParsing="false" prefHeight="43.0" prefWidth="201.0" styleClass="logout-button" text="Logout">
             <VBox.margin>
                <Insets top="20.0" />
             </VBox.margin>
@@ -75,28 +64,22 @@
                </ImageView>
             </graphic>
          </Button>
-      </children>
       <padding>
          <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
       </padding>
    </VBox>
-   <VBox alignment="TOP_CENTER" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="69.0">
-      <children>
-         <HBox maxWidth="546.0" prefHeight="47.0" prefWidth="546.0" style="-fx-background-color: #EDEDED; -fx-background-radius: 12; -fx-border-radius: 12;">
-            <children>
+   <VBox alignment="TOP_CENTER" styleClass="settings-area" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="232.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="69.0">
+         <HBox maxWidth="546.0" prefHeight="47.0" prefWidth="546.0" styleClass="profile-info-container">
                <ButtonBar prefHeight="20.0" prefWidth="117.0">
                   <buttons>
-                     <Button maxHeight="29.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="87.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 5; -fx-border-radius: 5; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 0;" text="Profile Info" />
+                     <Button maxHeight="29.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="87.0" styleClass="profile-info-button" text="Profile Info" />
                   </buttons>
                </ButtonBar>
-            </children>
          </HBox>
-         <VBox maxHeight="99.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
-            <children>
-               <Label style="-fx-font-size: 16;" text="Username" />
-                  <TextField fx:id="usernameField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
-               <Label fx:id="usernameFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
-            </children>
+         <VBox maxHeight="99.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" styleClass="input-container">
+               <Label styleClass="input-label" text="Username" />
+                  <TextField fx:id="usernameField" styleClass="input-field" />
+               <Label fx:id="usernameFeedback" styleClass="feedback-label" />
             <padding>
                <Insets bottom="5.0" left="15.0" right="15.0" top="15.0" />
             </padding>
@@ -104,12 +87,10 @@
                <Insets top="20.0" />
             </VBox.margin>
          </VBox>
-         <VBox maxHeight="95.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
-            <children>
-               <Label style="-fx-font-size: 16;" text="Current Password" />
-                  <PasswordField fx:id="currentPasswordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
-               <Label fx:id="currentPasswordFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
-            </children>
+         <VBox maxHeight="95.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" styleClass="input-container">
+               <Label styleClass="input-label" text="Current Password" />
+                  <PasswordField fx:id="currentPasswordField" styleClass="input-field" />
+               <Label fx:id="currentPasswordFeedback" styleClass="feedback-label" />
             <VBox.margin>
                <Insets top="30.0" />
             </VBox.margin>
@@ -117,12 +98,10 @@
                <Insets bottom="5.0" left="15.0" right="15.0" top="15.0" />
             </padding>
          </VBox>
-         <VBox maxHeight="112.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
-            <children>
-               <Label style="-fx-font-size: 16;" text="New Password" />
-               <PasswordField fx:id="newPasswordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
-               <Label fx:id="newPasswordFeedback" style="-fx-text-fill: red; -fx-font-style: italic; -fx-font-size: 16;" />
-            </children>
+         <VBox maxHeight="112.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" styleClass="input-container">
+               <Label styleClass="input-label" text="New Password" />
+               <PasswordField fx:id="newPasswordField" styleClass="input-field" />
+               <Label fx:id="newPasswordFeedback" styleClass="feedback-label" />
             <padding>
                <Insets bottom="5.0" left="15.0" right="15.0" top="15.0" />
             </padding>
@@ -130,11 +109,9 @@
                <Insets top="15.0" />
             </VBox.margin>
          </VBox>
-         <VBox maxHeight="112.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 5; -fx-border-radius: 5;">
-            <children>
-               <Label style="-fx-font-size: 16;" text="Confirm Password" />
-               <PasswordField fx:id="confirmPasswordField" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;" />
-            </children>
+         <VBox maxHeight="112.0" maxWidth="384.0" prefHeight="95.0" prefWidth="384.0" styleClass="input-container">
+               <Label styleClass="input-label" text="Confirm Password" />
+               <PasswordField fx:id="confirmPasswordField" styleClass="input-field" />
             <padding>
                <Insets bottom="5.0" left="15.0" right="15.0" top="15.0" />
             </padding>
@@ -143,31 +120,24 @@
             </VBox.margin>
          </VBox>
          <HBox alignment="BOTTOM_RIGHT" maxWidth="384.0" prefHeight="51.0" prefWidth="384.0">
-            <children>
-               <Button fx:id="saveButton" onAction="#onSave" prefHeight="36.0" prefWidth="115.0" style="-fx-background-color: #98E4CF; -fx-border-color: black; -fx-background-radius: 8; -fx-border-radius: 8; -fx-font-weight: bold; -fx-font-size: 14;" styleClass="saveButton" text="Save Change" />
-            </children>
+               <Button fx:id="saveButton" prefHeight="36.0" prefWidth="115.0" styleClass="save-button" text="Save Change" />
             <VBox.margin>
                <Insets top="8.0" />
             </VBox.margin>
          </HBox>
-      </children>
       <padding>
          <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
       </padding>
    </VBox>
-   <VBox alignment="BOTTOM_CENTER" layoutY="451.0" prefHeight="108.0" prefWidth="231.0" style="-fx-background-color: #757575;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
-      <children>
-         <Label alignment="CENTER" prefHeight="51.0" prefWidth="201.0" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" text="Delete Account" />
-         <Button fx:id="deleteUserButton" onAction="#onDelete" mnemonicParsing="false" prefHeight="45.0" prefWidth="211.0" style="-fx-background-color: #ef6a62; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;" styleClass="terminateButton" text="Terminate">
+   <VBox alignment="BOTTOM_CENTER" layoutY="451.0" prefHeight="108.0" prefWidth="231.0" styleClass="delete-section" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+         <Label alignment="CENTER" prefHeight="51.0" prefWidth="201.0" styleClass="delete-title" text="Delete Account" />
+         <Button fx:id="terminateUserButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="211.0" styleClass="terminate-button" text="Terminate">
             <graphic>
                <ImageView fitHeight="34.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
                      <Image url="@images/terminate.png" />
-                  </image>
                </ImageView>
             </graphic>
          </Button>
-      </children>
       <padding>
          <Insets bottom="20.0" />
       </padding>

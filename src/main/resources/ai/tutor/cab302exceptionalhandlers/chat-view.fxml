@@ -94,7 +94,7 @@
          <VBox alignment="CENTER" prefWidth="250.0" styleClass="sidebar" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
             <StackPane fx:id="chatListContainer" alignment="TOP_CENTER" prefWidth="230.0" VBox.vgrow="ALWAYS">
-               <TextField fx:id="noChatsField" alignment="TOP_CENTER" editable="false" styleClass=".no-chats-field" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
+               <TextField fx:id="noChatsField" styleClass="no-chats-field" alignment="TOP_CENTER" editable="false" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
                <ListView fx:id="chatsListView" styleClass="chat-list" VBox.vgrow="ALWAYS">
                <StackPane.margin>
                   <Insets bottom="5.0" />

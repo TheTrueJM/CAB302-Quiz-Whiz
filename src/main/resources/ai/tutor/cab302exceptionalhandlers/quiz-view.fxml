@@ -27,26 +27,25 @@
                     <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" styleClass="return-button" text="Back to Chat">
                         <graphic>
                             <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
                                     <Image url="@images/return.png" />
+                                </image>
                             </ImageView>
                         </graphic>
                     </Button>
             </Pane>
             <HBox alignment="CENTER" prefHeight="65.0" spacing="10" styleClass="top-bar-content" HBox.hgrow="ALWAYS">
-                    <Label fx:id="quizTitle" prefHeight="45.0" prefWidth="120.0" styleClass="quiz-title" text="Quiz Whiz">
+                    <Label fx:id="quizTitle" prefHeight="45.0" styleClass="quiz-title" text="Quiz Whiz" HBox.hgrow="ALWAYS">
                         <HBox.margin>
                             <Insets left="15.0" />
                         </HBox.margin>
                     </Label>
-                    <Region prefHeight="45.0" prefWidth="351.0" HBox.hgrow="ALWAYS" />
-                    <ComboBox prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes">
+                    <Region HBox.hgrow="ALWAYS" />
+                    <ComboBox prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes" HBox.hgrow="NEVER">
                         <HBox.margin>
                             <Insets right="10.0" />
                         </HBox.margin>
                     </ComboBox>
-                <padding>
-                    <Insets bottom="10" left="10" right="10" top="10" />
-                </padding>
             </HBox>
         </HBox>
     </top>

@@ -23,7 +23,7 @@ public class UserSettingsController {
     @FXML private Button backButton;
     @FXML private Button logoutButton;
     @FXML private Button saveButton;
-    @FXML private Button deleteUserButton;
+    @FXML private Button terminateUserButton;
 
     @FXML private TextField usernameField;
     @FXML private PasswordField currentPasswordField;
@@ -48,6 +48,10 @@ public class UserSettingsController {
     @FXML
     public void initialize() {
         setupUsernameField();
+        setupBackButton();
+        setupLogoutButton();
+        setupSaveButton();
+        setupTerminateButton();
     }
 
     private void setupUsernameField() {
@@ -67,7 +71,19 @@ public class UserSettingsController {
 
     @FXML
     private void onBack() throws IOException, RuntimeException, SQLException {
-        SceneManager.getInstance().navigateToChat(currentUser);
+       SceneManager.getInstance().navigateToChat(currentUser);
+    }
+
+    @FXML
+    private void setupBackButton() {
+            backButton.setOnAction(actionEvent -> {
+                try {
+                    onBack();
+                } catch (IOException | SQLException e) {
+                    Utils.showErrorAlert("Failed to load chat page " + e.getMessage());
+                }
+            });
+
     }
 
     @FXML
@@ -79,6 +95,18 @@ public class UserSettingsController {
                 SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
             }
         }
+    }
+
+    @FXML
+    private void setupLogoutButton() {
+        logoutButton.setOnAction(actionEvent -> {
+            try {
+                onLogout();
+            } catch (IOException | SQLException e) {
+                Utils.showErrorAlert("Failed to logout " + e.getMessage());
+            }
+        });
+
     }
 
     @FXML
@@ -115,7 +143,15 @@ public class UserSettingsController {
     }
 
     @FXML
-    private void onDelete() throws IOException, RuntimeException, SQLException {
+    private void setupSaveButton() {
+        saveButton.setOnAction(actionEvent -> {
+            onSave();
+        });
+
+    }
+
+    @FXML
+    private void onTerminate() throws IOException, RuntimeException, SQLException {
         Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to delete of your account?");
         if (result.isPresent()) {
             ButtonType buttonClicked = result.get();
@@ -128,6 +164,18 @@ public class UserSettingsController {
                 }
             }
         }
+    }
+
+    @FXML
+    private void setupTerminateButton() {
+        terminateUserButton.setOnAction(actionEvent -> {
+            try {
+                onTerminate();
+            } catch (IOException | SQLException e) {
+                Utils.showErrorAlert("Failed to terminate account  " + e.getMessage());
+            }
+        });
+
     }
 
     private void handleUsernameUpdate(String username) {
