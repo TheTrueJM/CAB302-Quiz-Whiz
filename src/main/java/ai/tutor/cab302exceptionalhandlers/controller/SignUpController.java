@@ -99,23 +99,16 @@ public class SignUpController extends AuthController {
      */
 
     @Override
-    public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
-        if (!User.validUsername(username)) {
-            throw new IllegalArgumentException("Username is invalid");
-        }
-        if (!User.validPassword(password)) {
-            throw new SecurityException("Password is invalid");
-        }
+    public User authenticateUser(String username, String password) throws IllegalArgumentException, SQLException {
+        String hashedPassword = User.hashPassword(password);
+        User newUser = new User(username, hashedPassword);
 
         User existingUser = userDAO.getUser(username);
         if (existingUser != null) {
             throw new IllegalArgumentException("Username is already taken");
         }
 
-        String hashedPassword = User.hashPassword(password);
-        User newUser = new User(username, hashedPassword);
         userDAO.createUser(newUser);
-
         return newUser;
     }
 }
