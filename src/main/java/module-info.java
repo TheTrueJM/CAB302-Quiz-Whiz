@@ -11,10 +11,14 @@ module ai.tutor.cab302exceptionalhandlers {
     requires one.jpro.platform.mdfx;
 
     opens ai.tutor.cab302exceptionalhandlers to javafx.fxml;
-    opens ai.tutor.cab302exceptionalhandlers.controller to javafx.fxml, com.google.gson;
+    opens ai.tutor.cab302exceptionalhandlers.controller to javafx.fxml;
+    opens ai.tutor.cab302exceptionalhandlers.Utils to com.google.gson;
 
     exports ai.tutor.cab302exceptionalhandlers;
     exports ai.tutor.cab302exceptionalhandlers.model;
     exports ai.tutor.cab302exceptionalhandlers.controller;
     exports ai.tutor.cab302exceptionalhandlers.Utils;
+    exports ai.tutor.cab302exceptionalhandlers.builders;
+    exports ai.tutor.cab302exceptionalhandlers.factories;
+    exports ai.tutor.cab302exceptionalhandlers.types;
 }

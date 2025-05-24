@@ -69,13 +69,6 @@ public class LoginController extends AuthController {
         }
     }
 
-    // Open Sign Up Page
-    @Override
-    @FXML
-    protected void switchLayout() throws IOException, RuntimeException, SQLException {
-        Utils.loadView("sign-up", new SignUpController(db), getStage());
-    }
-
 
     /*
      * =====================
