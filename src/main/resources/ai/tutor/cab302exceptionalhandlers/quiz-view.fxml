@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
@@ -25,21 +24,16 @@
     <top>
         <HBox maxHeight="65.0" maxWidth="Infinity" prefHeight="65.0" spacing="10" styleClass="top-bar">
             <Pane prefHeight="65.0" prefWidth="241.0" styleClass="sidebar-pane" HBox.hgrow="NEVER">
-                <children>
-                    <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" style="-fx-background-color: white; -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 0;" styleClass="return-button" text="Back to Chat">
+                    <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" styleClass="return-button" text="Back to Chat">
                         <graphic>
                             <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
                                     <Image url="@images/return.png" />
-                                </image>
                             </ImageView>
                         </graphic>
                     </Button>
-                </children>
             </Pane>
             <HBox alignment="CENTER" prefHeight="65.0" spacing="10" styleClass="top-bar-content" HBox.hgrow="ALWAYS">
-                <children>
-                    <Label fx:id="quizTitle" alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="120.0" styleClass="quiz-title" text="Quiz Whiz">
+                    <Label fx:id="quizTitle" prefHeight="45.0" prefWidth="120.0" styleClass="quiz-title" text="Quiz Whiz">
                         <HBox.margin>
                             <Insets left="15.0" />
                         </HBox.margin>
@@ -50,7 +44,6 @@
                             <Insets right="10.0" />
                         </HBox.margin>
                     </ComboBox>
-                </children>
                 <padding>
                     <Insets bottom="10" left="10" right="10" top="10" />
                 </padding>
@@ -73,15 +66,13 @@
     <!-- Center Region (Chat Area) -->
     <center>
         <VBox spacing="10" styleClass="quiz-area" VBox.vgrow="ALWAYS">
-            <Label fx:id="quizQuestionLabel" styleClass="quiz-question-label" text="In python, which of these is NOT a variable type?" wrapText="true">
+            <Label fx:id="quizQuestionLabel" styleClass="quiz-question-label" text="Placeholder" wrapText="true">
                 <padding>
                     <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
                 </padding>
             </Label>
             <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" prefWidth="670.0" spacing="10" styleClass="quiz-question-container">
-                <children>
                     <ScrollPane fx:id="quizScrollPane" fitToWidth="true" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
-                        <content>
                             <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" spacing="10" styleClass="quiz-answers">
                                 <Label styleClass="quiz-instruction" text="Please select one of the options">
                                     <VBox.margin>
@@ -89,13 +80,9 @@
                                     </VBox.margin>
                                 </Label>
                                 <VBox alignment="CENTER_LEFT" prefHeight="200.0">
-                                    <children>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
                                                 <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                    <children>
                                                         <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="A" />
-                                                    </children>
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -105,14 +92,10 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
                                                 <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                    <children>
                                                         <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="B" />
-                                                    </children>
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -122,14 +105,10 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
                                                 <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                    <children>
                                                         <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="C" />
-                                                    </children>
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -139,14 +118,10 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
                                                 <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                    <children>
                                                         <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="D" />
-                                                    </children>
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -156,22 +131,17 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
-                                    </children>
                                 </VBox>
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="5.0" />
                                 </padding>
                             </VBox>
-                        </content>
                     </ScrollPane>
-                </children>
                 <VBox.margin>
                     <Insets top="30.0" />
                 </VBox.margin>
             </VBox>
-            <StackPane fx:id="quizListContainer1" maxHeight="1.0" prefHeight="0.0" prefWidth="670.0" VBox.vgrow="ALWAYS" />
         </VBox>
     </center>
 </BorderPane>

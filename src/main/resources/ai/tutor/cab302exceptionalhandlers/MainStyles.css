@@ -9,7 +9,7 @@
 
 /* Shared Button Styles */
 .return-button {
-    -fx-background-color: -fx-white;
+    -fx-background-color: white;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-padding: 0px;

@@ -202,7 +202,7 @@
 }
 
 /* Hover Effects */
-.return-button:hover, .submit-quiz-button:hover, .select-question:hover, .question-container:hover,
+.submit-quiz-button:hover, .select-question:hover, .question-container:hover,
 .correct-answer:hover, .incorrect-answer:hover, .option-button:hover {
     -fx-opacity: 0.8;
     -fx-transition: opacity 0.2s ease-in-out;
