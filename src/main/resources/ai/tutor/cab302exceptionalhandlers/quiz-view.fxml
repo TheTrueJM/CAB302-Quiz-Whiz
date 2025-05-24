@@ -7,26 +7,24 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
-        <URL value="@QuizStyles.css" />
+        <URL value="@styles/MainStyles.css" />
+        <URL value="@styles/QuizStyles.css" />
     </stylesheets>
     <!-- Top Region -->
     <top>
-        <HBox maxHeight="65.0" maxWidth="Infinity" prefHeight="65.0" spacing="10" style="-fx-background-color: #535353;">
-            <Pane prefHeight="65.0" prefWidth="241.0" style="-fx-background-color: #535353;" HBox.hgrow="NEVER">
-                <children>
-                    <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" style="-fx-background-color: white; -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 0;" styleClass="return-button" text="Back to Chat">
+        <HBox maxHeight="65.0" maxWidth="Infinity" prefHeight="65.0" spacing="10" styleClass="top-bar">
+            <Pane prefHeight="65.0" prefWidth="241.0" styleClass="sidebar-pane" HBox.hgrow="NEVER">
+                    <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" styleClass="return-button" text="Back to Chat">
                         <graphic>
                             <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
                                 <image>
@@ -35,41 +33,28 @@
                             </ImageView>
                         </graphic>
                     </Button>
-                </children>
             </Pane>
-            <HBox alignment="CENTER" prefHeight="65.0" spacing="10" style="-fx-background-color: #213355;" HBox.hgrow="ALWAYS">
-                <children>
-                    <Label fx:id="quizTitle" alignment="CENTER_LEFT" prefHeight="46.0" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" text="Quiz Whiz">
+            <HBox alignment="CENTER" prefHeight="65.0" spacing="10" styleClass="top-bar-content" HBox.hgrow="ALWAYS">
+                    <Label fx:id="quizTitle" prefHeight="45.0" styleClass="quiz-title" text="Quiz Whiz" HBox.hgrow="ALWAYS">
                         <HBox.margin>
                             <Insets left="15.0" />
                         </HBox.margin>
                     </Label>
-                    <Region prefWidth="386.0" HBox.hgrow="ALWAYS" />
-                    <ComboBox prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8;">
+                    <Region HBox.hgrow="ALWAYS" />
+                    <ComboBox prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes" HBox.hgrow="NEVER">
                         <HBox.margin>
                             <Insets right="10.0" />
                         </HBox.margin>
                     </ComboBox>
-                </children>
-                <padding>
-                    <Insets bottom="10" left="10" right="10" top="10" />
-                </padding>
             </HBox>
         </HBox>
     </top>
 
     <!-- Left Region (Sidebar) -->
     <left>
-        <VBox alignment="CENTER" prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 5;" VBox.vgrow="ALWAYS">
-            <StackPane fx:id="quizQuestionsContainer" prefWidth="230.0" VBox.vgrow="ALWAYS">
-                <TextField fx:id="noQuizField" alignment="TOP_CENTER" editable="false" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
-                <ListView fx:id="questionListView" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
-                    <StackPane.margin>
-                        <Insets bottom="5.0" />
-                    </StackPane.margin>
-                </ListView>
-            </StackPane>
-            <Button fx:id="submitQuizButton" prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="Submit Quiz">
+        <VBox alignment="CENTER" prefWidth="250.0" styleClass="sidebar" VBox.vgrow="ALWAYS">
+             <ListView fx:id="questionListView" styleClass="quiz-list" VBox.vgrow="ALWAYS" />
+            <Button fx:id="submitQuizButton" prefHeight="35.0" prefWidth="208.0" styleClass="submit-quiz-button" text="Submit Quiz">
                 <VBox.margin>
                     <Insets bottom="10.0" />
                 </VBox.margin>
@@ -79,30 +64,24 @@
 
     <!-- Center Region (Chat Area) -->
     <center>
-        <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
-            <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type?" wrapText="true">
+        <VBox spacing="10" styleClass="quiz-area" VBox.vgrow="ALWAYS">
+            <Label fx:id="quizQuestionLabel" styleClass="quiz-question-label" text="Placeholder" wrapText="true">
                 <padding>
                     <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
                 </padding>
             </Label>
-            <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" prefWidth="670.0" spacing="10" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;">
-                <children>
-                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
-                        <content>
-                            <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" spacing="10" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14;">
-                                <Label style="-fx-background-color: #CBD6FF; -fx-font-size: 16; -fx-font-weight: bold;" text="Please select one of the options">
+            <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" prefWidth="670.0" spacing="10" styleClass="quiz-question-container">
+                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
+                            <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" spacing="10" styleClass="quiz-answers">
+                                <Label styleClass="quiz-instruction" text="Please select one of the options">
                                     <VBox.margin>
                                         <Insets top="7.0" />
                                     </VBox.margin>
                                 </Label>
                                 <VBox alignment="CENTER_LEFT" prefHeight="200.0">
-                                    <children>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
-                                                    <children>
-                                                        <Label layoutX="14.0" layoutY="6.0" style="-fx-font-size: 20; -fx-font-weight: bold;" text="A" />
-                                                    </children>
+                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
+                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="A" />
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -112,14 +91,10 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
-                                                    <children>
-                                                        <Label layoutX="14.0" layoutY="6.0" style="-fx-font-size: 20; -fx-font-weight: bold;" text="B" />
-                                                    </children>
+                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
+                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="B" />
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -129,14 +104,10 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
-                                                    <children>
-                                                        <Label layoutX="14.0" layoutY="6.0" style="-fx-font-size: 20; -fx-font-weight: bold;" text="C" />
-                                                    </children>
+                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
+                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="C" />
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -146,14 +117,10 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <Pane prefHeight="42.0" prefWidth="42.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 3 0 0 3; -fx-border-radius: 3 0 0 3;">
-                                                    <children>
-                                                        <Label layoutX="14.0" layoutY="6.0" style="-fx-font-size: 20; -fx-font-weight: bold;" text="D" />
-                                                    </children>
+                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
+                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="D" />
                                                     <HBox.margin>
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
@@ -163,22 +130,17 @@
                                                         <Insets bottom="16.0" />
                                                     </HBox.margin>
                                                 </Button>
-                                            </children>
                                         </HBox>
-                                    </children>
                                 </VBox>
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="5.0" />
                                 </padding>
                             </VBox>
-                        </content>
                     </ScrollPane>
-                </children>
                 <VBox.margin>
                     <Insets top="30.0" />
                 </VBox.margin>
             </VBox>
-            <StackPane fx:id="quizListContainer1" maxHeight="1.0" prefHeight="0.0" prefWidth="670.0" VBox.vgrow="ALWAYS" />
         </VBox>
     </center>
 </BorderPane>

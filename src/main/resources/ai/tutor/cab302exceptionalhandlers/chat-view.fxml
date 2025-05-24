@@ -16,17 +16,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<BorderPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
-      <URL value="@ChatStyles.css" />
+      <URL value="@styles/MainStyles.css" />
+      <URL value="@styles/ChatStyles.css" />
    </stylesheets>
    <!-- Top Region -->
    <top>
       <HBox maxHeight="65.0" prefHeight="65.0" spacing="10" style="-fx-background-color: #535353;">
             <!-- Pane to match sidebar width and color -->
-            <Pane prefHeight="65.0" prefWidth="241.0" style="-fx-background-color: #535353;" HBox.hgrow="NEVER">
+            <Pane prefHeight="65.0" prefWidth="241.0" styleClass="sidebar-pane" HBox.hgrow="NEVER">
             <children>
-               <Button fx:id="logoutButton" layoutX="18.0" layoutY="9.0" prefHeight="44.0" prefWidth="54.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: #e84c5c; -fx-background-radius: 15; -fx-border-radius: 15; -fx-font-size: 13;" styleClass="return-button">
+               <Button fx:id="logoutButton" layoutX="18.0" layoutY="9.0" prefHeight="44.0" prefWidth="54.0" styleClass="logout-button">
                   <graphic>
                      <ImageView fitHeight="38.0" fitWidth="55.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -35,7 +36,7 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="addNewChat" contentDisplay="RIGHT" layoutX="123.0" layoutY="10.0" prefHeight="40.0" prefWidth="115.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand; -fx-background-radius: 10; -fx-border-radius: 10; -fx-font-weight: bold; -fx-font-size: 14;" styleClass="addChatButton" text="Add Chat">
+               <Button fx:id="addNewChat" contentDisplay="RIGHT" layoutX="123.0" layoutY="10.0" prefHeight="40.0" prefWidth="115.0" styleClass="add-chat-button" text="Add Chat">
                   <graphic>
                      <ImageView fitHeight="34.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -50,7 +51,7 @@
                   <ImageView fitHeight="29.0" fitWidth="12.0" nodeOrientation="INHERIT" HBox.hgrow="NEVER" />
                   <StackPane prefHeight="62.0" prefWidth="31.0">
                      <children>
-                              <Button fx:id="editChatName" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand;" styleClass="editName" visible="false">
+                              <Button fx:id="editChatName" prefHeight="26.0" prefWidth="25.0" styleClass="edit-chat-name" visible="false">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -59,7 +60,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="confirmEditChatName" prefHeight="26.0" prefWidth="25.0" style="-fx-padding: 3; -fx-background-color: white; -fx-cursor: hand;" styleClass="confirmEdit" visible="false">
+                        <Button fx:id="confirmEditChatName" prefHeight="26.0" prefWidth="25.0" styleClass="confirm-edit-chat" visible="false">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -70,10 +71,10 @@
                         </Button>
                      </children>
                   </StackPane>
-                  <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" promptText="Enter chat name" style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background-insets: 0; -fx-border-insets: 0; -fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: white; -fx-prompt-text-fill: white; -fx-padding: 0;" styleClass="editable-title" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="chatNameField" editable="false" prefHeight="46.0" promptText="Enter chat name" styleClass="chat-name-field" text="Quiz Whiz" HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER_RIGHT" nodeOrientation="LEFT_TO_RIGHT">
                      <children>
-                        <Button fx:id="chatSettingsButton" alignment="CENTER" contentDisplay="RIGHT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="34.0" prefWidth="120.0" style="-fx-background-color: white; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-opacity: 0.95; -fx-font-size: 14; -fx-text-fill: grey;" styleClass="setting-button" text="Settings">
+                        <Button fx:id="chatSettingsButton" alignment="CENTER" contentDisplay="RIGHT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="34.0" prefWidth="120.0" styleClass="settings-button" text="Settings">
                            <graphic>
                               <ImageView fitHeight="29.0" fitWidth="27.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.8;">
                                  <image>
@@ -90,16 +91,16 @@
 
       <!-- Left Region (Sidebar) -->
       <left>
-         <VBox alignment="CENTER" prefWidth="250.0" style="-fx-background-color: #535353; -fx-padding: 5;" VBox.vgrow="ALWAYS">
+         <VBox alignment="CENTER" prefWidth="250.0" styleClass="sidebar" VBox.vgrow="ALWAYS">
             <!-- Chat List -->
-            <StackPane fx:id="chatListContainer" prefWidth="230.0" VBox.vgrow="ALWAYS">
-               <TextField fx:id="noChatsField" alignment="TOP_CENTER" editable="false" style="-fx-background-color: #535353; -fx-text-fill: white;" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
-               <ListView fx:id="chatsListView" style="-fx-background-color: #535353; -fx-padding: 10;" styleClass="chat-list" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="chatListContainer" alignment="TOP_CENTER" prefWidth="230.0" VBox.vgrow="ALWAYS">
+               <TextField fx:id="noChatsField" alignment="TOP_CENTER" editable="false" styleClass="no-chats-field" text="You currently have no past chats" visible="false" VBox.vgrow="ALWAYS" />
+               <ListView fx:id="chatsListView" styleClass="chat-list" VBox.vgrow="ALWAYS">
                <StackPane.margin>
                   <Insets bottom="5.0" />
                </StackPane.margin></ListView>
             </StackPane>
-            <Button fx:id="userDetailsButton" prefHeight="35.0" prefWidth="208.0" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16; -fx-cursor: hand;" styleClass="userDetailsButton" text="User Details">
+            <Button fx:id="userDetailsButton" prefHeight="35.0" prefWidth="208.0" styleClass="user-details-button" text="User Details">
                <VBox.margin>
                   <Insets bottom="15.0" />
                </VBox.margin>
@@ -109,35 +110,35 @@
 
    <!-- Center Region (Chat Area) -->
    <center>
-      <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
+      <VBox spacing="10" styleClass="chat-area" VBox.vgrow="ALWAYS">
          <StackPane fx:id="chatListContainer1" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
                <children>
                   <!-- Chat Section -->
-                  <ScrollPane fx:id="chatScrollPane" fitToWidth="true" style="-fx-background-color: white;" styleClass="chatScrollPane" VBox.vgrow="ALWAYS">
+                  <ScrollPane fx:id="chatScrollPane" fitToWidth="true" styleClass="chatScrollPane" VBox.vgrow="ALWAYS">
                      <content>
-                           <VBox fx:id="chatMessagesVBox" spacing="10" style="-fx-padding: 10; -fx-background-color: white;" styleClass="chatMessagesVBox" />
+                           <VBox fx:id="chatMessagesVBox" spacing="10" styleClass="chatMessagesVBox" />
                      </content>
                   </ScrollPane>
-                  <VBox fx:id="greetingContainer" alignment="CENTER" style="-fx-background-color: white;">
+                  <VBox fx:id="greetingContainer" alignment="CENTER" styleClass="chat-container">
                      <children>
-                           <TextField fx:id="welcomeTitle" alignment="CENTER" editable="false" prefHeight="67.0" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: black; -fx-background-insets: 0; -fx-background-color: white;" text="Welcome, X" visible="false" VBox.vgrow="NEVER" />
-                           <Button fx:id="addNewChatMain" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" style="-fx-font-size: 12; -fx-border-color: black; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1; -fx-padding: 0; -fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold;" styleClass="createChat2" text="Create a Chat" visible="false" />
+                           <TextField fx:id="welcomeTitle" alignment="CENTER" editable="false" prefHeight="67.0" styleClass="welcome-title" text="Welcome, X" visible="false" VBox.vgrow="NEVER" />
+                           <Button fx:id="addNewChatMain" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" styleClass="create-chat-main" text="Create a Chat" visible="false" />
                      </children>
                   </VBox>
                </children>
          </StackPane>
          <!-- Chat Input -->
-         <VBox alignment="BOTTOM_CENTER" spacing="10" style="-fx-padding: 10; -fx-border-color: #757575; -fx-border-radius: 8; -fx-background-color: white; -fx-border-width: 1; -fx-background-radius: 8;">
+         <VBox alignment="BOTTOM_CENTER" spacing="10" styleClass="message-input-container">
                <HBox fx:id="messageContainer" maxHeight="200.0">
                   <children>
-                     <TextArea fx:id="messageInputField" promptText="Enter Message..." style="-fx-background-insets: 0; -fx-border-color: white; -fx-background-color: transparent; -fx-prompt-text-fill: #757575; -fx-font-size: 14; -fx-border-color: white;" styleClass="message-area" wrapText="true" HBox.hgrow="ALWAYS" />
-                     <Button fx:id="chatModeButton" alignment="CENTER" disable="true" opacity="1" prefHeight="29.0" prefWidth="54.0" style="-fx-cursor: hand;" styleClass="chat-mode-active" text="Chat">
+                     <TextArea fx:id="messageInputField" promptText="Enter Message..." styleClass="message-area" wrapText="true" HBox.hgrow="ALWAYS" />
+                     <Button fx:id="chatModeButton" alignment="CENTER" disable="true" opacity="1" prefHeight="29.0" prefWidth="54.0" styleClass="chat-mode-active" text="Chat">
                      <HBox.margin>
                         <Insets left="5.0" right="5.0" />
                      </HBox.margin>
                   </Button>
-                     <Button fx:id="quizModeButton" alignment="CENTER" prefHeight="27.0" prefWidth="55.0" style="-fx-cursor: hand;" styleClass="quiz-mode-disabled" text="Quiz" />
-                     <Button fx:id="sendMessage" alignment="TOP_CENTER" prefHeight="27.0" prefWidth="48.0" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" styleClass="upload-button">
+                     <Button fx:id="quizModeButton" alignment="CENTER" prefHeight="27.0" prefWidth="55.0" styleClass="quiz-mode-disabled" text="Quiz" />
+                     <Button fx:id="sendMessage" alignment="TOP_CENTER" prefHeight="27.0" prefWidth="48.0" styleClass="send-message-button">
                            <graphic>
                               <ImageView fitHeight="22.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

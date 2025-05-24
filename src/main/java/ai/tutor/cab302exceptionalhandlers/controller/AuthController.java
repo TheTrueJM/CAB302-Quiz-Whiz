@@ -1,11 +1,13 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.SceneManager;
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
 import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -23,7 +25,9 @@ public abstract class AuthController {
     @FXML
     protected TextField usernameField;
     @FXML
-    protected TextField passwordField;
+    protected PasswordField passwordField;
+    @FXML
+    protected PasswordField confirmPasswordField;
 
     @FXML
     protected Button submitButton;
@@ -32,6 +36,9 @@ public abstract class AuthController {
     protected Label usernameFeedback;
     @FXML
     protected Label passwordFeedback;
+
+
+    @FXML protected Button switchLayout;
 
     public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
         this.db = db;
@@ -48,6 +55,13 @@ public abstract class AuthController {
      *    FXML UI Functions
      * =======================
      */
+
+    @FXML
+    public void initialize() {
+        setupSwitchLayoutButton();
+        setupSubmitButton();
+        setupInputField();
+    }
 
     @FXML
     protected abstract void onFieldChanged(KeyEvent e);
@@ -76,6 +90,43 @@ public abstract class AuthController {
         SceneManager.getInstance().navigateToAuth(targetType);
     }
 
+    @FXML
+    // Set up event handler for switch to login/signup button
+    protected void setupSwitchLayoutButton() {
+        if (switchLayout != null) {
+            switchLayout.setOnAction(event -> {
+                try {
+                    switchLayout();
+                } catch (IOException | SQLException e) {
+                    Utils.showErrorAlert("Failed to switch pages" + e.getMessage());
+                }
+            });
+        }
+    }
+
+    @FXML
+    // Set up event handler for submit button
+    protected void setupSubmitButton() {
+        if (submitButton != null) {
+            submitButton.setOnAction(event -> {
+                try {
+                    onSubmit();
+                } catch (IOException | SQLException e) {
+                    Utils.showErrorAlert("Failed to submit: " + e.getMessage());
+                }
+            });
+        }
+    }
+
+    @FXML
+    protected  void setupInputField() {
+        if (usernameField != null) {
+            usernameField.setOnKeyReleased(this::onFieldChanged);
+        }
+        if (passwordField != null) {
+            passwordField.setOnKeyReleased(this::onFieldChanged);
+        }
+    }
 
     /*
      * =====================
