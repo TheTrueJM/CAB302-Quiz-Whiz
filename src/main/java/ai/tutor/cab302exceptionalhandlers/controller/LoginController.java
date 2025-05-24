@@ -85,13 +85,13 @@ public class LoginController extends AuthController {
 
     @Override
     public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
-        User existingUser = userDAO.getUser(username != null ? username : "");
+        User existingUser = userDAO.getUser(username);
         if (existingUser == null) {
             throw new IllegalArgumentException("User does not exist");
         }
 
         // Verify input password equals hashed user password
-        if (!existingUser.verifyPassword(password != null ? password : "")) {
+        if (!existingUser.verifyPassword(password)) {
             throw new SecurityException("Incorrect Password");
         }
 

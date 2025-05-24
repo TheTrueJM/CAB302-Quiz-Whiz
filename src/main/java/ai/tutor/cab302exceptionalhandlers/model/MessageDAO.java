@@ -48,7 +48,7 @@ public class MessageDAO implements IMessageDAO {
     }
 
     @Override
-    public List<Message> getAllChatMessages(int chatId) throws SQLException {
+    public List<Message> getAllChatMessages(int chatId) throws IllegalArgumentException, SQLException {
         List<Message> chatMessages = new ArrayList<>();
         String sql = "SELECT * FROM messages WHERE chatId = ?";
         try (PreparedStatement readChatMessages = connection.prepareStatement(sql)) {
