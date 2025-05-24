@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -17,18 +18,13 @@ import org.slf4j.helpers.Util;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class QuizController {
     @FXML private Button returnButton;
     @FXML private Button searchButton;
     @FXML private Button quizSettingsButton;
     @FXML private Button userDetailsButton;
-    @FXML private Button answerA;
-    @FXML private Button answerB;
-    @FXML private Button answerC;
-    @FXML private Button answerD;
-    @FXML private Button answerT;
-    @FXML private Button answerF;
     @FXML private Button configureQuiz;
     @FXML private Button chatModeButton;
     @FXML private Button quizModeButton;
@@ -38,7 +34,7 @@ public class QuizController {
     @FXML private ListView questionListView;
     @FXML private ScrollPane quizScrollPane;
     @FXML private VBox quizQuestion;
-    @FXML private VBox quizAnswers;
+    @FXML private VBox quizAnswersVBox;
     @FXML private StackPane quizQuestionsContainer;
     @FXML private StackPane quizListContainer1;
     @FXML private Label quizQuestionLabel;
@@ -62,6 +58,11 @@ public class QuizController {
     //For User Answers
     private final Map<Integer, String> questionAnswers = new HashMap<>();
     private boolean quizCompleted;
+
+    // Dynamic loading
+    // NOTE: maps a list of answer option pairs to a messageID for ui layout purposes
+    private Map<Integer, List<AnswerOption[]>> answerOptionPairs = new HashMap<>();
+    private List<HBox> dynamicHBoxCollection = new ArrayList<>(); // Save reference so they can be removed
 
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException {
@@ -96,7 +97,20 @@ public class QuizController {
         setupQuestions();
         setupQuizListView();
         setupReturnButton();
+        setupSubmitButton();
         displayQuestion(1);
+    }
+
+    private void setupSubmitButton(){
+        submitQuizButton.setOnMouseClicked(mouseEvent -> {
+            if(questionAnswers.size() != quizQuestions.size()){ // Make sure we have answered all question
+                Utils.showWarningAlert("Make sure to answer all questions before submitting.");
+                return;
+            }
+
+            submitAnswers();
+            displayQuestion(1);
+        });
     }
 
     //A function that places each question into a list to use later
@@ -108,13 +122,26 @@ public class QuizController {
                 return;
             }
 
-            //questionListView.getItems().setAll(quizQuestions);
+            // Get List of answer pairs, then map them to a messageID
+            List<AnswerOption[]> allPairs = new ArrayList<>();
+            AnswerOption[] pair = new AnswerOption[2];
 
-            for (int i = 0; i < quizQuestions.size(); i++) {
-                int questionNum = i + 1;
+            for(QuizQuestion question : quizQuestions){ // Foreach question
+                int qNumber = question.getNumber();
+
                 List<AnswerOption> options = answerOptionDAO.getAllQuestionAnswerOptions(
-                        currentQuiz.getMessageId(), questionNum);
-                answerOptions.put(questionNum, options);
+                        currentQuiz.getMessageId(), qNumber); // Get its options
+
+                for(int i = 0; i < options.size(); i+=2){ // Pair all options up
+                    pair[0] = options.get(i);
+                    if(i + 1 < options.size()){
+                        pair[1] = options.get(i + 1);
+                    }
+                    allPairs.add(Arrays.copyOf(pair, pair.length));
+                }
+
+                answerOptionPairs.put(qNumber, new ArrayList<>(allPairs)); // (qNumber: array of options as pairs)
+                allPairs.clear();
             }
         } catch (SQLException e) {
             Utils.showErrorAlert("Failed to load quiz questions: " + e.getMessage());
@@ -154,122 +181,105 @@ public class QuizController {
 
         // Get the answer options
         List<AnswerOption> options = answerOptions.get(questionNumber);
-        if (options == null) {
-            Utils.showErrorAlert("Answer options are missing");
-            return;
+
+        // Clear previous or existing buttons
+        for (HBox dynamic : dynamicHBoxCollection){
+            if(quizAnswersVBox.getChildren().contains(dynamic)){
+                quizAnswersVBox.getChildren().remove(dynamic); // Remove if exists
+            }
+            quizAnswersVBox.getChildren().remove(dynamic);
         }
 
-        if(options.size() == 4){
-            // Sort answer options
-            options.sort(Comparator.comparing(AnswerOption::getOption));
+        dynamicHBoxCollection.clear(); // Apparently garbage collection will remove it if no references
 
-            answerC.setVisible(true);
-            answerD.setVisible(true);
+        // Load questions into VBox as pairs in child Vbox's
+        List<AnswerOption[]> allPairs = answerOptionPairs.get(questionNumber);
 
-            // Assign text
-            answerA.setText(options.get(0).getValue());
-            answerB.setText(options.get(1).getValue());
-            answerC.setText(options.get(2).getValue());
-            answerD.setText(options.get(3).getValue());
-        }
-        else if(options.size() == 2){
-            // Sort answer options
-            options.sort(Comparator.comparing(AnswerOption::getOption));
+        for(AnswerOption[] pair : allPairs){ // Foreach pair we have for this question
+            HBox childHBox = new HBox(); // New pair, new vbox
 
-            answerA.setText(options.get(0).getValue());
-            answerB.setText(options.get(1).getValue());
-            answerC.setVisible(false);
-            answerD.setVisible(false);
-        }
+            for(int i = 0; i < pair.length; i++){ // Create a button for each
+                AnswerOption a = pair[i];
+                if(a != null){
+                    Button answerButton = new Button();
+                    answerButton.setText(a.getValue());
 
-        if(quizCompleted == true){
-            // Disable buttons
-            answerA.setDisable(true);
-            answerB.setDisable(true);
-            answerC.setDisable(true);
-            answerD.setDisable(true);
-            submitQuizButton.setDisable(true);
+                    // Apply toggled style if toggled
+                    String opt = a.getOption();
+                    if(questionAnswers.containsKey(questionNumber)){
+                        String style = questionAnswers.get(questionNumber).equals(opt.toLowerCase())
+                                ? "option-button-toggled"
+                                : "option-button";
+                        answerButton.getStyleClass().add(style);
+                    }
+                    else{
+                        answerButton.getStyleClass().add("option-button");
+                    }
 
-            answerA.getStyleClass().removeAll("correct-answer", "incorrect-answer");
-            answerB.getStyleClass().removeAll("correct-answer", "incorrect-answer");
-            answerC.getStyleClass().removeAll("correct-answer", "incorrect-answer");
-            answerD.getStyleClass().removeAll("correct-answer", "incorrect-answer");
+                    // Set mouse click event
+                    answerButton.setOnMouseClicked(mouseEvent -> {
+                        // Reset all style classes
+                        dynamicHBoxCollection.stream()
+                                .flatMap(hbox -> hbox.getChildren().stream())
+                                .filter(node -> node instanceof Button)
+                                .map(node -> (Button) node)
+                                .forEach(btn -> {
+                                    btn.getStyleClass().setAll("option-button");
+                                });
 
-            // Get the user's selected answer
-            String selected = questionAnswers.get(questionNumber);
+                        answerButton.getStyleClass().remove("option-button");
+                        answerButton.getStyleClass().add("option-button-toggled");
+                        answerButton.setText(a.getValue());
 
-            // Apply correct/incorrect CSS classes
-            for (AnswerOption opt : options) {
-                Button targetButton = null;
-                if (opt.getOption().equals("a")) targetButton = answerA;
-                if (opt.getOption().equals("b")) targetButton = answerB;
-                if (opt.getOption().equals("c")) targetButton = answerC;
-                if (opt.getOption().equals("d")) targetButton = answerD;
+                        if(!questionAnswers.containsKey(questionNumber))
+                            questionAnswers.put(questionNumber, a.getOption()); // Update answer
+                    });
 
-                if (targetButton != null) {
-                    if (opt.getIsAnswer()) {
-                        targetButton.getStyleClass().add("correct-answer");
-                    } else if (opt.getOption().equals(selected.toLowerCase())) {
-                        targetButton.getStyleClass().add("incorrect-answer");
+                    if(quizCompleted){
+                        String selected = questionAnswers.get(questionNumber);
+                        answerButton.getStyleClass().add("option-button");
+                        if(selected.toLowerCase().equals(a.getOption().toLowerCase())){
+                            if(!a.getIsAnswer())
+                                answerButton.getStyleClass().add("incorrect-answer");
+                        }
+
+                        if(a.getIsAnswer()){
+                            answerButton.getStyleClass().add("correct-answer");
+                        }
+                    }
+
+                    // Set margin
+                    double left = i == 0 ? 30 : 0;
+                    double right = i == 0 ? 0 : 30;
+                    HBox.setMargin(answerButton, new Insets(0, right, 0, left));
+                    childHBox.getChildren().add(answerButton);
+
+                    // Add region between two buttons
+                    if(i == 0){
+                        Region r = new Region();
+                        r.setPrefWidth(76);
+                        r.setPrefHeight(40);
+                        childHBox.getChildren().add(r);
                     }
                 }
             }
 
-        } else{
-            // Reset button styles
-            Button[] answerButtons = {answerA, answerB, answerC, answerD};
-            for (Button btn : answerButtons) {
-                btn.getStyleClass().removeAll("option-button", "option-button-toggled");
-                btn.getStyleClass().add("option-button");
-            }
-
-            // Restore toggled state if an answer was previously selected
-            String selectedAnswer = questionAnswers.get(questionNumber);
-            if (selectedAnswer != null) {
-                Button selectedButton = switch (selectedAnswer) {
-                    case "A" -> answerA;
-                    case "B" -> answerB;
-                    case "C" -> answerC;
-                    case "D" -> answerD;
-                    default -> null;
-                };
-                if (selectedButton != null) {
-                    selectedButton.getStyleClass().remove("option-button");
-                    selectedButton.getStyleClass().add("option-button-toggled");
-                }
-            }
-
-            answerA.setOnAction(e -> registerAnswer(questionNumber,"A"));
-            answerB.setOnAction(e -> registerAnswer(questionNumber,"B"));
-            answerC.setOnAction(e -> registerAnswer(questionNumber,"C"));
-            answerD.setOnAction(e -> registerAnswer(questionNumber, "D"));
-            //Activates the submit Button
-            submitQuizButton.setOnAction(e -> submitAnswers());
-        }
-    }
-
-    //register the answers to map
-    private void registerAnswer(int questionNumber, String answerOption){
-        questionAnswers.put(questionNumber, answerOption);
-
-        // Reset styles for all buttons
-        Button[] answerButtons = {answerA, answerB, answerC, answerD};
-        for (Button btn : answerButtons) {
-            btn.getStyleClass().removeAll("option-button", "option-button-toggled");
-            btn.getStyleClass().add("option-button");
+            // Add the pair of buttons to a new HBox and add to the question template
+            dynamicHBoxCollection.add(childHBox); // Save for deletion
+            quizAnswersVBox.getChildren().add(childHBox);
         }
 
-        // Apply toggled style to the selected button
-        Button selectedButton = switch (answerOption) {
-            case "A" -> answerA;
-            case "B" -> answerB;
-            case "C" -> answerC;
-            case "D" -> answerD;
-            default -> null;
-        };
-        if (selectedButton != null) {
-            selectedButton.getStyleClass().remove("option-button");
-            selectedButton.getStyleClass().add("option-button-toggled");
+        if(quizCompleted){
+            // Disable buttons
+            dynamicHBoxCollection.stream()
+                    .flatMap(hbox -> hbox.getChildren().stream())
+                    .filter(node -> node instanceof Button)
+                    .map(node -> (Button) node)
+                    .forEach(btn -> {
+                        btn.setDisable(true);
+                    });
+
+            submitQuizButton.setDisable(true);
         }
     }
 
@@ -299,7 +309,6 @@ public class QuizController {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -343,7 +352,6 @@ public class QuizController {
                     }
                 }
             };
-
 
             cell.setOnMouseClicked(event -> {
                 int qNumber = questionListView.getSelectionModel().getSelectedIndex() + 1;
