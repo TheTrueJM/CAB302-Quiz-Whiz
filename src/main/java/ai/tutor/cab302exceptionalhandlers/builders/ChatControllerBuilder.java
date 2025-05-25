@@ -10,7 +10,7 @@ import ai.tutor.cab302exceptionalhandlers.model.User;
  * This class is responsible for the construction of {@code ChatController} objects,
  * requiring a currently authenticated user.
  *
- * <h1>Usage Example:</h1>
+ * <p>Usage Example:
  * <pre>
  * ChatController controller = controllerFactory.chatController()
  *                                .currentUser(authenticatedUser)

@@ -25,7 +25,7 @@ jobs:
         run: mvn compile
 
       - name: Generate site
-        run: mvn site -Dmaven.javadoc.failOnError=false -Dmaven.javadoc.failOnWarnings=false
+        run: mvn site -Dmaven.javadoc.failOnError=true -Dmaven.javadoc.failOnWarnings=false
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

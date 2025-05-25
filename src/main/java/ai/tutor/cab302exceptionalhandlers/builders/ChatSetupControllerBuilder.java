@@ -16,7 +16,7 @@ import java.sql.SQLException;
  * or a {@link ChatUpdateController} based on the specified {@link ChatSetupType}.
  * It requires the current user and, for updates, the specific chat to be modified.
  *
- * <h1>Usage Example (Create):</h1>
+ * <p>Usage Example (Create):
  * <pre>
  * ChatSetupController createController = controllerFactory.chatSetupController()
  *                                          .currentUser(user)
@@ -24,7 +24,7 @@ import java.sql.SQLException;
  *                                          .build();
  * </pre>
  *
- * <h1>Usage Example (Update):</h1>
+ * <p>Usage Example (Update):
  * <pre>
  * ChatSetupController updateController = controllerFactory.chatSetupController()
  *                                          .currentUser(user)
@@ -33,6 +33,7 @@ import java.sql.SQLException;
  *                                          .build();
  * </pre>
  *
+ * @author Justin.
  * @see ai.tutor.cab302exceptionalhandlers.builders.ControllerBuilder
  * @see ai.tutor.cab302exceptionalhandlers.controller.ChatCreateController
  * @see ai.tutor.cab302exceptionalhandlers.controller.ChatUpdateController

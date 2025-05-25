@@ -14,7 +14,7 @@ import java.sql.SQLException;
  * This class constructs either a {@link LoginController} or a {@link SignUpController}
  * based on the specified {@link AuthType}.
  *
- * <h1>Usage Example:</h1>
+ * <p>Usage Example:
  * <pre>
  * AuthController controller = controllerFactory.authController()
  *                                .type(AuthType.LOGIN) // or AuthType.SIGNUP

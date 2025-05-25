@@ -12,6 +12,7 @@ import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
  * singleton. This allows all controller builders produced by the factory
  * to share the same database connection.
  *
+ * @author Justin.
  * @see ai.tutor.cab302exceptionalhandlers.factories.ControllerFactory
  */
 public abstract class AbstractControllerFactory {

@@ -10,7 +10,7 @@ import ai.tutor.cab302exceptionalhandlers.model.User;
  * This class is responsible for the construction of {@code UserSettingsController} objects,
  * requiring the current authenticated {@link User}.
  *
- * <h1>Usage Example:</h1>
+ * <p>Usage Example:
  * <pre>
  * UserSettingsController controller = controllerFactory.userSettingsController()
  *                                        .currentUser(authenticatedUser)
