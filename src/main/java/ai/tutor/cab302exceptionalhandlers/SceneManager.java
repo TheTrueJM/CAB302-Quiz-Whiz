@@ -19,7 +19,7 @@ import java.io.IOException;
  * for switching between different views in the JavaFX application.
  * It uses a {@link ControllerFactory} to create controllers for each view.
  *
- * <h1>Usage Example:</h1>
+ * <p>Usage Example:
  * <pre>
  * SceneManager.getInstance().initialize(primaryStage, controllerFactory);
  * SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);

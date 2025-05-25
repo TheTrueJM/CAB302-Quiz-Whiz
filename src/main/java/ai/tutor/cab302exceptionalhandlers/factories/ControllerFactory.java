@@ -14,7 +14,7 @@ import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
  * to obtain builders for different types of controllers used in the application.
  * Each builder is initialized with the {@link SQLiteConnection} provided to this factory.
  *
- * <h1>Usage Example:</h1>
+ * <p>Usage Example:
  * <pre>
  * SQLiteConnection dbConnection = new SQLiteConnection("database.db");
  * ControllerFactory factory = new ControllerFactory(dbConnection);

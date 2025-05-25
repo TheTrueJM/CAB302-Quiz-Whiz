@@ -11,7 +11,7 @@ import ai.tutor.cab302exceptionalhandlers.model.Quiz;
  * This class is responsible for the construction of {@code QuizController} objects,
  * requiring a specific {@link Quiz} and the current authenticated {@link User}.
  *
- * <h1>Usage Example:</h1>
+ * <p>Usage Example:
  * <pre>
  * QuizController controller = controllerFactory.quizController()
  *                                .quiz(selectedQuiz)
