@@ -24,6 +24,9 @@ import java.io.IOException;
  * SceneManager.getInstance().initialize(primaryStage, controllerFactory);
  * SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
  * </pre>
+ *
+ * @author Justin.
+ * @see ai.tutor.cab302exceptionalhandlers.factories.ControllerFactory
  */
 public class SceneManager {
     private static SceneManager instance;
