@@ -17,6 +17,7 @@ import ai.tutor.cab302exceptionalhandlers.model.User;
  *                                        .build();
  * </pre>
  *
+ * @author Justin.
  * @see ai.tutor.cab302exceptionalhandlers.builders.ControllerBuilder
  * @see ai.tutor.cab302exceptionalhandlers.controller.UserSettingsController
  */

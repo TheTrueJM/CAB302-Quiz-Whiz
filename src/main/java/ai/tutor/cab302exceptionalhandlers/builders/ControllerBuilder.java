@@ -9,8 +9,8 @@ import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
  * create their respective controllers, ensuring each builder has access to a
  * {@link SQLiteConnection}.
  *
- * @param <T> The type of controller to be built.
  * @author Justin.
+ * @param <T> The type of controller to be built.
  */
 public abstract class ControllerBuilder<T> {
     protected final SQLiteConnection db;

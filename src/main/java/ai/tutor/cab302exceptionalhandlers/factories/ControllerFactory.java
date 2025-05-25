@@ -26,6 +26,7 @@ import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
  * // ... configure and build ChatController
  * </pre>
  *
+ * @author Justin.
  * @see ai.tutor.cab302exceptionalhandlers.factories.AbstractControllerFactory
  * @see ai.tutor.cab302exceptionalhandlers.builders.ControllerBuilder
  */

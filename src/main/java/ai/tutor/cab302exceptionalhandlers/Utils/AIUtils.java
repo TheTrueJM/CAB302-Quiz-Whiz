@@ -336,7 +336,6 @@ public class AIUtils {
      * <p>
      * These system prompts are used as the system prompt for AI's responses in tutor and quiz modes.
      *
-     * @return True if verbose output is enabled, false otherwise.
      * @throws IOException if there is an error reading the prompt files.
      */
     private void loadPrompts() throws IOException {
