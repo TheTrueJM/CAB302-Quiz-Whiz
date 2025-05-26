@@ -27,7 +27,7 @@ public class MessageDAO implements IMessageDAO {
      * are removed when their associated chat is deleted.
      *
      * @param sqliteConnection the {@code SQLiteConnection} instance for database access
-     * @throws SQLException if a database error occurs during initialization
+     * @throws SQLException if a database error occurs during initialisation
      * @throws RuntimeException if the SQLite connection cannot be established
      */
 
