@@ -10,7 +10,7 @@ import java.util.List;
  * This Data Access Object (DAO) provides methods to perform CRUD operations on the
  * {@code answerOptions} table in the SQLite database. Answer options are associated
  * with quiz questions via a composite key of message ID, question number, and option
- * identifier, supporting the application's personalised learning features.
+ * identifier.
  *
  * @author Jack
  */
