@@ -68,7 +68,6 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
      * it is inserted.
      *
      * @param answerOption the {@code AnswerOption} object to save
-     * @throws IllegalArgumentException if {@code answerOption} is {@code null} or has invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 

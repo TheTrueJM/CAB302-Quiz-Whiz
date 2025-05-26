@@ -23,7 +23,6 @@ public interface IAnswerOptionDAO {
      * must ensure the answer option is valid.
      *
      * @param answerOption the {@code AnswerOption} object to save
-     * @throws IllegalArgumentException if {@code answerOption} is {@code null} or has invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 
@@ -40,7 +39,6 @@ public interface IAnswerOptionDAO {
      * @param questionNumber the number of the question within the quiz
      * @param option the identifier of the answer option
      * @return the {@code AnswerOption} object if found, or {@code null} if no matching option exists
-     * @throws IllegalArgumentException if {@code messageId} or {@code questionNumber} is negative, or {@code option} is {@code null} or empty
      * @throws SQLException if a database error occurs during retrieval
      */
 
@@ -57,7 +55,6 @@ public interface IAnswerOptionDAO {
      * @param messageId the ID of the quiz message
      * @param questionNumber the number of the question within the quiz
      * @return a {@code List} of {@code AnswerOption} objects for the question, or an empty list if none exist
-     * @throws IllegalArgumentException if {@code messageId} or {@code questionNumber} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 

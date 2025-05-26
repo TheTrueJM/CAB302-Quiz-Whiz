@@ -72,7 +72,6 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
      * must be unique for that message ID.
      *
      * @param quizQuestion the {@code QuizQuestion} entity to save
-     * @throws IllegalArgumentException if {@code quizQuestion} is {@code null} or contains invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 

@@ -23,7 +23,6 @@ public interface IMessageDAO {
      * validate the message to ensure it has valid fields before saving.
      *
      * @param message the {@code Message} entity to save
-     * @throws IllegalArgumentException if {@code message} is {@code null} or contains invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 
@@ -38,7 +37,6 @@ public interface IMessageDAO {
      *
      * @param chatId the ID of the chat session
      * @return a {@code List} of {@code Message} entities for the specified chat, or an empty list if none exist
-     * @throws IllegalArgumentException if {@code chatId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 

@@ -66,7 +66,6 @@ public class QuizDAO implements IQuizDAO {
      * must correspond to an existing message in the {@code messages} table.
      *
      * @param quiz the {@code Quiz} entity to save
-     * @throws IllegalArgumentException if {@code quiz} is {@code null} or has invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 
@@ -90,7 +89,6 @@ public class QuizDAO implements IQuizDAO {
      *
      * @param messageId the ID of the associated message
      * @return the {@code Quiz} entity, or {@code null} if none exists
-     * @throws IllegalArgumentException if {@code messageId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 
@@ -120,7 +118,6 @@ public class QuizDAO implements IQuizDAO {
      *
      * @param chatId the ID of the chat session
      * @return a {@code List} of {@code Quiz} entities for the chat, or an empty list if none exist
-     * @throws IllegalArgumentException if {@code chatId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 
@@ -152,7 +149,6 @@ public class QuizDAO implements IQuizDAO {
      *
      * @param userId the ID of the user
      * @return a {@code List} of {@code Quiz} entities for the user, or an empty list if none exist
-     * @throws IllegalArgumentException if {@code userId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 

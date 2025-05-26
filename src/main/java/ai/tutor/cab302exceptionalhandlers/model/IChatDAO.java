@@ -24,7 +24,6 @@ public interface IChatDAO {
      * {@code Chat} to ensure uniqueness.
      *
      * @param chat the {@code Chat} entity to save
-     * @throws IllegalArgumentException if {@code chat} is {@code null} or has invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 
@@ -39,7 +38,6 @@ public interface IChatDAO {
      * new values are set by the user.
      *
      * @param chat the updated {@code Chat} entity
-     * @throws IllegalArgumentException if {@code chat} is {@code null} or has invalid fields
      * @throws SQLException if a database error occurs during update
      */
 
@@ -52,7 +50,6 @@ public interface IChatDAO {
      * allowing users to rename chat sessions without affecting other preferences.
      *
      * @param chat the {@code Chat} entity with the updated name
-     * @throws IllegalArgumentException if {@code chat} is {@code null} or has an invalid name or ID
      * @throws SQLException if a database error occurs during update
      */
 
@@ -66,7 +63,6 @@ public interface IChatDAO {
      * as quiz questions and answer options is also removed.
      *
      * @param chat the {@code Chat} entity to delete
-     * @throws IllegalArgumentException if {@code chat} is {@code null} or has an invalid ID
      * @throws SQLException if a database error occurs during deletion
      */
 
@@ -80,7 +76,6 @@ public interface IChatDAO {
      *
      * @param id the unique identifier of the {@code Chat} entity
      * @return the {@code Chat} entity if found, or {@code null} if no chat exists
-     * @throws IllegalArgumentException if {@code id} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 
@@ -94,7 +89,6 @@ public interface IChatDAO {
      *
      * @param userId the ID of the user
      * @return a {@code List} of {@code Chat} entities for the user, or an empty list if none exist
-     * @throws IllegalArgumentException if {@code userId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 

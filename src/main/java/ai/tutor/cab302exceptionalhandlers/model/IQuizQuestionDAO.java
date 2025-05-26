@@ -24,7 +24,6 @@ public interface IQuizQuestionDAO {
      * an existing quiz.
      *
      * @param quizQuestion the {@code QuizQuestion} entity to save
-     * @throws IllegalArgumentException if {@code quizQuestion} is {@code null} or contains invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 
@@ -41,7 +40,6 @@ public interface IQuizQuestionDAO {
      * @param messageId the ID of the associated quiz
      * @param number the question number within the quiz
      * @return the {@code QuizQuestion} entity, or {@code null} if none exists
-     * @throws IllegalArgumentException if {@code messageId} or {@code number} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 
@@ -56,7 +54,6 @@ public interface IQuizQuestionDAO {
      *
      * @param messageId the ID of the associated quiz
      * @return a {@code List} of {@code QuizQuestion} entities for the quiz, or an empty list if none exist
-     * @throws IllegalArgumentException if {@code messageId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
 

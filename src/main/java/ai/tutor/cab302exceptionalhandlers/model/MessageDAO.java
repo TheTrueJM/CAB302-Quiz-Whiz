@@ -71,7 +71,6 @@ public class MessageDAO implements IMessageDAO {
      * to ensure uniqueness.
      *
      * @param message the {@code Message} entity to save
-     * @throws IllegalArgumentException if {@code message} is {@code null} or has invalid fields
      * @throws SQLException if a database error occurs during insertion
      */
 
