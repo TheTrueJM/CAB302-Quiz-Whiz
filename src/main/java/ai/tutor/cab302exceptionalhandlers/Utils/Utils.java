@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * General utility class for helper methods
  *
- * @author Mason
+ * @author Mason M.
  */
 public final class Utils {
     private Utils() {
