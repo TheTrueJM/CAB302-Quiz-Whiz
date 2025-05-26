@@ -6,9 +6,9 @@ package ai.tutor.cab302exceptionalhandlers.model;
  * All variables here once set, are immutable.
  *
  * @author Joshua M.
- * @see {#link ai.tutor.cab302exceptionalhandlers.model.Quiz}
- * @see {#link ai.tutor.cab302exceptionalhandlers.model.QuizQuestion}
- * @see {#link ai.tutor.cab302exceptionalhandlers.model.UserAnswerDAO}
+ * @see ai.tutor.cab302exceptionalhandlers.model.Quiz
+ * @see ai.tutor.cab302exceptionalhandlers.model.QuizQuestion
+ * @see ai.tutor.cab302exceptionalhandlers.model.UserAnswerDAO
  */
 public class UserAnswer {
     private final int messageId;

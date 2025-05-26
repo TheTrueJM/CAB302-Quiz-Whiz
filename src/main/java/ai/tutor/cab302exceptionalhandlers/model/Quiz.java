@@ -6,8 +6,8 @@ package ai.tutor.cab302exceptionalhandlers.model;
  * Quizzes must have have a name and difficulty. Within a quiz, there will be
  * multiple options for the student to choose from. See {@link QuizQuestion}
  * @author Joshua M.
- * @see {@link ai.tutor.cab302exceptionalhandlers.model.IQuizDAO}
- * @see {@link ai.tutor.cab302exceptionalhandlers.model.QuizQuestion}
+ * @see ai.tutor.cab302exceptionalhandlers.model.IQuizDAO
+ * @see ai.tutor.cab302exceptionalhandlers.model.QuizQuestion
  */
 public class Quiz {
     private final int messageId;

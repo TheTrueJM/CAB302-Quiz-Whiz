@@ -11,7 +11,7 @@ import com.password4j.ScryptFunction;
  * Passwords are hashed and salted using the Scrypt algorithm
  *
  * @author Joshua M.
- * @see {@link ai.tutor.cab302exceptionalhandlers.model.UserDAO}
+ * @see ai.tutor.cab302exceptionalhandlers.model.UserDAO
  */
 public class User {
     private int id;
@@ -26,7 +26,7 @@ public class User {
      * @param username The username of the user, must be 1-25 alphanumeric characters
      * @param passwordHash The hashed password of the user, must not be null or empty
      * @throws IllegalArgumentException if any of the parameters are invalid
-     * @see {@link ai.tutor.cab302exceptionalhandlers.model.User#hashPassword(String)}
+     * @see #hashPassword
      */
     public User(String username, String passwordHash) throws IllegalArgumentException {
         setUsername(username);

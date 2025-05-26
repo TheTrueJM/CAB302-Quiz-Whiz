@@ -4,7 +4,7 @@ package ai.tutor.cab302exceptionalhandlers.model;
  * Represents a single message in a Chat
  *
  * @author Joshua M.
- * @see {@link ai.tutor.cab302exceptionalhandlers.model.Chat}
+ * @see ai.tutor.cab302exceptionalhandlers.model.Chat
  */
 public class Message {
     private int id;
