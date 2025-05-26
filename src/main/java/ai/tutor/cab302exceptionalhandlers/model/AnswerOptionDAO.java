@@ -5,44 +5,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages {@code AnswerOption} entities for quiz questions
+ * Responsible for conducting database CRUD operations for quiz answer options.
  * <p>
- * This Data Access Object (DAO) provides methods to perform CRUD operations on the
- * {@code answerOptions} table in the SQLite database. Answer options are associated
- * with quiz questions via a composite key of message ID, question number, and option
- * identifier.
+ * This Data Access Object (DAO) provides methods to create and retrieve
+ * answer options for quiz questions in the SQLite database.
+ * It manages the `answerOptions` table, which stores
+ * answer options associated with quiz questions.
  *
- * @author Jack
+ * @author Joshua M.
  */
-
 public class AnswerOptionDAO implements IAnswerOptionDAO {
     private final Connection connection;
 
     /**
-     * Constructs an {@code AnswerOptionDAO} with a connection to the SQLite database.
-     * Initialises the {@code answerOptions} table if it does not already exist.
+     * Constructor for {@link AnswerOptionDAO} initializing answerOptions table.
      *
-     * @param sqliteConnection the {@code SQLiteConnection} instance for database access
-     * @throws SQLException if a database error occurs during initialisation
+     * @param sqliteConnection the {@link SQLiteConnection} instance for database access
+     * @throws SQLException if a database error occurs when creating answerOptions table
      * @throws RuntimeException if the SQLite connection cannot be established
+     * @see #createTable()
      */
-
     public AnswerOptionDAO(SQLiteConnection sqliteConnection) throws SQLException, RuntimeException {
         connection = sqliteConnection.getInstance();
         createTable();
     }
 
     /**
-     * Creates the {@code answerOptions} table in the SQLite database.
+     * Creates the {@link answerOptions} table in the SQLite database.
      * <p>
-     * This method defines the schema for the {@code answerOptions} table, including columns
-     * for message ID, question number, option identifier, value, and a flag indicating if
-     * the option is the correct answer. The table uses a composite primary key and a foreign
-     * key to the {@code quizQuestions} table with cascading deletion.
+     * If the table does not exist, it creates a new table named answerOptions.
      *
      * @throws SQLException if a database error occurs during table creation
+     * @see {@link quizQuestions}
      */
-
     private void createTable() throws SQLException {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
@@ -60,17 +55,15 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     }
 
     /**
-     * Saves a new {@code AnswerOption} to the database.
+     * Inserts an {@link AnswerOption} into the database.
      * <p>
-     * This method inserts an {@code AnswerOption} into the {@code answerOptions} table,
+     * This method inserts an {@link AnswerOption} into the {@code answerOptions} table,
      * storing its message ID, question number, option identifier, value, and whether it
-     * is the correct answer. The operation ensures the answer option is valid before
-     * it is inserted.
+     * is the correct answer.
      *
-     * @param answerOption the {@code AnswerOption} object to save
+     * @param answerOption the {@link AnswerOption} object to insert
      * @throws SQLException if a database error occurs during insertion
      */
-
     @Override
     public void createAnswerOption(AnswerOption answerOption) throws SQLException {
         String sql = "INSERT INTO answerOptions (messageId, questionNumber, option, value, isAnswer) VALUES (?, ?, ?, ?, ?)";
@@ -127,7 +120,7 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
      *
      * @param messageId the ID of the quiz message
      * @param questionNumber the number of the question within the quiz
-     * @return a {@code List} of {@code AnswerOption} objects for the question, or an empty list if none exist
+     * @return a {@code List} of {@link AnswerOption} objects for the question, or an empty list if none exist
      * @throws IllegalArgumentException if {@code messageId} or {@code questionNumber} is negative
      * @throws SQLException if a database error occurs during fetching
      */

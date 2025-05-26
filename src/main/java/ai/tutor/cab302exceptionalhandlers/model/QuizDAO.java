@@ -5,25 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages {@code Quiz} entities for chat sessions.
+ * Conducts database operations for managing quizzes
  * <p>
  * This Data Access Object (DAO) provides methods to perform CRUD operations and queries
  * on the {@code quizzes} table in the SQLite database. Quizzes are associated with
  * messages via a message ID, representing AI-generated quiz content within chat sessions.
  *
- * @author Jack
+ * @author Joshua M.
  */
-
 public class QuizDAO implements IQuizDAO {
     private final Connection connection;
 
     /**
      * Initialises the {@code QuizDAO} with an SQLite database connection.
-     * <p>
-     * This constructor establishes a connection using the provided {@code SQLiteConnection}
-     * and creates the {@code quizzes} table if it does not exist. The table includes a
-     * foreign key to the {@code messages} table with cascading deletion to ensure quizzes
-     * are removed when their associated message is deleted.
      *
      * @param sqliteConnection the {@code SQLiteConnection} instance for database access
      * @throws SQLException if a database error occurs during initialisation
@@ -37,14 +31,9 @@ public class QuizDAO implements IQuizDAO {
 
     /**
      * Creates the {@code quizzes} table in the database.
-     * <p>
-     * This method defines the schema for the {@code quizzes} table, including columns for
-     * message ID (primary key), name, and difficulty. The table includes a foreign
-     * key to the {@code messages} table with cascading deletion.
      *
      * @throws SQLException if a database error occurs during table creation
      */
-
     private void createTable() throws SQLException {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
@@ -60,10 +49,6 @@ public class QuizDAO implements IQuizDAO {
 
     /**
      * Saves a new {@code Quiz} entity to the database.
-     * <p>
-     * This method inserts a {@code Quiz} entity into the {@code quizzes} table, storing
-     * its message ID, name, and difficulty. The message ID is the primary key and
-     * must correspond to an existing message in the {@code messages} table.
      *
      * @param quiz the {@code Quiz} entity to save
      * @throws SQLException if a database error occurs during insertion
@@ -91,7 +76,6 @@ public class QuizDAO implements IQuizDAO {
      * @return the {@code Quiz} entity, or {@code null} if none exists
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public Quiz getQuiz(int messageId) throws SQLException {
         String sql = "SELECT * FROM quizzes WHERE messageId = ?";
@@ -120,7 +104,6 @@ public class QuizDAO implements IQuizDAO {
      * @return a {@code List} of {@code Quiz} entities for the chat, or an empty list if none exist
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public List<Quiz> getAllChatQuizzes(int chatId) throws SQLException {
         List<Quiz> chatQuizzes = new ArrayList<>();
@@ -151,7 +134,6 @@ public class QuizDAO implements IQuizDAO {
      * @return a {@code List} of {@code Quiz} entities for the user, or an empty list if none exist
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public List<Quiz> getAllUserQuizzes(int userId) throws SQLException {
         List<Quiz> userQuizzes = new ArrayList<>();

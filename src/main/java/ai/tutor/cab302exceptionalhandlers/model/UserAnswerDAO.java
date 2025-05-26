@@ -5,33 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages {@code UserAnswer} entities for quiz questions.
+ * Represents the data operations for {@code UserAnswer} entities in the SQLite database.
  * <p>
  * This Data Access Object (DAO) provides methods to perform CRUD operations and queries
  * on the {@code userAnswers} table in the SQLite database. User answers are associated
  * with quiz questions via a composite key of message ID, attempt number, and question
  * number, representing user responses to quiz questions.
  *
- * @author Jack
+ * @author Joshua M.
  */
-
 public class UserAnswerDAO implements IUserAnswerDAO {
     private final Connection connection;
 
     /**
-     * Initialises the {@code UserAnswerDAO} with an SQLite database connection.
-     * <p>
-     * This constructor establishes a connection using the provided {@code SQLiteConnection}
-     * and creates the {@code userAnswers} table if it does not exist. The table includes
-     * a composite primary key (message ID, attempt, question number) and a foreign key
-     * to the {@code quizQuestions} table with cascading deletion to ensure user answers
-     * are removed when their associated quiz question is deleted.
+     * Constructs a sqlite {@code UserAnswerDAO} connection for database operations.
      *
      * @param sqliteConnection the {@code SQLiteConnection} instance for database access
      * @throws SQLException if a database error occurs during initialisation
      * @throws RuntimeException if the SQLite connection cannot be established
      */
-
     public UserAnswerDAO(SQLiteConnection sqliteConnection) throws SQLException, RuntimeException {
         connection = sqliteConnection.getInstance();
         createTable();
@@ -39,16 +31,9 @@ public class UserAnswerDAO implements IUserAnswerDAO {
 
     /**
      * Creates the {@code userAnswers} table in the SQLite database.
-     * <p>
-     * This method defines the schema for the {@code userAnswers} table, including columns
-     * for message ID, attempt number (with a constraint ensuring it is at least 1),
-     * question number (with a constraint ensuring it is at least 1), and answer option.
-     * The table uses a composite primary key (message ID, attempt, question number) and
-     * a foreign key to the {@code quizQuestions} table with cascading deletion.
      *
      * @throws SQLException if a database error occurs during table creation
      */
-
     private void createTable() throws SQLException {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
@@ -65,17 +50,16 @@ public class UserAnswerDAO implements IUserAnswerDAO {
     }
 
     /**
-     * Saves a new {@code UserAnswer} entity to the database.
+     * Inserts a new {@code UserAnswer} entity to the database.
      * <p>
      * This method inserts a {@code UserAnswer} entity into the {@code userAnswers} table,
      * storing its message ID, attempt number, question number, and answer option. The
      * message ID and question number must correspond to an existing quiz question in the
      * {@code quizQuestions} table.
      *
-     * @param userAnswer the {@code UserAnswer} entity to save
+     * @param userAnswer the {@code UserAnswer} entity to insert
      * @throws SQLException if a database error occurs during insertion
      */
-
     @Override
     public void createUserAnswer(UserAnswer userAnswer) throws SQLException {
         String sql = "INSERT INTO userAnswers (messageId, attempt, questionNumber, answerOption) VALUES (?, ?, ?, ?)";
@@ -89,7 +73,7 @@ public class UserAnswerDAO implements IUserAnswerDAO {
     }
 
     /**
-     * Retrieves a {@code UserAnswer} entity by its message ID, attempt number, and question number.
+     * Retrieves a {@code UserAnswer} entity
      * <p>
      * This method fetches a single {@code UserAnswer} entity from the {@code userAnswers}
      * table that matches the specified composite key. Returns {@code null} if no user
@@ -102,7 +86,6 @@ public class UserAnswerDAO implements IUserAnswerDAO {
      * @throws IllegalArgumentException if {@code messageId}, {@code attempt}, or {@code questionNumber} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public UserAnswer getUserQuestionAnswer(int messageId, int attempt, int questionNumber) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM userAnswers WHERE messageId = ? AND attempt = ? AND questionNumber = ?";
@@ -134,7 +117,6 @@ public class UserAnswerDAO implements IUserAnswerDAO {
      * @throws IllegalArgumentException if {@code messageId} or {@code questionNumber} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public List<UserAnswer> getAllUserQuestionAttempts(int messageId, int questionNumber) throws IllegalArgumentException, SQLException {
         List<UserAnswer> userQuestionAttempts = new ArrayList<>();
@@ -168,7 +150,6 @@ public class UserAnswerDAO implements IUserAnswerDAO {
      * @throws IllegalArgumentException if {@code messageId} or {@code attempt} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public List<UserAnswer> getAllUserQuizAnswers(int messageId, int attempt) throws IllegalArgumentException, SQLException {
         List<UserAnswer> userQuizAnswers = new ArrayList<>();
@@ -200,7 +181,6 @@ public class UserAnswerDAO implements IUserAnswerDAO {
      * @throws IllegalArgumentException if {@code messageId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public List<UserAnswer> getAllUserQuizAttempts(int messageId) throws IllegalArgumentException, SQLException {
         List<UserAnswer> userQuizAttempts = new ArrayList<>();

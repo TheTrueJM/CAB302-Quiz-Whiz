@@ -4,58 +4,39 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Outlines the contract for managing {@code QuizQuestion} entities.
- * <p>
- * This interface specifies methods for performing CRUD operations on quiz questions
- * stored in the SQLite database. Quiz questions are linked to quizzes via a message ID
- * and a question number, representing individual questions within a quiz.
+ * Defines the interface for a QuizQuestion DAO.
  *
- * @author Jack
+ * Any class implementing {@code IQuizQuestionDAO} must provide implementations for
+ * creating and retrieving quiz questions.
+ *
+ * @author Joshua M.
  */
-
 public interface IQuizQuestionDAO {
 
     /**
-     * Saves a new {@code QuizQuestion} entity to the database.
-     * <p>
-     * This method inserts a {@code QuizQuestion} entity into the {@code quizQuestions}
-     * table, storing its message ID, question number, and question content. Implementations
-     * must validate the quiz question to ensure it has valid fields and is associated with
-     * an existing quiz.
+     * Creates a new QuizQuestion in the database.
      *
-     * @param quizQuestion the {@code QuizQuestion} entity to save
-     * @throws SQLException if a database error occurs during insertion
+     * @param quizQuestion The QuizQuestion to create.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public void createQuizQuestion(QuizQuestion quizQuestion) throws SQLException;
 
-
     /**
-     * Retrieves a {@code QuizQuestion} entity by its message ID and question number.
-     * <p>
-     * This method fetches a single {@code QuizQuestion} entity from the {@code quizQuestions}
-     * table that matches the specified message ID and question number. Returns {@code null}
-     * if no quiz question is found for the given key.
+     * Retrieves a specific QuizQuestion from the database.
      *
-     * @param messageId the ID of the associated quiz
-     * @param number the question number within the quiz
-     * @return the {@code QuizQuestion} entity, or {@code null} if none exists
-     * @throws SQLException if a database error occurs during retrieval
+     * @param messageId The ID of the message (quiz) associated with the question.
+     * @param number The question number within the quiz.
+     * @return The {@link QuizQuestion} matching the criteria, or null if not found.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public QuizQuestion getQuizQuestion(int messageId, int number) throws SQLException;
 
     /**
-     * Retrieves all {@code QuizQuestion} entities for a specific quiz.
-     * <p>
-     * This method fetches all quiz questions associated with the specified message ID
-     * from the {@code quizQuestions} table. Returns a list of {@code QuizQuestion} entities,
-     * which may be empty if no questions are found for the quiz.
+     * Retrieves all QuizQuestions associated with a specific quiz (message).
      *
-     * @param messageId the ID of the associated quiz
-     * @return a {@code List} of {@code QuizQuestion} entities for the quiz, or an empty list if none exist
-     * @throws SQLException if a database error occurs during retrieval
+     * @param messageId The ID of the message (quiz) whose questions are to be retrieved.
+     * @return A list of {@link QuizQuestion} objects for the specified quiz.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public List<QuizQuestion> getAllQuizQuestions(int messageId) throws SQLException;
 }

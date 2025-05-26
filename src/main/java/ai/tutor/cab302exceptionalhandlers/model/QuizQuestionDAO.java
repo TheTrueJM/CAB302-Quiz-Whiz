@@ -5,34 +5,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages {@code QuizQuestion} entities for quizzes.
+ * Conducts SQL operations for managing quiz questions into the database
  * <p>
  * This Data Access Object (DAO) provides methods to perform CRUD operations on the
  * {@code quizQuestions} table in the SQLite database. Quiz questions are associated with
  * quizzes via a message ID and a question number, representing individual questions within
  * a quiz, and support features such as quiz delivery and evaluation.
  *
- * @author Jack
+ * @author Joshua M.
  */
-
 public class QuizQuestionDAO implements IQuizQuestionDAO {
     private final Connection connection;
 
 
     /**
      * Initialises the {@code QuizQuestionDAO} with an SQLite database connection.
-     * <p>
-     * This constructor establishes a connection using the provided {@code SQLiteConnection}
-     * and creates the {@code quizQuestions} table if it does not exist. The table includes
-     * a composite primary key (message ID and question number) and a foreign key to the
-     * {@code quizzes} table with cascading deletion to ensure quiz questions are removed
-     * when their associated quiz is deleted.
      *
      * @param sqliteConnection the {@code SQLiteConnection} instance for database access
      * @throws SQLException if a database error occurs during initialisation
      * @throws RuntimeException if the SQLite connection cannot be established
      */
-
     public QuizQuestionDAO(SQLiteConnection sqliteConnection) throws SQLException, RuntimeException {
         connection = sqliteConnection.getInstance();
         createTable();
@@ -40,15 +32,9 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
 
     /**
      * Creates the {@code quizQuestions} table in the SQLite database.
-     * <p>
-     * This method defines the schema for the {@code quizQuestions} table, including columns
-     * for message ID, question number (with a constraint ensuring it is at least 1), and
-     * question content. The table uses a composite primary key (message ID and question
-     * number) and a foreign key to the {@code quizzes} table with cascading deletion.
      *
      * @throws SQLException if a database error occurs during table creation
      */
-
     private void createTable() throws SQLException {
         try (Statement createTable = connection.createStatement()) {
             createTable.execute(
@@ -64,17 +50,16 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
     }
 
     /**
-     * Saves a new {@code QuizQuestion} entity to the database.
+     * Inserts a new {@code QuizQuestion} entity to the database.
      * <p>
      * This method inserts a {@code QuizQuestion} entity into the {@code quizQuestions} table,
      * storing its message ID, question number, and question content. The message ID must
      * correspond to an existing quiz in the {@code quizzes} table, and the question number
      * must be unique for that message ID.
      *
-     * @param quizQuestion the {@code QuizQuestion} entity to save
+     * @param quizQuestion the {@code QuizQuestion} entity to insert
      * @throws SQLException if a database error occurs during insertion
      */
-
     @Override
     public void createQuizQuestion(QuizQuestion quizQuestion) throws SQLException {
         String sql = "INSERT INTO quizQuestions (messageId, number, question) VALUES (?, ?, ?)";
@@ -99,7 +84,6 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
      * @throws IllegalArgumentException if {@code messageId} or {@code number} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public QuizQuestion getQuizQuestion(int messageId, int number) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM quizQuestions WHERE messageId = ? AND number = ?";
@@ -128,7 +112,6 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
      * @throws IllegalArgumentException if {@code messageId} is negative
      * @throws SQLException if a database error occurs during retrieval
      */
-
     @Override
     public List<QuizQuestion> getAllQuizQuestions(int messageId) throws IllegalArgumentException, SQLException {
         List<QuizQuestion> quizQuestions = new ArrayList<>();

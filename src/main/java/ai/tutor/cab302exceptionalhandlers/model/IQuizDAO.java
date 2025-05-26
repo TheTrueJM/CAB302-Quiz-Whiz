@@ -4,69 +4,47 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Outlines the contract for managing {@code Quiz} entities.
- * <p>
- * This interface specifies methods for performing CRUD operations and queries on quizzes
- * stored in the SQLite database. Quizzes are linked to messages via a message ID,
- * representing AI-generated quiz content within chat sessions.
+ * Defines the interface for a Quiz DAO.
  *
- * @author Jack
+ * Any class implementing {@code IQuizDAO} must provide implementations for
+ * CRUD methods and other quiz-related operations in this interface.
+ *
+ * @author Joshua M.
  */
-
 public interface IQuizDAO {
 
     /**
-     * Saves a new {@code Quiz} entity to the database.
-     * <p>
-     * This method inserts a {@code Quiz} entity into the {@code quizzes} table, storing
-     * its message ID, name, and difficulty. Implementations must validate the quiz to
-     * ensure it has valid fields and is associated with an existing message.
+     * Creates a new Quiz in the database.
      *
-     * @param quiz the {@code Quiz} entity to save
-     * @throws SQLException if a database error occurs during insertion
+     * @param quiz The Quiz to create.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public void createQuiz(Quiz quiz) throws SQLException;
 
     /**
-     * Retrieves a {@code Quiz} entity by its associated message ID.
-     * <p>
-     * This method fetches a single {@code Quiz} entity from the {@code quizzes} table
-     * that matches the specified message ID. Returns {@code null} if no quiz is found
-     * for the given message ID.
+     * Retrieves a Quiz from the database by its associated message ID.
      *
-     * @param messageId the ID of the associated message
-     * @return the {@code Quiz} entity, or {@code null} if none exists
-     * @throws SQLException if a database error occurs during retrieval
+     * @param messageId The ID of the message associated with the Quiz.
+     * @return The {@link Quiz} matching the message ID, or null if not found.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public Quiz getQuiz(int messageId) throws SQLException;
 
     /**
-     * Retrieves all {@code Quiz} entities for a specific chat session.
-     * <p>
-     * This method fetches all quizzes associated with AI-generated messages marked as
-     * quizzes within the specified chat session. Returns a list of {@code Quiz} entities,
-     * which may be empty if no quizzes are found for the chat ID.
+     * Retrieves all Quizzes associated with a specific chat.
      *
-     * @param chatId the ID of the chat session
-     * @return a {@code List} of {@code Quiz} entities for the chat, or an empty list if none exist
-     * @throws SQLException if a database error occurs during retrieval
+     * @param chatId The ID of the chat whose quizzes are to be retrieved.
+     * @return A list of {@link Quiz} objects associated with the chat.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public List<Quiz> getAllChatQuizzes(int chatId) throws SQLException;
 
     /**
-     * Retrieves all {@code Quiz} entities for a specific user across all their chat sessions.
-     * <p>
-     * This method fetches all quizzes associated with AI-generated messages marked as
-     * quizzes from all chat sessions linked to the specified user ID. Returns a list of
-     * {@code Quiz} entities, which may be empty if no quizzes are found for the user.
+     * Retrieves all Quizzes associated with a specific user.
      *
-     * @param userId the ID of the user
-     * @return a {@code List} of {@code Quiz} entities for the user, or an empty list if none exist
-     * @throws SQLException if a database error occurs during retrieval
+     * @param userId The ID of the user whose quizzes are to be retrieved.
+     * @return A list of {@link Quiz} objects associated with the user.
+     * @throws SQLException If an SQL error occurs during the operation.
      */
-
     public List<Quiz> getAllUserQuizzes(int userId) throws SQLException;
 }
