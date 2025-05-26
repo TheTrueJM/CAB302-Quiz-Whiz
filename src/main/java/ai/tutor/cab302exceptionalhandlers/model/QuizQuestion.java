@@ -8,7 +8,7 @@ package ai.tutor.cab302exceptionalhandlers.model;
  * and the question content itself.
  *
  * @author Joshua M.
- * @see {#link ai.tutor.cab302exceptionalhandlers.model.Quiz}
+ * @see {@link ai.tutor.cab302exceptionalhandlers.model.Quiz}
  */
 public class QuizQuestion {
     private final int messageId;
