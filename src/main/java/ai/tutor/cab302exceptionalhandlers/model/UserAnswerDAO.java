@@ -18,12 +18,11 @@ public class UserAnswerDAO implements IUserAnswerDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS userAnswers ("
                     + "messageId INTEGER,"
-                    + "attempt INTEGER NOT NULL CHECK (attempt >= 1),"
-                    + "questionNumber INTEGER NOT NULL CHECK (questionNumber >= 1),"
-                    + "answerOption VARCHAR NOT NULL,"
+                    + "attempt INTEGER CHECK (attempt >= 1),"
+                    + "questionNumber INTEGER CHECK (questionNumber >= 1),"
+                    + "answerOption VARCHAR,"
                     + "PRIMARY KEY (messageId, attempt, questionNumber),"
-                    + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE,"
-                    + "FOREIGN KEY(answerOption) REFERENCES answerOptions(option)"
+                    + "FOREIGN KEY(messageId, questionNumber) REFERENCES quizQuestions(messageId, number) ON DELETE CASCADE"
                     + ")"
             );
         }
@@ -43,7 +42,7 @@ public class UserAnswerDAO implements IUserAnswerDAO {
     }
 
     @Override
-    public UserAnswer getUserQuestionAnswer(int messageId, int attempt, int questionNumber) throws SQLException {
+    public UserAnswer getUserQuestionAnswer(int messageId, int attempt, int questionNumber) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM userAnswers WHERE messageId = ? AND attempt = ? AND questionNumber = ?";
         try (PreparedStatement readUserQuestionAnswer = connection.prepareStatement(sql)) {
             readUserQuestionAnswer.setInt(1, messageId);
@@ -60,7 +59,7 @@ public class UserAnswerDAO implements IUserAnswerDAO {
     }
 
     @Override
-    public List<UserAnswer> getAllUserQuestionAttempts(int messageId, int questionNumber) throws SQLException {
+    public List<UserAnswer> getAllUserQuestionAttempts(int messageId, int questionNumber) throws IllegalArgumentException, SQLException {
         List<UserAnswer> userQuestionAttempts = new ArrayList<>();
         String sql = "SELECT * FROM userAnswers WHERE messageId = ? AND questionNumber = ?";
         try (PreparedStatement readUserQuestionAttempts = connection.prepareStatement(sql)) {
@@ -79,7 +78,7 @@ public class UserAnswerDAO implements IUserAnswerDAO {
     }
 
     @Override
-    public List<UserAnswer> getAllUserQuizAnswers(int messageId, int attempt) throws SQLException {
+    public List<UserAnswer> getAllUserQuizAnswers(int messageId, int attempt) throws IllegalArgumentException, SQLException {
         List<UserAnswer> userQuizAnswers = new ArrayList<>();
         String sql = "SELECT * FROM userAnswers WHERE messageId = ? AND attempt = ?";
         try (PreparedStatement readUserQuizAnswers = connection.prepareStatement(sql)) {
@@ -98,7 +97,7 @@ public class UserAnswerDAO implements IUserAnswerDAO {
     }
 
     @Override
-    public List<UserAnswer> getAllUserQuizAttempts(int messageId) throws SQLException {
+    public List<UserAnswer> getAllUserQuizAttempts(int messageId) throws IllegalArgumentException, SQLException {
         List<UserAnswer> userQuizAttempts = new ArrayList<>();
         String sql = "SELECT * FROM userAnswers WHERE messageId = ?";
         try (PreparedStatement readUserQuizAttempts = connection.prepareStatement(sql)) {

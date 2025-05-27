@@ -18,7 +18,7 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
             createTable.execute(
                     "CREATE TABLE IF NOT EXISTS quizQuestions ("
                     + "messageId INTEGER,"
-                    + "number INTEGER,"
+                    + "number INTEGER CHECK (number >= 1),"
                     + "question VARCHAR NOT NULL,"
                     + "PRIMARY KEY (messageId, number),"
                     + "FOREIGN KEY(messageId) REFERENCES quizzes(messageId) ON DELETE CASCADE"
@@ -40,7 +40,7 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
     }
 
     @Override
-    public QuizQuestion getQuizQuestion(int messageId, int number) throws SQLException {
+    public QuizQuestion getQuizQuestion(int messageId, int number) throws IllegalArgumentException, SQLException {
         String sql = "SELECT * FROM quizQuestions WHERE messageId = ? AND number = ?";
         try (PreparedStatement readQuizQuestion = connection.prepareStatement(sql)) {
             readQuizQuestion.setInt(1, messageId);
@@ -56,7 +56,7 @@ public class QuizQuestionDAO implements IQuizQuestionDAO {
     }
 
     @Override
-    public List<QuizQuestion> getAllQuizQuestions(int messageId) throws SQLException {
+    public List<QuizQuestion> getAllQuizQuestions(int messageId) throws IllegalArgumentException, SQLException {
         List<QuizQuestion> quizQuestions = new ArrayList<>();
         String sql = "SELECT * FROM quizQuestions WHERE messageId = ?";
         try (PreparedStatement readQuizQuestions = connection.prepareStatement(sql)) {

@@ -1,48 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
+<VBox alignment="TOP_CENTER" maxHeight="540.0" maxWidth="960.0" prefHeight="518.0" prefWidth="960.0" spacing="20.0" styleClass="main-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+       <URL value="@styles/MainStyles.css" />
+      <URL value="@styles/AuthStyles.css" />
+   </stylesheets>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml" style="-fx-background-color: #CBD6FF;">
+   <!--Top Banner Region-->
+   <HBox alignment="TOP_CENTER" maxWidth="Infinity" styleClass="banner">
+      <Label alignment="TOP_CENTER" styleClass="banner-title" text="Welcome to Quiz Whiz" textAlignment="CENTER" />
+   </HBox>
+   <!--Main Container-->
+   <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+      <!--Form Container-->
+         <VBox alignment="CENTER" maxHeight="468.0" maxWidth="500.0" prefHeight="178.0" styleClass="form-container">
+               <VBox maxWidth="400.0" prefHeight="111.0">
+                  <!-- The Fields for Login page-->
+                     <Label styleClass="input-label" text="Username">
+                        <VBox.margin>
+                           <Insets top="12.0" />
+                        </VBox.margin>
+                     </Label>
+                     <TextField fx:id="usernameField" promptText="Username..." styleClass="input-field" />
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
+               </VBox>
+               <Label fx:id="usernameFeedback" prefWidth="400.0" styleClass="feedback-label" />
+               <VBox alignment="BOTTOM_LEFT" maxWidth="400.0" prefHeight="79.0">
+                     <Label styleClass="input-label" text="Password" />
+                        <PasswordField fx:id="passwordField" promptText="Password..." styleClass="input-field" />
+               </VBox>
+               <Label fx:id="passwordFeedback" prefWidth="400.0" styleClass="feedback-label" />
+               <Button fx:id="submitButton" disable="true" prefHeight="43.0" prefWidth="142.0" styleClass="submit-button" text="Login">
+                  <VBox.margin>
+                     <Insets bottom="15.0" top="3.0" />
+                  </VBox.margin>
+               </Button>
+               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <Label styleClass="switch-prompt" text="Don’t have an Account?">
+                        <HBox.margin>
+                           <Insets right="6.0" />
+                        </HBox.margin>
+                     </Label>
+                     <Button fx:id="switchLayout" styleClass="switch-button" text="Sign Up" />
+               </HBox>
 
-<!--The Header-->
-    <HBox alignment="TOP_CENTER" spacing="10" style="-fx-background-color: #336699; -fx-padding: 10;">
-        <Label style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="Welcome to Quiz Whiz" textAlignment="CENTER" alignment="TOP_CENTER" />
-    </HBox>
-
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged" />
-    <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
-    <Button fx:id="loginButton" text="Login" onAction="#onLogin" disable="true" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold;"/>
-    <Button text="Switch to Sign Up" onAction="#switchToSignUp" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold;"/>
-
-    <!-- Logo at the end of page -->
-    <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
-        <image>
-            <Image url="@images/logo-blue.png" />
-        </image>
-    </ImageView>
-
-
+               <!-- Bottom Form Logo -->
+               <ImageView fitHeight="92.0" fitWidth="166.0" pickOnBounds="true" preserveRatio="true">
+                     <Image url="@images/logo-blue.png" />
+                  <VBox.margin>
+                     <Insets bottom="10.0" top="4.0" />
+                  </VBox.margin>
+               </ImageView>
+         </VBox>
+   </VBox>
 </VBox>
-
-<!--
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ai.tutor.cab302exceptionalhandlers.controller.AuthController"
-            prefHeight="200.0" prefWidth="300.0">
-
-    <center>
-        <TextField fx:id="usernameField" promptText="Username..." />
-        <TextField fx:id="passwordField" promptText="Password..." />
-        <Button fx:id="loginButton" onAction="#onLogin" HBox.hgrow="ALWAYS"/>
-    </center>
-
-</BorderPane>
--->

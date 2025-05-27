@@ -1,0 +1,106 @@
+/* Main Layout */
+.background {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, -fx-background-light 0%, -fx-primary-color 100%);
+}
+
+.main-container {
+    -fx-background-color: white;
+    -fx-border-radius: 60px;
+    -fx-background-radius: 60px;
+    -fx-border-color: #808080;
+}
+
+/* Top bar */
+.banner {
+    -fx-background-radius: 60px 60px 0px 0px;
+    -fx-background-color: -fx-topbar-color;
+    -fx-border-radius: 60px 60px 0px 0px;
+}
+
+/* Slider */
+.quiz-length {
+    -fx-background-color: white;
+    -fx-padding: 3px;
+}
+
+.quiz-length .thumb {
+    -fx-background-color: white;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 10px;
+    -fx-pref-height: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5px, 0, 0, 1px);
+}
+
+.quiz-length .thumb:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.quiz-length .thumb:pressed {
+    -fx-background-color: #a0a0a0;
+}
+
+/* Form Input */
+.option-container {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-background-light;
+    -fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+}
+
+.form-content {
+    -fx-padding: 25px;
+}
+
+.input-field {
+    -fx-background-color: white;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.dropdown-field {
+    -fx-background-color: white;
+    -fx-background-radius: 6px;
+}
+
+/* Columns */
+.column-left {
+    -fx-padding: 10px 40px 0px 0px;
+}
+
+.column-right {
+    -fx-padding: 10px 0px 10px 40px;
+}
+
+/* Buttons */
+.submit-button {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 23px;
+}
+
+.download-button {
+    -fx-background-color: transparent;
+}
+
+.exit-button {
+    -fx-background-color: transparent;
+}
+
+.submit-button:hover,
+.download-button:hover,
+.exit-button:hover,
+.dropdown-field:hover,
+.background:hover {
+    -fx-opacity: 0.8;
+    -fx-transition: opacity 0.2s ease-in-out;
+    -fx-cursor: hand;
+}
+
+/* Headers */
+.setup-header {
+    -fx-text-fill: white;
+    -fx-font-size: 36px;
+}

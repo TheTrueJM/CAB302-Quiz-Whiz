@@ -1,9 +1,11 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
-import ai.tutor.cab302exceptionalhandlers.model.User;
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
+import ai.tutor.cab302exceptionalhandlers.model.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -11,22 +13,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class LoginController {
-    private final AuthController authController;
-
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField passwordField;
-    @FXML
-    private Button loginButton;
-
-    private boolean usernameEmpty = true;
-    private boolean passwordEmpty = true;
-
-
+public class LoginController extends AuthController {
     public LoginController(SQLiteConnection db) throws RuntimeException, SQLException {
-        this.authController = new AuthController(db);
+        super(db);
     }
 
 
@@ -36,10 +25,7 @@ public class LoginController {
      * =========================
      */
 
-    private Stage getStage() {
-        return (Stage) loginButton.getScene().getWindow();
-    }
-
+    @Override
     @FXML
     protected void onFieldChanged(KeyEvent e) {
         TextField sender = (TextField) e.getSource();
@@ -58,29 +44,50 @@ public class LoginController {
         submitButtonToggle();
     }
 
-    private void submitButtonToggle() {
-        loginButton.setDisable(usernameEmpty || passwordEmpty);
+    @Override
+    protected void submitButtonToggle() {
+        submitButton.setDisable(usernameEmpty || passwordEmpty);
     }
 
+    @Override
     @FXML
-    protected void onLogin() throws IOException, SQLException {
+    protected void onSubmit() throws IOException, SQLException {
+        resetErrorFeedback();
         String username = usernameField.getText();
         String password = passwordField.getText();
 
         try {
-            User existingUser = authController.login(username, password);
+            User existingUser = authenticateUser(username, password);
 
             // Open Chat Page
-            authController.authenticate(existingUser, getStage());
-        } catch (Exception e) {
-            // TODO: Display possible Login error messages to FXML
-            System.err.println("User Login Failed: " + e.getMessage() + e.getClass());
+            loadChat(existingUser);
+
+        } catch (IllegalArgumentException e) {
+            errorFeedback(usernameFeedback, e.getMessage());
+        } catch (SecurityException e) {
+            errorFeedback(passwordFeedback, e.getMessage());
         }
     }
 
-    // Open Login Page
-    @FXML
-    protected void switchToSignUp() throws IOException, SQLException {
-        authController.switchLayout("sign-up", getStage());
+
+    /*
+     * =====================
+     *    CRUD Operations
+     * =====================
+     */
+
+    @Override
+    public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
+        User existingUser = userDAO.getUser(username);
+        if (existingUser == null) {
+            throw new IllegalArgumentException("User does not exist");
+        }
+
+        // Verify input password equals hashed user password
+        if (!existingUser.verifyPassword(password)) {
+            throw new SecurityException("Incorrect Password");
+        }
+
+        return existingUser;
     }
 }

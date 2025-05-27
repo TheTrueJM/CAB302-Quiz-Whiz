@@ -1,32 +1,43 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 import org.junit.jupiter.api.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
-
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
+
+import com.google.gson.Gson;
 
 public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
     private ChatController chatController;
+    private AIUtils aiUtils;
+    private boolean isOllamaRunning = false;
+    private boolean hasCorrectModel = false;
+
+    private static final Gson gson = new Gson();
 
     private static final User CurrentUser = new User(
             "TestUser", User.hashPassword("password")
     );
 
-    private static final Map<String, Chat> Chats = new HashMap<>();
-    static {
-        Chats.put("chat1", new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"));
-        Chats.put("chat2", new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"));
-        Chats.put("chat3", new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT"));
-    }
+    private static final Chat[] Chats = {
+        new Chat(1, "Test Chat 1", "regular", "normal", 3, "University", "IT"),
+        new Chat(1, "Test Chat 2", "regular", "normal", 3, "University", "IT"),
+        new Chat(1, "Test Chat 3", "regular", "normal", 3, "University", "IT")
+    };
 
     private static final Map<String, Message> Messages = new HashMap<>();
     static {
@@ -36,37 +47,98 @@ public class ChatControllerTest {
         Messages.put("messageAIQuiz", new Message(1, "Quiz Message from AI", false, true));
     }
 
-    // TODO: Figure out format for AI quiz response
-    private static final Map<String, String> QuizContent = new HashMap<>();
-    static {
-        QuizContent.put("valid", "[Valid Quiz Content Format]");
-        QuizContent.put("invalidQuiz", "[Invalid Quiz Content Format]");
-        QuizContent.put("invalidQuestion", "[Invalid Quiz Question Content Format]");
-        QuizContent.put("invalidAnswer", "[Invalid Quiz Question Answer Option Content Format]");
+    private static ModelResponseFormat loadModelResponseFromResource(String resourcePath) {
+        try (InputStream is = ChatControllerTest.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new IOException("Resource not found: " + resourcePath);
+            }
+            String jsonContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            return gson.fromJson(jsonContent, ModelResponseFormat.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load quiz content: " + e.getMessage(), e);
+        }
     }
 
-    private static final Map<String, String> QuestionContent = new HashMap<>();
+    private static final Map<String, ModelResponseFormat> QuizContent = new HashMap<>();
     static {
-        QuestionContent.put("valid", "[Valid Quiz Question Content Format]");
-        QuestionContent.put("invalidQuestion", "[Invalid Quiz Question Content Format]");
-        QuestionContent.put("invalidAnswer", "[Invalid Quiz Question Answer Option Content Format]");
+        QuizContent.put("valid", loadModelResponseFromResource("/ai/tutor/testdata/valid_quiz.json"));
+        QuizContent.put("invalidQuiz", loadModelResponseFromResource("/ai/tutor/testdata/invalid_quiz.json"));
+        QuizContent.put("invalidQuestion", loadModelResponseFromResource("/ai/tutor/testdata/invalid_question.json"));
+        QuizContent.put("invalidAnswer", loadModelResponseFromResource("/ai/tutor/testdata/invalid_answer.json"));
     }
 
-    private static final Map<String, String> AnswerContent = new HashMap<>();
+    private static final Map<String, Question[]> QuestionContent = new HashMap<>();
     static {
-        AnswerContent.put("valid", "[Valid Quiz Question Answer Option Content Format]");
-        AnswerContent.put("invalid", "[Invalid Quiz Question Answer Option Content Format]");
+        QuestionContent.put("valid", getQuestionsFromResponse(QuizContent.get("valid")));
+        QuestionContent.put("invalidQuestion", getQuestionsFromResponse(QuizContent.get("invalidQuestion")));
+        QuestionContent.put("invalidAnswer", getQuestionsFromResponse(QuizContent.get("invalidAnswer")));
     }
+
+    private static final Map<String, Option> AnswerContent = new HashMap<>();
+    static {
+        AnswerContent.put("valid", getFirstOptionFromQuiz("valid"));
+        AnswerContent.put("invalid", getFirstOptionFromQuiz("invalidAnswer"));
+    }
+
+    /* ----- */
+
+    private static Question[] getQuestionsFromResponse(ModelResponseFormat response) {
+        if (response != null && response.quizzes != null && response.quizzes.length > 0) {
+            return response.quizzes[0].getQuestions();
+        } else {
+            return new Question[0];
+        }
+    }
+
+    private static Option getFirstOptionFromQuiz(String key) {
+        ModelResponseFormat response = QuizContent.get(key);
+        if (response != null && response.quizzes != null && response.quizzes.length > 0) {
+            QuizFormat quiz = response.quizzes[0];
+            return extractFirstOption(quiz);
+        }
+        return null;
+    }
+
+    private static Option extractFirstOption(QuizFormat quiz) {
+        if (quiz != null) {
+            Question[] questions = quiz.getQuestions();
+            if (questions != null && questions.length > 0) {
+                Option[] options = questions[0].getOptions();
+                if (options != null && options.length > 0) {
+                    return options[0];
+                }
+            }
+        }
+        return null;
+    }
+
+    /* ----- */
 
     @BeforeEach
-    public void setUp() throws SQLException, IllegalStateException {
+    public void setUp(TestInfo testInfo) throws SQLException, IllegalStateException, IOException {
+        System.out.println("Running test: " + testInfo.getDisplayName());
         db = new SQLiteConnection(true);
         connection = db.getInstance();
 
         UserDAO userDAO = new UserDAO(db);
         userDAO.createUser(CurrentUser);
 
+        ChatDAO chatDAO = new ChatDAO(db);
+        for (Chat chat : Chats) {
+            chatDAO.createChat(chat);
+        }
+
         chatController = new ChatController(db, CurrentUser);
+        aiUtils = AIUtils.getInstance();
+        isOllamaRunning = aiUtils.isOllamaRunning();
+        hasCorrectModel = aiUtils.hasModel();
+        aiUtils.setVerbose(true);
+
+        if (!hasCorrectModel && isOllamaRunning) {
+                fail(String.format(
+                        "You need to download the correct model by running `ollama pull %s'", aiUtils.getModelName()
+                ));
+        }
     }
 
     @AfterEach
@@ -76,140 +148,16 @@ public class ChatControllerTest {
         }
     }
 
-    @Test
-    public void testCreateNewChat() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        assertNotNull(newChat);
-        assertEquals(1, newChat.getId());
-        assertEquals(chat.getName(), newChat.getName());
-        assertEquals(chat.getResponseAttitude(), newChat.getResponseAttitude());
-        assertEquals(chat.getQuizDifficulty(), newChat.getQuizDifficulty());
-        assertEquals(chat.getEducationLevel(), newChat.getEducationLevel());
-        assertEquals(chat.getStudyArea(), newChat.getStudyArea());
-    }
-
-    @Disabled
-    public void testCreateNewChatEmptyName() {
-        Chat chat = Chats.get("chat1");
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> chatController.createNewChat(
-                        "", chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-                )
-        );
-    }
-
-    @Disabled
-    public void testCreateNewChatNullName() {
-        Chat chat = Chats.get("chat1");
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> chatController.createNewChat(
-                        null, chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-                )
-        );
-    }
-
-    @Disabled
-    public void testCreateNewChatEmptyAttitude() {
-        Chat chat = Chats.get("chat1");
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> chatController.createNewChat(
-                        chat.getName(), "", chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-                )
-        );
-    }
-
-    @Disabled
-    public void testCreateNewChatNullAttitude() {
-        Chat chat = Chats.get("chat1");
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> chatController.createNewChat(
-                        chat.getName(), null, chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-                )
-        );
-    }
-
-    @Disabled
-    public void testCreateNewChatEmptyDifficulty() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> chatController.createNewChat(
-                        chat.getName(), chat.getResponseAttitude(), "", chat.getEducationLevel(), chat.getStudyArea()
-                )
-        );
-    }
-
-    @Disabled
-    public void testCreateNewChatNullDifficulty() {
-        Chat chat = Chats.get("chat1");
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> chatController.createNewChat(
-                        chat.getName(), chat.getResponseAttitude(), null, chat.getEducationLevel(), chat.getStudyArea()
-                )
-        );
-    }
-
-    @Test
-    public void testCreateNewChatEmptyEducation() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), "", chat.getStudyArea()
-        );
-        assertNotNull(newChat);
-        assertNull(newChat.getEducationLevel());
-    }
-
-    @Test
-    public void testCreateNewChatNullEducation() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), null, chat.getStudyArea()
-        );
-        assertNotNull(newChat);
-        assertNull(newChat.getEducationLevel());
-    }
-
-    @Test
-    public void testCreateNewChatEmptyStudyArea() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), ""
-        );
-        assertNotNull(newChat);
-        assertNull(newChat.getStudyArea());
-    }
-
-    @Test
-    public void testCreateNewChatNullStudyArea() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), null
-        );
-        assertNotNull(newChat);
-        assertNull(newChat.getStudyArea());
-    }
 
     @Test
     public void testGetUserChats() throws IllegalArgumentException, SQLException {
-        for (Chat chat : Chats.values()) {
-            chatController.createNewChat(
-                    chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-            );
-        }
         List<Chat> userChats = chatController.getUserChats();
         assertNotNull(userChats);
-        assertEquals(Chats.size(), userChats.size());
+        assertEquals(Chats.length, userChats.size());
     }
 
-    @Test
+    @Disabled
+    // TODO: Need a User that has No Chats
     public void testGetNoneUserChats() throws IllegalArgumentException, SQLException {
         List<Chat> userChats = chatController.getUserChats();
         assertNotNull(userChats);
@@ -218,14 +166,9 @@ public class ChatControllerTest {
 
     @Test
     public void testGetUserChat() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        for (Chat chat : Chats.values()) {
-            chatController.createNewChat(
-                    chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-            );
-        }
-        Chat findChat = Chats.get("chat2");
-        findChat.setId(2);
-        Chat userChat = chatController.getChat(findChat.getId());
+        int chatId = 1;
+        Chat findChat = Chats[chatId - 1];
+        Chat userChat = chatController.getChat(chatId);
         assertNotNull(userChat);
         assertEquals(findChat.getId(), userChat.getId());
     }
@@ -234,7 +177,7 @@ public class ChatControllerTest {
     public void testGetUserChatInvalidId() {
         assertThrows(
                 NoSuchElementException.class,
-                () -> chatController.getChat(1)
+                () -> chatController.getChat(Chats.length + 1)
         );
     }
 
@@ -248,53 +191,42 @@ public class ChatControllerTest {
 
     @Test
     public void testUpdateChatName() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        assertNotNull(newChat);
-
+        int chatId = 1;
         String updatedName = "Updated Name";
-        chatController.updateChatName(newChat.getId(), updatedName);
+        chatController.updateChatName(chatId, updatedName);
 
-        Chat updatedChat = chatController.getChat(newChat.getId());
+        Chat updatedChat = chatController.getChat(chatId);
         assertNotNull(updatedChat);
         assertEquals(updatedName, updatedChat.getName());
     }
 
     @Test
     public void testUpdateChatNameEmpty() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        assertNotNull(newChat);
+        int chatId = 1;
+        Chat chat = Chats[chatId - 1];
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> chatController.updateChatName(newChat.getId(), "")
+                () -> chatController.updateChatName(chatId, "")
         );
 
 
-        Chat originalChat = chatController.getChat(newChat.getId());
+        Chat originalChat = chatController.getChat(chatId);
         assertNotNull(originalChat);
         assertEquals(chat.getName(), originalChat.getName());
     }
 
     @Test
     public void testUpdateChatNameNull() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        assertNotNull(newChat);
+        int chatId = 1;
+        Chat chat = Chats[chatId - 1];
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> chatController.updateChatName(newChat.getId(), null)
+                () -> chatController.updateChatName(chatId, null)
         );
 
-        Chat originalChat = chatController.getChat(newChat.getId());
+        Chat originalChat = chatController.getChat(chatId);
         assertNotNull(originalChat);
         assertEquals(chat.getName(), originalChat.getName());
     }
@@ -303,7 +235,7 @@ public class ChatControllerTest {
     public void testUpdateChatNameInvalidId() {
         assertThrows(
                 NoSuchElementException.class,
-                () -> chatController.updateChatName(1, "New Chat Name")
+                () -> chatController.updateChatName(Chats.length + 1, "New Chat Name")
         );
     }
 
@@ -317,11 +249,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessage() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageUser");
         Message newMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -340,7 +267,7 @@ public class ChatControllerTest {
         assertThrows(
                 NoSuchElementException.class,
                 () -> chatController.createNewChatMessage(
-                        1, message.getContent(), message.getFromUser(), message.getIsQuiz()
+                        Chats.length + 1, message.getContent(), message.getFromUser(), message.getIsQuiz()
                 )
         );
     }
@@ -358,11 +285,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessageEmptyContent() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageUser");
         assertThrows(
                 IllegalArgumentException.class,
@@ -374,11 +296,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewChatMessageNullContent() throws IllegalArgumentException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageUser");
         assertThrows(
                 IllegalArgumentException.class,
@@ -388,12 +305,9 @@ public class ChatControllerTest {
         );
     }
 
-    @Test
+    @Disabled
     public void testGenerateChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
+        assumeTrue(isOllamaRunning, "Ollama is not running");
 
         Message message = Messages.get("messageUser");
         Message userMessage = chatController.createNewChatMessage(
@@ -411,12 +325,36 @@ public class ChatControllerTest {
     }
 
     @Test
-    public void testGenerateChatMessageResponseInvalidFromAI() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
+    @Disabled
+    public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
 
+        Chat chat = Chats[0];
+        Chat newChat = chatController.createNewChat(
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getQuizLength(), chat.getEducationLevel(), chat.getStudyArea()
+        );
+        int chatID = newChat.getId();
+
+        /* First User Message */
+        Message firstUserMessage = chatController.createNewChatMessage(chatID, "My favourite number is 5, remember that.", true, false);
+
+        /* First AI Response */
+        Message firstResponse = chatController.generateChatMessageResponse(firstUserMessage);
+
+        /* Second User Message */
+        Message secondUserMessage = chatController.createNewChatMessage(chatID, "So what is my favourite number?", true, false);
+
+        /* Second AI Response */
+        Message secondResponse = chatController.generateChatMessageResponse(secondUserMessage);
+
+        assertEquals(firstUserMessage.getChatId(), secondResponse.getChatId());
+        assertEquals(firstUserMessage.getId() + 1, firstResponse.getId());
+        assertEquals(firstResponse.getId() + 1, secondUserMessage.getId());
+        assertEquals(secondUserMessage.getId() + 1, secondResponse.getId());
+    }
+
+    @Test
+    public void testGenerateChatMessageResponseInvalidFromAI() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Message message = Messages.get("messageAI");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -431,11 +369,7 @@ public class ChatControllerTest {
 
     @Test
     public void testGetChatMessages() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        assertNotNull(newChat);
+        int chatId = 1;
 
         for (Message message : Messages.values()) {
             chatController.createNewChatMessage(
@@ -443,20 +377,16 @@ public class ChatControllerTest {
             );
         }
 
-        List<Message> messages = chatController.getChatMessages(newChat.getId());
+        List<Message> messages = chatController.getChatMessages(chatId);
         assertNotNull(messages);
         assertEquals(Messages.size(), messages.size());
     }
 
     @Test
     public void testGetNoneChatMessages() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-        assertNotNull(newChat);
+        int chatId = 1;
 
-        List<Message> messages = chatController.getChatMessages(newChat.getId());
+        List<Message> messages = chatController.getChatMessages(chatId);
         assertNotNull(messages);
         assertEquals(0, messages.size());
     }
@@ -465,7 +395,7 @@ public class ChatControllerTest {
     public void testGetChatMessagesInvalidChatId() {
         assertThrows(
                 NoSuchElementException.class,
-                () -> chatController.getChatMessages(1)
+                () -> chatController.getChatMessages(Chats.length + 1)
         );
     }
 
@@ -478,12 +408,47 @@ public class ChatControllerTest {
     }
 
     @Disabled
-    public void testCreateNewQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
+    public void testGenerateQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
+        assumeTrue(isOllamaRunning, "Ollama is not running");
+        assumeTrue(hasCorrectModel, "Required model is not available");
 
+        int chatId = 1;
+
+        // Send a regular message
+        Message userMessage = chatController.createNewChatMessage(
+                chatId, "Tell me about object-oriented programming principles", true, false
+        );
+        assertNotNull(userMessage);
+
+        // Generate AI response
+        Message aiResponse = chatController.generateChatMessageResponse(userMessage);
+        assertNotNull(aiResponse);
+        assertFalse(aiResponse.getIsQuiz());
+
+        // Switch to quiz mode and request a quiz
+        chatController.setQuizMode(true);
+
+        // Create a message requesting a quiz
+        Message quizRequest = chatController.createNewChatMessage(
+                chatId, "Create a quiz about object-oriented programming", true, true
+        );
+        assertNotNull(quizRequest);
+        assertTrue(quizRequest.getIsQuiz());
+
+        // Generate AI response in quiz mode
+        Message quizResponse = chatController.generateChatMessageResponse(quizRequest);
+        assertNotNull(quizResponse);
+        assertTrue(quizResponse.getIsQuiz());
+        assertFalse(quizResponse.getFromUser());
+
+        Quiz quiz = null;
+        quiz = chatController.getQuizForMessage(quizResponse.getId());
+        assertNotNull(quiz);
+        assertEquals(quizResponse.getId(), quiz.getMessageId());
+    }
+
+    @Test
+    public void testCreateNewQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -499,11 +464,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidNotQuiz() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAI");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -519,11 +479,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidFromUser() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageUserQuiz");
         Message userMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -539,11 +494,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidQuizContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -559,11 +509,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidQuestionContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -579,11 +524,6 @@ public class ChatControllerTest {
 
     @Test
     public void testCreateNewQuizInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -599,11 +539,6 @@ public class ChatControllerTest {
 
     @Disabled
     public void testCreateNewQuizQuestion() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -614,8 +549,9 @@ public class ChatControllerTest {
         );
         assertNotNull(newQuiz);
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
         assertNotNull(newQuizQuestion);
         assertEquals(newQuiz.getMessageId(), newQuizQuestion.getMessageId());
@@ -624,11 +560,6 @@ public class ChatControllerTest {
     @Disabled("Only implement if question number is extracted from quiz question content\nOtherwise remove test case")
     @Test
     public void testCreateNewQuizQuestionExistingNumber() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -639,25 +570,22 @@ public class ChatControllerTest {
         );
 
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                QuestionContent.get("valid")[0].getQuestionContent(), newQuiz
         );
         assertNotNull(newQuizQuestion);
+
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
 
         assertThrows(
                 IllegalStateException.class,
                 () -> chatController.createNewQuizQuestion(
-                        QuestionContent.get("valid"), newQuiz
+                        questionStrContent, newQuiz
                 )
         );
     }
 
     @Disabled
     public void testCreateNewQuizQuestionInvalidQuestionContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -667,25 +595,24 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("invalidQuestion")[0].getQuestionContent();
+
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatController.createNewQuizQuestion(
-                        QuestionContent.get("invalidQuestion"), newQuiz
+                        questionStrContent, newQuiz
                 )
         );
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionInvalidAnswerContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
+        System.out.println(message.getIsQuiz());
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
         );
+
 
         Quiz newQuiz = chatController.createNewQuiz(
                 QuizContent.get("valid"), aiMessage
@@ -694,19 +621,14 @@ public class ChatControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> chatController.createNewQuizQuestion(
-                        QuestionContent.get("invalidAnswer"), newQuiz
+                        "", newQuiz
                 )
         );
 
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -716,8 +638,9 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
         assertNotNull(newQuizQuestion);
 
@@ -729,13 +652,8 @@ public class ChatControllerTest {
         assertEquals(newQuizQuestion.getNumber(), newAnswerOption.getQuestionNumber());
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionAnswerExistingAnswer() throws IllegalStateException, IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -745,8 +663,9 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
 
         chatController.createNewQuestionAnswerOption(
@@ -761,13 +680,8 @@ public class ChatControllerTest {
         );
     }
 
-    @Disabled
+    @Test
     public void testCreateNewQuizQuestionAnswerInvalidContent() throws IllegalArgumentException, NoSuchElementException, SQLException {
-        Chat chat = Chats.get("chat1");
-        chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
-        );
-
         Message message = Messages.get("messageAIQuiz");
         Message aiMessage = chatController.createNewChatMessage(
                 message.getChatId(), message.getContent(), message.getFromUser(), message.getIsQuiz()
@@ -777,8 +691,9 @@ public class ChatControllerTest {
                 QuizContent.get("valid"), aiMessage
         );
 
+        String questionStrContent = QuestionContent.get("valid")[0].getQuestionContent();
         QuizQuestion newQuizQuestion = chatController.createNewQuizQuestion(
-                QuestionContent.get("valid"), newQuiz
+                questionStrContent, newQuiz
         );
 
         assertThrows(

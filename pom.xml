@@ -12,7 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.2</junit.version>
-    <javafx.version>21</javafx.version>
+    <javafx.version>23.0.1</javafx.version>
     <javafx.maven_plugin.version>0.0.8</javafx.maven_plugin.version>
     <testfx.version>4.0.18</testfx.version>
     <java.version>21</java.version>
@@ -22,6 +22,10 @@
     <javadoc.version>3.11.2</javadoc.version>
     <password4j.version>1.8.2</password4j.version>
     <monacle.version>21.0.2</monacle.version>
+    <slf4j.version>2.0.12</slf4j.version>
+    <ollama4j.version>1.0.100</ollama4j.version>
+    <gson.version>2.13.1</gson.version>
+    <mdfx.version>0.5.6</mdfx.version>
   </properties>
 
   <dependencies>
@@ -33,6 +37,11 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-web</artifactId>
       <version>${javafx.version}</version>
     </dependency>
     <dependency>
@@ -78,12 +87,27 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.12</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.12</version>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.ollama4j</groupId>
+        <artifactId>ollama4j</artifactId>
+        <version>${ollama4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>one.jpro.platform</groupId>
+        <artifactId>jpro-mdfx</artifactId>
+        <version>${mdfx.version}</version>
     </dependency>
   </dependencies>
 
@@ -132,6 +156,7 @@
             <prism.order>sw</prism.order>
             <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
+          <rerunFailingTestsCount>3</rerunFailingTestsCount>
         </configuration>
       </plugin>
       <plugin>

@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -17,39 +18,35 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<StackPane fx:id="rootPane" alignment="TOP_CENTER" prefHeight="540.0" prefWidth="956.0" styleClass="setup-dialog" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-    <stylesheets>
-        <URL value="@styles.css" />
-    </stylesheets>
-    <Pane fx:id="backgroundOverlay" style="-fx-background-color: #535353;" styleClass="translucent-background">
-      <children>
-         <ImageView fitHeight="540.0" fitWidth="1009.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.7;">
-            <image>
-               <Image url="@images/chat-setup-background.PNG" />
-            </image>
-         </ImageView>
-      </children>
-   </Pane>
-    <VBox alignment="TOP_CENTER" maxHeight="491.0" maxWidth="822.0" prefHeight="475.0" prefWidth="820.0" style="-fx-background-color: white; -fx-border-radius: 60; -fx-background-radius: 60;" styleClass="setup-form" StackPane.alignment="CENTER">
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-radius: 60 60 0 0; -fx-background-color: #213355; -fx-border-radius: 60 60 0 0;">
+<StackPane fx:id="rootPane" alignment="TOP_CENTER" prefHeight="540.0" prefWidth="956.0" styleClass="setup-dialog" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+      <URL value="@styles/MainStyles.css" />
+      <URL value="@styles/ChatSetupStyles.css" />
+   </stylesheets>
+   <!-- Background Region -->
+   <Pane fx:id="backgroundOverlay" styleClass="background" />
+   <!-- Main Container -->
+   <VBox alignment="TOP_CENTER" maxHeight="491.0" maxWidth="822.0" prefHeight="475.0" prefWidth="820.0" styleClass="main-container" StackPane.alignment="CENTER">
+      <!-- Top Banner Region -->
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" styleClass="banner">
          <children>
-              <Label fx:id="settingsTitle" alignment="CENTER" prefHeight="53.0" prefWidth="294.0" style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold;" styleClass="setup-header" text="Chat Setup" />
-            <Region prefHeight="100.0" prefWidth="183.0" />
+            <Label fx:id="settingsTitle" alignment="CENTER" prefHeight="53.0" prefWidth="294.0" styleClass="setup-header" text="Chat Setup" />
+            <Region prefHeight="100.0" prefWidth="128.0" />
 
-             <Button fx:id="downloadButton" styleClass="download-button" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;" onAction="#downloadChat">
-                 <graphic>
-                     <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
-                         <image>
-                             <Image url="@images/download.png" />
-                         </image>
-                     </ImageView>
-                 </graphic>
-                 <HBox.margin>
-                     <Insets right="10.0" />
-                 </HBox.margin>
-             </Button>
+            <Button fx:id="downloadButton" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" styleClass="download-button">
+               <graphic>
+                  <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true" styleClass="download-button">
+                     <image>
+                        <Image url="@images/download.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
 
-            <Button fx:id="exitButton" styleClass="exit-button" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: transparent;">
+            <Button fx:id="exitButton" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" styleClass="exit-button">
                <graphic>
                   <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -63,38 +60,39 @@
             </Button>
          </children>
       </HBox>
-        <HBox alignment="CENTER" style="-fx-padding: 25;" styleClass="form-content">
-            <VBox style="-fx-padding: 10 40 0 0;" styleClass="column">
-            <Pane prefHeight="65.0" prefWidth="254.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 7; -fx-background-radius: 7;">
+      <!-- Center Form Region -->
+      <HBox alignment="CENTER" styleClass="form-content">
+         <VBox styleClass="column-left">
+            <Pane prefHeight="65.0" prefWidth="254.0" styleClass="option-container">
                <children>
-                      <Label layoutX="13.0" layoutY="2.0" styleClass="form-label" text="Chat Name" />
-                      <TextField fx:id="chatNameInput" layoutX="11.0" layoutY="24.0" prefHeight="28.0" prefWidth="231.0" promptText="Enter chat name" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;" styleClass="form-field" />
+                  <Label layoutX="13.0" layoutY="2.0" styleClass="form-label" text="Chat Name" />
+                  <TextField fx:id="chatNameInput" layoutX="11.0" layoutY="24.0" prefHeight="28.0" prefWidth="231.0" promptText="Enter chat name" styleClass="input-field" />
                </children>
             </Pane>
-            <Pane prefHeight="65.0" prefWidth="254.0" style="-fx-padding: 10; -fx-background-color: #CBD6FF; -fx-background-radius: 7; -fx-border-radius: 7;">
+            <Pane prefHeight="65.0" prefWidth="254.0" styleClass="option-container">
                <children>
-                      <Label layoutX="13.0" layoutY="1.0" styleClass="form-label" text="AI Response Attitude" />
-                      <ComboBox fx:id="responseAttitude" layoutX="11.0" layoutY="26.0" prefHeight="25.0" prefWidth="226.0" style="-fx-background-color: white; -fx-background-radius: 6;" styleClass="form-field">
-                          <items>
-                              <FXCollections fx:factory="observableArrayList">
-                                  <String fx:value="Balanced" />
-                                  <String fx:value="Friendly" />
-                                  <String fx:value="Formal" />
-                              </FXCollections>
-                          </items>
-                          <value>
-                              <String fx:value="Balanced" />
-                          </value>
-                      </ComboBox>
+                  <Label layoutX="13.0" layoutY="1.0" styleClass="form-label" text="AI Response Attitude" />
+                  <ComboBox fx:id="responseAttitude" layoutX="11.0" layoutY="26.0" prefHeight="25.0" prefWidth="226.0" styleClass="dropdown-field">
+                     <items>
+                        <FXCollections fx:factory="observableArrayList">
+                           <String fx:value="Balanced" />
+                           <String fx:value="Friendly" />
+                           <String fx:value="Formal" />
+                        </FXCollections>
+                     </items>
+                     <value>
+                        <String fx:value="Balanced" />
+                     </value>
+                  </ComboBox>
                </children>
                <VBox.margin>
                   <Insets top="15.0" />
                </VBox.margin>
             </Pane>
-            <Pane prefHeight="65.0" prefWidth="254.0" style="-fx-padding: 10; -fx-background-color: #CBD6FF; -fx-background-radius: 7; -fx-border-radius: 7;">
+            <Pane prefHeight="65.0" prefWidth="254.0" styleClass="option-container">
                <children>
                   <Label layoutX="13.0" layoutY="1.0" styleClass="form-label" text="Quiz Difficulty" />
-                  <ComboBox fx:id="quizDifficulty" layoutX="11.0" layoutY="26.0" prefHeight="25.0" prefWidth="226.0" style="-fx-background-color: white; -fx-background-radius: 6;" styleClass="form-field" value="Normal">
+                  <ComboBox fx:id="quizDifficulty" layoutX="11.0" layoutY="26.0" prefHeight="25.0" prefWidth="226.0" styleClass="dropdown-field" value="Normal">
                      <items>
                         <FXCollections fx:factory="observableArrayList">
                            <String fx:value="Easy" />
@@ -108,49 +106,56 @@
                   <Insets top="15.0" />
                </VBox.margin>
             </Pane>
-            </VBox>
-         <Line endX="100.04220581054688" endY="-74.70085144042969" startX="100.06330871582031" startY="167.092041015625" />
-            <VBox style="-fx-padding: 10 0 10 40;" styleClass="column">
-            <Pane prefHeight="62.0" prefWidth="254.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 7; -fx-background-radius: 7;">
-               <children>
-                      <Label layoutX="13.0" layoutY="2.0" styleClass="form-label" text="Chat Topic" />
-                      <TextField fx:id="chatTopic" layoutX="13.0" layoutY="23.0" prefHeight="25.0" prefWidth="229.0" promptText="Enter chat topic" style="-fx-background-color: white;" styleClass="form-field" />
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Pane>
-            <Pane prefHeight="68.0" prefWidth="254.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 7; -fx-background-radius: 7;">
-               <children>
-                      <Label layoutX="15.0" layoutY="3.0" styleClass="form-label" text="Education Level" />
-                      <ComboBox fx:id="educationLevel" layoutX="14.0" layoutY="25.0" prefHeight="25.0" prefWidth="225.0" style="-fx-background-color: white;" styleClass="form-field">
-                          <items>
-                              <FXCollections fx:factory="observableArrayList">
-                                  <String fx:value="High School" />
-                                  <String fx:value="University" />
-                                  <String fx:value="Professional" />
-                              </FXCollections>
-                          </items>
-                          <value>
-                              <String fx:value="University" />
-                          </value>
-                      </ComboBox>
-               </children>
-               <VBox.margin>
-                  <Insets top="15.0" />
-               </VBox.margin>
-            </Pane>
-
-
-
-            </VBox>
-        </HBox>
-        <HBox alignment="CENTER" prefHeight="85.0" prefWidth="822.0" spacing="10">
-         <VBox alignment="CENTER" prefHeight="86.0" prefWidth="168.0" style="-fx-padding: 10;" HBox.hgrow="ALWAYS">
-            <children>
-                  <Button fx:id="startChatButton" style="-fx-background-color: #6C95DF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5; -fx-font-size: 23;" styleClass="start-button" text="Start Chat" />
-            </children>
          </VBox>
-        </HBox>
-    </VBox>
+         <Line endX="100.04220581054688" endY="-74.70085144042969" startX="100.06330871582031" startY="167.092041015625" />
+            <VBox styleClass="column-right">
+               <Pane prefHeight="62.0" prefWidth="254.0" styleClass="option-container">
+                  <children>
+                        <Label layoutX="13.0" layoutY="2.0" styleClass="form-label" text="Chat Topic" />
+                        <TextField fx:id="chatTopic" layoutX="13.0" layoutY="23.0" prefHeight="25.0" prefWidth="229.0" promptText="Enter chat topic" styleClass="input-field" />
+                  </children>
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
+               </Pane>
+               <Pane prefHeight="68.0" prefWidth="254.0" styleClass="option-container">
+                  <children>
+                           <Label layoutX="15.0" layoutY="3.0" styleClass="form-label" text="Education Level" />
+                           <ComboBox fx:id="educationLevel" layoutX="14.0" layoutY="25.0" prefHeight="25.0" prefWidth="225.0" styleClass="dropdown-field">
+                           <items>
+                                 <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="High School" />
+                                    <String fx:value="University" />
+                                    <String fx:value="Professional" />
+                                 </FXCollections>
+                           </items>
+                           <value>
+                              <String fx:value="University" />
+                           </value>
+                        </ComboBox>
+                  </children>
+                  <VBox.margin>
+                     <Insets top="15.0" />
+                  </VBox.margin>
+               </Pane>
+               <Pane prefHeight="62.0" prefWidth="254.0" styleClass="option-container">
+                  <children>
+                     <Label layoutX="13.0" layoutY="2.0" text="Quiz Length" />
+                     <Slider fx:id="quizLength" layoutX="14.0" layoutY="23.0" majorTickUnit="1" max="10" min="1" minorTickCount="0" prefHeight="25.0" prefWidth="229.0" showTickLabels="true" snapToTicks="true" styleClass="quiz-length" value="3" />
+                  </children>
+                  <VBox.margin>
+                     <Insets top="15.0" />
+                  </VBox.margin>
+               </Pane>
+            </VBox>
+         </HBox>
+      <!-- Bottom Region -->
+         <HBox alignment="CENTER" prefHeight="85.0" spacing="10">
+            <VBox alignment="CENTER" prefHeight="115.0" prefWidth="820.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="startChatButton" styleClass="submit-button" text="Start Chat" />
+               </children>
+            </VBox>
+         </HBox>
+   </VBox>
 </StackPane>

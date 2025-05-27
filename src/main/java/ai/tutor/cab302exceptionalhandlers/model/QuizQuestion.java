@@ -6,9 +6,14 @@ public class QuizQuestion {
     private final String question;
 
 
-    public QuizQuestion(int messageId, int number, String question) {
+    public QuizQuestion(int messageId, int number, String question) throws IllegalArgumentException {
+        if (messageId < 1) { throw new IllegalArgumentException("Invalid Message Id: Must be greater than 1"); }
         this.messageId = messageId;
+
+        if (number < 1) { throw new IllegalArgumentException("Invalid Question Number: Must be greater than 1"); }
         this.number = number;
+
+        if (question == null || question.isEmpty() || 100 < question.length()) { throw new IllegalArgumentException("Invalid Question: Must only contain 1-100 characters"); }
         this.question = question;
     }
 
