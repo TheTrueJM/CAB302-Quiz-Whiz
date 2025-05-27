@@ -233,6 +233,9 @@ public class ChatController {
         }
     }
 
+    /**
+    * Refreshes the chat list view to display new chats
+     */
     public void refreshChatListView () {
         try {
             Chat selectedChat = getSelectedChat();
