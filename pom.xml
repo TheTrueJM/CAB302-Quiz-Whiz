@@ -199,7 +199,7 @@
         <version>${javadoc.version}</version>
         <configuration>
           <failOnWarnings>false</failOnWarnings>
-          <failOnError>false</failOnError>
+          <failOnError>true</failOnError>
         </configuration>
       </plugin>
     </plugins>
