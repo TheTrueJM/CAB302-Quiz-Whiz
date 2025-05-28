@@ -69,7 +69,7 @@
             </padding></Label>
                 <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="345.0" prefHeight="345.0" prefWidth="670.0" spacing="10" styleClass="quiz-question-container">
                     <!-- Options Section -->
-                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" prefHeight="335.0" prefWidth="334.0" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
+                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" prefHeight="335.0" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
                             <VBox fx:id="quizAnswersVBox" alignment="CENTER" fillWidth="false" styleClass="quiz-answers" VBox.vgrow="ALWAYS">
                                 <Label styleClass="quiz-instruction" text="Please select one of the options">
                            <VBox.margin>

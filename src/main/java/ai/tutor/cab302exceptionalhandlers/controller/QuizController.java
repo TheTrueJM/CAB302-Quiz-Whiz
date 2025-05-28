@@ -224,7 +224,7 @@ public class QuizController {
         int optionIndex = 0;
         for (AnswerOption option : options) {
             HBox childHBox = new HBox();
-            addOptionLabel(optionIndex, childHBox);
+            addOptionLabel(option, childHBox, options, optionIndex);
             Button answerButton = createAnswerButton(option, questionNumber);
             childHBox.getChildren().add(answerButton);
             dynamicHBoxCollection.add(childHBox);
@@ -238,14 +238,18 @@ public class QuizController {
         questionListView.refresh();
     }
 
-    private void addOptionLabel(int optionIndex, HBox childHBox) {
+    private void addOptionLabel(AnswerOption option, HBox childHBox, List<AnswerOption> options, int optionIndex) {
         Label optionLabel = new Label();
         optionLabel.getStyleClass().setAll(("option-label"));
 
         // Converts index to ASCII letter (e.g, A,B,C)
-        String optionLetter = String.valueOf((char)(optionIndex + 'A'));
-        optionLabel.setText(optionLetter);
-
+        if (options.size() != 2) {
+            optionLabel.setText(option.getOption().toUpperCase());
+        } else {
+            // Set explicit Labels for T/F options
+            String optLabel = optionIndex == 0 ? "A" : "B";
+            optionLabel.setText(optLabel);
+        }
         HBox labelContainer = new HBox(optionLabel);
         labelContainer.setAlignment(Pos.CENTER);
         labelContainer.getStyleClass().setAll(("label-container"));
