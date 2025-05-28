@@ -22,7 +22,7 @@ import java.sql.SQLException;
  *
  * <p>Usage Example:
  * <pre>
- * SceneManager.getInstance().initialize(primaryStage, controllerFactory);
+ * SceneManager.getInstance().applicationInitialize(primaryStage);
  * SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
  * </pre>
  *
@@ -33,16 +33,27 @@ public class SceneManager {
     private static SceneManager instance;
     private Stage stage;
     private ControllerFactory controllerFactory;
-    private boolean startUp = true;
 
-    private SceneManager() {}
+
+    /**
+     * Initializes the scene manager for the application.
+     * <p>
+     * A new instance of {@link SQLiteConnection} is created for database access, and given
+     * to {@link ControllerFactory} to manage application controller initialization.
+     *
+     * @throws SQLException if a database connection error occurs.
+     */
+    private SceneManager() throws SQLException {
+        controllerFactory = new ControllerFactory(new SQLiteConnection());
+    }
 
     /**
      * Gets the singleton instance of {@code SceneManager}.
      *
      * @return The singleton instance.
+     * @throws SQLException if a database connection error occurs.
      */
-    public static SceneManager getInstance() {
+    public static SceneManager getInstance() throws SQLException {
         if (instance == null) {
             instance = new SceneManager();
         }
@@ -50,15 +61,13 @@ public class SceneManager {
     }
 
     /**
-     * Initializes the SceneManager with the primary stage and controller factory.
-     * This method must be called only once at application startup.
+     * Initializes the SceneManager with the primary stage.
+     * This method must be called once before application startup.
      *
      * @param stage The primary {@link Stage} of the application.
-     * @param factory The {@link ControllerFactory} used to create controllers.
      */
-    public void initialize(Stage stage, ControllerFactory factory) {
+    public void applicationInitialize(Stage stage) {
         this.stage = stage;
-        this.controllerFactory = factory;
     }
 
     /**
@@ -163,27 +172,21 @@ public class SceneManager {
 
 
     /**
-     * Loads an FXML file, sets its controller, and displays it on the main stage.
-     * <p>
-     * This method sets the default window width and height only once at startup. But
-     * stays the same size after first run.
+     * Loads an FXML file, sets its controller, and displays this scene on the main stage.
      *
      * @param fxmlFile The name of the FXML file to load (e.g., "login-view.fxml").
      * @param controller The controller instance for the view.
+     * @throws IllegalStateException if the application stage was not initialized.
      * @throws IOException if the scene view cannot be loaded.
      */
-    private void loadView(String fxmlFile, Object controller) throws IOException {
+    private void loadView(String fxmlFile, Object controller) throws IllegalStateException, IOException {
+        if (stage == null) {
+            throw new IllegalStateException("The application was not initialized with a stage");
+        }
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlFile));
         fxmlLoader.setController(controller);
         Scene scene = new Scene(fxmlLoader.load());
-
         stage.setScene(scene);
-
-        /* This basically sets the default height and width only once at startup */
-        if (startUp) {
-            stage.setWidth(QuizWhizApplication.WIDTH);
-            stage.setHeight(QuizWhizApplication.HEIGHT);
-            startUp = false;
-        }
     }
 }
