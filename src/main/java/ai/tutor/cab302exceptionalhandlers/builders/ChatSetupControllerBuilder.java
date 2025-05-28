@@ -90,11 +90,12 @@ public class ChatSetupControllerBuilder extends ControllerBuilder<ChatSetupContr
      * based on the specified type and parameters.
      *
      * @return An instance of {@link ChatSetupController}.
-     * @throws Exception if a database access error occurs.
      * @throws IllegalStateException if required parameters (currentUser, setupType, or currentChat for UPDATE) are not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
      */
     @Override
-    public ChatSetupController build() throws Exception {
+    public ChatSetupController build() throws IllegalStateException, RuntimeException, SQLException {
         if (currentUser == null) {
             throw new IllegalStateException("Current user must be set");
         }
@@ -104,12 +105,7 @@ public class ChatSetupControllerBuilder extends ControllerBuilder<ChatSetupContr
 
         return switch (setupType) {
             case CREATE -> buildCreate();
-            case UPDATE -> {
-                if (currentChat == null) {
-                    throw new IllegalStateException("Selected chat must be set for update type");
-                }
-                yield buildUpdate(currentChat);
-            }
+            case UPDATE -> buildUpdate();
         };
     }
 
@@ -118,10 +114,11 @@ public class ChatSetupControllerBuilder extends ControllerBuilder<ChatSetupContr
      * Requires {@code currentUser} to be set.
      *
      * @return A new instance of {@link ChatCreateController}.
-     * @throws SQLException if a database access error occurs.
      * @throws IllegalStateException if the current user is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
      */
-    public ChatCreateController buildCreate() throws SQLException {
+    public ChatCreateController buildCreate() throws IllegalStateException, RuntimeException, SQLException {
         if (currentUser == null) {
             throw new IllegalStateException("Current user must be set");
         }
@@ -130,18 +127,14 @@ public class ChatSetupControllerBuilder extends ControllerBuilder<ChatSetupContr
 
     /**
      * Builds a {@link ChatUpdateController} for the given chat.
-     * Requires {@code currentUser} and {@code selectedChat} to be set.
+     * Requires {@code currentUser} and {@code currentChat} to be set.
      *
-     * @param selectedChat The {@link Chat} to be updated.
      * @return A new instance of {@link ChatUpdateController}.
-     * @throws SQLException if a database access error occurs.
      * @throws IllegalStateException if the current user or selected chat is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
      */
-    public ChatUpdateController buildUpdate(Chat selectedChat) throws SQLException {
-        if (currentUser == null) {
-            throw new IllegalStateException("Current user must be set");
-        }
-        this.currentChat = selectedChat;
-        return new ChatUpdateController(db, currentUser, selectedChat);
+    public ChatUpdateController buildUpdate() throws IllegalStateException, RuntimeException, SQLException {
+        return new ChatUpdateController(db, currentUser, currentChat);
     }
 }

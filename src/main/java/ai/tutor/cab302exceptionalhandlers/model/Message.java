@@ -21,7 +21,7 @@ public class Message {
      * @param content The content of this message, must not be null or empty
      * @param fromUser Whether this message is from the user or the AI, true if from user, false if from AI
      * @param isQuiz Whether this message is a quiz question or not
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if any of the parameters are invalid
      */
     public Message(int chatId, String content, boolean fromUser, boolean isQuiz) throws IllegalArgumentException {
         if (chatId < 1) { throw new IllegalArgumentException("Invalid Chat Id: Must be greater than 1"); }
@@ -37,7 +37,7 @@ public class Message {
 
     public int getId() { return id; }
 
-    public void setId(int id) {
+    public void setId(int id) throws IllegalArgumentException {
         if (id < 1) {
             throw new IllegalArgumentException("Invalid Id: Must be greater than 1");
         }

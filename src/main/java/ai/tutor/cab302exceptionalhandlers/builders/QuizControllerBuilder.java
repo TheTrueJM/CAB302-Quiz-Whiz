@@ -5,6 +5,8 @@ import ai.tutor.cab302exceptionalhandlers.model.User;
 import ai.tutor.cab302exceptionalhandlers.controller.QuizController;
 import ai.tutor.cab302exceptionalhandlers.model.Quiz;
 
+import java.sql.SQLException;
+
 /**
  * Builder for creating instances of {@link QuizController}.
  * <p>
@@ -63,10 +65,11 @@ public class QuizControllerBuilder extends ControllerBuilder<QuizController> {
      *
      * @return A new instance of {@link QuizController}.
      * @throws IllegalStateException if the quiz or current user is not set.
-     * @throws Exception if any other error occurs during construction (though typically only IllegalStateException is expected from this build).
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
      */
     @Override
-    public QuizController build() throws Exception {
+    public QuizController build() throws IllegalStateException, RuntimeException, SQLException {
         if (chosenQuiz == null) {
             throw new IllegalStateException("Quiz must be set");
         }

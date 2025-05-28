@@ -31,12 +31,12 @@ public class AnswerOptionDAO implements IAnswerOptionDAO {
     }
 
     /**
-     * Creates the {@link answerOptions} table in the SQLite database.
+     * Creates the {@code answerOptions} table in the SQLite database.
      * <p>
      * If the table does not exist, it creates a new table named answerOptions.
      *
      * @throws SQLException if a database error occurs during table creation
-     * @see {@link quizQuestions}
+     * @see {@code quizQuestions}
      */
     private void createTable() throws SQLException {
         try (Statement createTable = connection.createStatement()) {

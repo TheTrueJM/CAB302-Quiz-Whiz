@@ -1,15 +1,11 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
-import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -129,14 +125,10 @@ public class SignUpController extends AuthController {
      * {@link #authenticateUser(String, String)}, and navigates to the chat screen
      * if successful. Displays error feedback for invalid inputs or mismatches.
      * </p>
-     * @throws IOException If loading the chat screen fails
-     * @throws SQLException If database operations fail
-     * @throws IllegalArgumentException If the username is taken or invalid
-     * @throws SecurityException If the passwords do not match
      */
     @Override
     @FXML
-    protected void onSubmit() throws IOException, RuntimeException, SQLException {
+    protected void onSubmit() {
         resetErrorFeedback();
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -156,15 +148,17 @@ public class SignUpController extends AuthController {
             errorFeedback(usernameFeedback, e.getMessage());
         } catch (SecurityException e) {
             errorFeedback(passwordFeedback, e.getMessage());
+        } catch (Exception e) {
+            Utils.showErrorAlert(e.getMessage());
         }
     }
+
 
     /*
      * =====================
      *    CRUD Operations
      * =====================
      */
-
 
     /**
      * Authenticates and creates a new user with the provided username and password.

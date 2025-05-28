@@ -76,8 +76,9 @@ public class User {
      *
      * @param passwordPlaintext the plaintext password to verify
      * @return true if the password is valid and matches the stored hash, false otherwise
+     * @throws IllegalArgumentException if the {@code passwordPlaintext} is {@code null} or empty
      */
-    public boolean verifyPassword(String passwordPlaintext) {
+    public boolean verifyPassword(String passwordPlaintext) throws IllegalArgumentException {
         if (passwordPlaintext == null || passwordPlaintext.isEmpty()) {
             throw new IllegalArgumentException("Invalid Password: Cannot be empty");
         }
@@ -92,7 +93,7 @@ public class User {
      *
      * @param passwordPlaintext the plaintext password to hash
      * @return the hashed password as a String
-     * @throws IllegalArgumentException if the password is null or empty
+     * @throws IllegalArgumentException if the {@code passwordPlaintext} is {@code null} or empty
      */
     public static String hashPassword(String passwordPlaintext) throws IllegalArgumentException {
         if (passwordPlaintext == null || passwordPlaintext.isEmpty()) {

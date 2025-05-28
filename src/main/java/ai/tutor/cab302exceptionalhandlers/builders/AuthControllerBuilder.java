@@ -55,10 +55,11 @@ public class AuthControllerBuilder extends ControllerBuilder<AuthController> {
      * based on the specified {@link AuthType}.
      *
      * @return An instance of {@link AuthController}.
-     * @throws SQLException if a database access error occurs.
      * @throws IllegalStateException if the authentication type is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
      */
-    public AuthController build() throws SQLException {
+    public AuthController build() throws IllegalStateException, RuntimeException, SQLException {
         if (authType == null) {
             throw new IllegalStateException("Auth type must be set");
         }
@@ -73,9 +74,10 @@ public class AuthControllerBuilder extends ControllerBuilder<AuthController> {
      * Builds a {@link LoginController}.
      *
      * @return A new instance of {@link LoginController}.
+     * @throws RuntimeException if a database connection error occurs.
      * @throws SQLException if a database access error occurs.
      */
-    public LoginController buildLogin() throws SQLException {
+    public LoginController buildLogin() throws RuntimeException, SQLException {
         return new LoginController(db);
     }
 
@@ -83,9 +85,10 @@ public class AuthControllerBuilder extends ControllerBuilder<AuthController> {
      * Builds a {@link SignUpController}.
      *
      * @return A new instance of {@link SignUpController}.
+     * @throws RuntimeException if a database connection error occurs.
      * @throws SQLException if a database access error occurs.
      */
-    public SignUpController buildSignUp() throws SQLException {
+    public SignUpController buildSignUp() throws RuntimeException, SQLException {
         return new SignUpController(db);
     }
 }

@@ -3,7 +3,7 @@ package ai.tutor.cab302exceptionalhandlers.model;
 /**
  * Represents a Quiz
  * <p>
- * Quizzes must have have a name and difficulty. Within a quiz, there will be
+ * Quizzes must have a name and difficulty. Within a quiz, there will be
  * multiple options for the student to choose from. See {@link QuizQuestion}
  * @author Joshua M.
  * @see ai.tutor.cab302exceptionalhandlers.model.IQuizDAO

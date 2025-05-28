@@ -79,10 +79,11 @@ public class ChatController {
     private int thinkingChatId;
     private final AIUtils aiUtils;
 
-    public ChatController(SQLiteConnection db, User authenticatedUser) throws IOException, RuntimeException, SQLException {
+    public ChatController(SQLiteConnection db, User authenticatedUser) throws IllegalStateException, RuntimeException, SQLException {
         if (authenticatedUser == null) {
             throw new IllegalStateException("No user was authenticated");
         }
+
         this.db = db;
         this.currentUser = authenticatedUser;
         this.userDAO = new UserDAO(db);
@@ -117,9 +118,6 @@ public class ChatController {
         setupUserDetailsButton();
     }
 
-    private Stage getStage() {
-        return (Stage) chatsListView.getScene().getWindow();
-    }
 
     /*
      * =========================================================================
@@ -422,7 +420,7 @@ public class ChatController {
         return wrapper;
     }
 
-    private void handleTakeQuiz(ActionEvent actionEvent, Message message) throws IOException, RuntimeException, SQLException {
+    private void handleTakeQuiz(ActionEvent actionEvent, Message message) throws Exception {
         Quiz currentQuiz = quizDAO.getQuiz(message.getId());
         SceneManager.getInstance().navigateToQuiz(currentQuiz, currentUser);
     }
@@ -607,7 +605,7 @@ public class ChatController {
         addNewChat.setOnAction(actionEvent -> {
             try {
                 loadChatSetup();
-            } catch (IOException | SQLException e ) {
+            } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
@@ -615,7 +613,7 @@ public class ChatController {
         addNewChatMain.setOnAction(actionEvent -> {
             try {
                 loadChatSetup();
-            } catch (IOException | SQLException e ) {
+            } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
         });
@@ -642,14 +640,18 @@ public class ChatController {
         return chatsListView.getSelectionModel().getSelectedItem();
     }
 
-    private void loadChatSetup() throws IOException, RuntimeException, SQLException {
+    private void loadChatSetup() throws Exception {
         ChatSetupType setupType = getSelectedChat() == null ? ChatSetupType.CREATE : ChatSetupType.UPDATE;
         SceneManager.getInstance().navigateToChatSetup(currentUser, setupType, getSelectedChat());
     }
 
     private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
+            try {
+                SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
+            } catch (Exception e) {
+                Utils.showErrorAlert("Error Loading Authentication: " + e);
+            }
         });
     }
 

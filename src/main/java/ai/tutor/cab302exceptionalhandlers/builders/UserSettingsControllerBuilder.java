@@ -4,6 +4,8 @@ import ai.tutor.cab302exceptionalhandlers.controller.UserSettingsController;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 
+import java.sql.SQLException;
+
 /**
  * Builder for creating instances of {@link UserSettingsController}.
  * <p>
@@ -49,13 +51,11 @@ public class UserSettingsControllerBuilder extends ControllerBuilder<UserSetting
      *
      * @return A new instance of {@link UserSettingsController}.
      * @throws IllegalStateException if the current user is not set.
-     * @throws Exception if any other error occurs during construction (though typically only IllegalStateException is expected from this build).
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
      */
     @Override
-    public UserSettingsController build() throws Exception {
-        if (currentUser == null) {
-            throw new IllegalStateException("Current user must be set");
-        }
+    public UserSettingsController build() throws IllegalStateException, RuntimeException, SQLException {
         return new UserSettingsController(db, currentUser);
     }
 }

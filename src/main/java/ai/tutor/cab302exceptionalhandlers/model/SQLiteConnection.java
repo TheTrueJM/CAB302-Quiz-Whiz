@@ -60,7 +60,7 @@ public class SQLiteConnection {
 
 
     /**
-     * Returns the singleton instance of the SQLite database connection.
+     * Returns the defined instance of the SQLite database connection.
      *
      * @return the {@link Connection} instance
      * @throws RuntimeException if the connection has not been established

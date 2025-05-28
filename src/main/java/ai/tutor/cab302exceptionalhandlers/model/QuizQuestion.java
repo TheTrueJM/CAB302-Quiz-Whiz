@@ -22,7 +22,7 @@ public class QuizQuestion {
      * @param messageId The message ID that this question belongs to, must be greater than 0
      * @param number The question number within the quiz, must be greater than 0
      * @param question The content of the question, must not be null or empty and must be between 1 and 100 characters
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if any of the parameters are invalid
      */
     public QuizQuestion(int messageId, int number, String question) throws IllegalArgumentException {
         if (messageId < 1) { throw new IllegalArgumentException("Invalid Message Id: Must be greater than 1"); }

@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Manages scene navigation and controller instantiation for the application.
@@ -64,35 +65,35 @@ public class SceneManager {
      * Navigates to the authentication view (Login or Sign Up).
      *
      * @param type The {@link AuthType} specifying whether to show the Login or Sign Up view.
+     * @throws IllegalStateException if the authentication type is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
+     * @throws IOException if the authentication view cannot be loaded.
      */
-    public void navigateToAuth(AuthType type) {
-        try {
-            AuthController controller = controllerFactory.authController()
-                .type(type)
-                .build();
+    public void navigateToAuth(AuthType type) throws IllegalStateException, RuntimeException, SQLException, IOException {
+        AuthController controller = controllerFactory.authController()
+            .type(type)
+            .build();
 
-            String viewName = type.equals(AuthType.LOGIN) ? "login-view.fxml" : "sign-up-view.fxml";
-            loadView(viewName, controller);
-        } catch (Exception e) {
-            Utils.showErrorAlert("Failed to load auth view: " + e.getMessage());
-        }
+        String viewName = type.equals(AuthType.LOGIN) ? "login-view.fxml" : "sign-up-view.fxml";
+        loadView(viewName, controller);
     }
 
     /**
      * Navigates to the main chat view.
      *
      * @param user The currently authenticated {@link User}.
+     * @throws IllegalStateException if the user is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
+     * @throws IOException if the chat view cannot be loaded.
      */
-    public void navigateToChat(User user) {
-        try {
-            ChatController controller = controllerFactory.chatController()
-                .currentUser(user)
-                .build();
+    public void navigateToChat(User user) throws IllegalStateException, RuntimeException, SQLException, IOException {
+        ChatController controller = controllerFactory.chatController()
+            .currentUser(user)
+            .build();
 
-            loadView("chat-view.fxml", controller);
-        } catch (Exception e) {
-            Utils.showErrorAlert("Failed to load chat: " + e.getMessage());
-        }
+        loadView("chat-view.fxml", controller);
     }
 
     /**
@@ -101,44 +102,44 @@ public class SceneManager {
      * @param user The currently authenticated {@link User}.
      * @param type The {@link ChatSetupType} (CREATE or UPDATE).
      * @param chat The {@link Chat} to be updated, or null if creating a new chat.
+     * @throws IllegalStateException if the user or chat (for update) is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
+     * @throws IOException if the chat setup view cannot be loaded.
      */
-    public void navigateToChatSetup(User user, ChatSetupType type, Chat chat) {
-        try {
-            ChatSetupController controller;
-            if (chat == null) {
-                controller = controllerFactory.chatSetupController()
-                    .currentUser(user)
-                    .type(type)
-                    .build();
-            } else {
-                controller = controllerFactory.chatSetupController()
-                    .currentUser(user)
-                    .type(type)
-                    .currentChat(chat)
-                    .build();
-            }
-
-            loadView("chat-setup-view.fxml", controller);
-        } catch (Exception e) {
-            Utils.showErrorAlert("Failed to load chat setup: " + e.getMessage());
+    public void navigateToChatSetup(User user, ChatSetupType type, Chat chat) throws IllegalStateException, RuntimeException, SQLException, IOException {
+        ChatSetupController controller;
+        if (chat == null) {
+            controller = controllerFactory.chatSetupController()
+                .currentUser(user)
+                .type(type)
+                .build();
+        } else {
+            controller = controllerFactory.chatSetupController()
+                .currentUser(user)
+                .type(type)
+                .currentChat(chat)
+                .build();
         }
+
+        loadView("chat-setup-view.fxml", controller);
     }
 
     /**
      * Navigates to the user settings view.
      *
      * @param user The currently authenticated {@link User}.
+     * @throws IllegalStateException if the user is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
+     * @throws IOException if the user settings view cannot be loaded.
      */
-    public void navigateToUserSettings(User user) {
-        try {
-            UserSettingsController controller = controllerFactory.userSettingsController()
-                .currentUser(user)
-                .build();
+    public void navigateToUserSettings(User user) throws IllegalStateException, RuntimeException, SQLException, IOException {
+        UserSettingsController controller = controllerFactory.userSettingsController()
+            .currentUser(user)
+            .build();
 
-            loadView("user-settings-view.fxml", controller);
-        } catch (Exception e) {
-            Utils.showErrorAlert("Failed to load user settings: " + e.getMessage());
-        }
+        loadView("user-settings-view.fxml", controller);
     }
 
     /**
@@ -146,19 +147,20 @@ public class SceneManager {
      *
      * @param quiz The {@link Quiz} to be displayed.
      * @param user The currently authenticated {@link User}.
+     * @throws IllegalStateException if the user or quiz is not set.
+     * @throws RuntimeException if a database connection error occurs during controller construction.
+     * @throws SQLException if a database access error occurs during controller construction.
+     * @throws IOException if the quiz view cannot be loaded.
      */
-    public void navigateToQuiz(Quiz quiz, User user) {
-        try {
-            QuizController controller = controllerFactory.quizController()
-                .quiz(quiz)
-                .currentUser(user)
-                .build();
+    public void navigateToQuiz(Quiz quiz, User user) throws IllegalStateException, RuntimeException, SQLException, IOException {
+        QuizController controller = controllerFactory.quizController()
+            .quiz(quiz)
+            .currentUser(user)
+            .build();
 
-            loadView("quiz-view.fxml", controller);
-        } catch (Exception e) {
-            Utils.showErrorAlert("Failed to load quiz: " + e.getMessage());
-        }
+        loadView("quiz-view.fxml", controller);
     }
+
 
     /**
      * Loads an FXML file, sets its controller, and displays it on the main stage.
@@ -168,23 +170,20 @@ public class SceneManager {
      *
      * @param fxmlFile The name of the FXML file to load (e.g., "login-view.fxml").
      * @param controller The controller instance for the view.
+     * @throws IOException if the scene view cannot be loaded.
      */
-    private void loadView(String fxmlFile, Object controller) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlFile));
-            fxmlLoader.setController(controller);
-            Scene scene = new Scene(fxmlLoader.load());
+    private void loadView(String fxmlFile, Object controller) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlFile));
+        fxmlLoader.setController(controller);
+        Scene scene = new Scene(fxmlLoader.load());
 
-            stage.setScene(scene);
+        stage.setScene(scene);
 
-            /* This basically sets the default height and width only once at startup */
-            if (startUp) {
-                stage.setWidth(QuizWhizApplication.WIDTH);
-                stage.setHeight(QuizWhizApplication.HEIGHT);
-                startUp = false;
-            }
-        } catch (IOException e) {
-            Utils.showErrorAlert("Failed to load view: " + e.getMessage());
+        /* This basically sets the default height and width only once at startup */
+        if (startUp) {
+            stage.setWidth(QuizWhizApplication.WIDTH);
+            stage.setHeight(QuizWhizApplication.HEIGHT);
+            startUp = false;
         }
     }
 }

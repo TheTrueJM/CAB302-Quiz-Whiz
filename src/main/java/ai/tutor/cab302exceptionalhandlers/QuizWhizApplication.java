@@ -32,7 +32,6 @@ public class QuizWhizApplication extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            // In-Memory for developing
             SQLiteConnection db = new SQLiteConnection();
             ControllerFactory controllerFactory = new ControllerFactory(db);
             SceneManager sceneManager = SceneManager.getInstance();

@@ -4,6 +4,8 @@ import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 
+import java.sql.SQLException;
+
 /**
  * Builder for creating instances of {@link ChatController}.
  * <p>
@@ -49,13 +51,11 @@ public class ChatControllerBuilder extends ControllerBuilder<ChatController> {
      *
      * @return A new instance of {@link ChatController}.
      * @throws IllegalStateException if the current user is not set.
-     * @throws Exception if any other error occurs during construction (though typically only IllegalStateException is expected from this build).
+     * @throws RuntimeException if a database connection error occurs.
+     * @throws SQLException if a database access error occurs.
      */
     @Override
-    public ChatController build() throws Exception {
-        if (authenticatedUser == null) {
-            throw new IllegalStateException("Current user must be set");
-        }
+    public ChatController build() throws IllegalStateException, RuntimeException, SQLException {
         return new ChatController(db, authenticatedUser);
     }
 }

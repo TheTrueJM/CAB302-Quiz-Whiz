@@ -66,21 +66,9 @@ public abstract class AuthController {
      * @throws RuntimeException If unexpected errors occur during setup
      */
 
-    public AuthController(SQLiteConnection db) throws RuntimeException, SQLException {
+    public AuthController(SQLiteConnection db) throws SQLException, RuntimeException {
         this.db = db;
         this.userDAO = new UserDAO(db);
-    }
-
-    /**
-     * Retrieves the JavaFX stage (window) containing the authentication form.
-     * <p>
-     * Uses the {@link #submitButton} to access the current scene and its window.
-     * </p>
-     * @return The {@link Stage} hosting the authentication form
-     */
-
-    protected Stage getStage() {
-        return (Stage) submitButton.getScene().getWindow();
     }
 
 
@@ -167,12 +155,10 @@ public abstract class AuthController {
      * Abstract method to be implemented by subclasses to handle form submission,
      * such as validating input and authenticating the user.
      * </p>
-     * @throws IOException If navigating to the next screen fails
-     * @throws SQLException If database operations fail
      */
 
     @FXML
-    protected abstract void onSubmit() throws IOException, SQLException;
+    protected abstract void onSubmit();
 
     /**
      * Navigates to the chat screen for the authenticated user.
@@ -186,7 +172,7 @@ public abstract class AuthController {
      */
 
 
-    public void loadChat(User user) throws IOException, RuntimeException, SQLException {
+    public void loadChat(User user) throws Exception {
         SceneManager.getInstance().navigateToChat(user);
     }
 
@@ -203,7 +189,7 @@ public abstract class AuthController {
      */
 
     @FXML
-    protected void switchLayout() throws IOException, RuntimeException, SQLException {
+    protected void switchLayout() throws Exception {
         AuthType targetType = this instanceof LoginController ? AuthType.SIGNUP : AuthType.LOGIN;
         SceneManager.getInstance().navigateToAuth(targetType);
     }
@@ -223,7 +209,7 @@ public abstract class AuthController {
             switchLayout.setOnAction(event -> {
                 try {
                     switchLayout();
-                } catch (IOException | SQLException e) {
+                } catch (Exception e) {
                     Utils.showErrorAlert("Failed to switch pages" + e.getMessage());
                 }
             });
@@ -243,11 +229,7 @@ public abstract class AuthController {
     protected void setupSubmitButton() {
         if (submitButton != null) {
             submitButton.setOnAction(event -> {
-                try {
-                    onSubmit();
-                } catch (IOException | SQLException e) {
-                    Utils.showErrorAlert("Failed to submit: " + e.getMessage());
-                }
+                onSubmit();
             });
         }
     }
@@ -262,7 +244,7 @@ public abstract class AuthController {
      */
 
     @FXML
-    protected  void setupInputField() {
+    protected void setupInputField() {
         if (usernameField != null) {
             usernameField.setOnKeyReleased(this::onFieldChanged);
         }
