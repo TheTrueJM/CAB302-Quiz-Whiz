@@ -242,11 +242,11 @@ public class QuizController {
         Label optionLabel = new Label();
         optionLabel.getStyleClass().setAll(("option-label"));
 
-        // Converts index to ASCII letter (e.g, A,B,C)
+        // Adds (A,B,C..) labels for none True/False questions
         if (options.size() != 2) {
             optionLabel.setText(option.getOption().toUpperCase());
         } else {
-            // Set explicit Labels for T/F options
+            // Set explicit Labels for True/False options
             String optLabel = optionIndex == 0 ? "A" : "B";
             optionLabel.setText(optLabel);
         }
