@@ -15,6 +15,24 @@ import javafx.stage.Stage;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Controller for managing the quiz-taking interface in the AI tutor application.
+ * <p>
+ * Handles the display of quiz questions, collection of user answers, submission of quiz
+ * results, and navigation back to the chat screen. Interacts with the database via
+ * {@link QuizDAO}, {@link QuizQuestionDAO}, {@link AnswerOptionDAO}, and
+ * {@link UserAnswerDAO} to retrieve quiz details and store user answers. Uses JavaFX for
+ * rendering the quiz UI, including question lists, answer buttons, and submission logic.
+ * </p>
+ * @see QuizDAO
+ * @see QuizQuestionDAO
+ * @see AnswerOptionDAO
+ * @see UserAnswerDAO
+ * @see SceneManager
+ * @see Quiz
+ * @see User
+ */
+
 public class QuizController {
     @FXML private Button returnButton;
     @FXML private Button answerA;
@@ -51,6 +69,22 @@ public class QuizController {
     private boolean quizCompleted;
     private int currentAttempt;
 
+    /**
+     * Constructs a QuizController with a database connection, chosen quiz, and authenticated user.
+     * <p>
+     * Initializes the database connection, quiz, user, and DAO instances ({@link UserDAO},
+     * {@link ChatDAO}, {@link MessageDAO}, {@link QuizDAO}, {@link QuizQuestionDAO},
+     * {@link AnswerOptionDAO}, {@link UserAnswerDAO}). Calculates the current attempt number
+     * using {@link #calculateCurrentAttempt()}. Throws an exception if the user or quiz is null.
+     * </p>
+     * @param db The SQLite database connection
+     * @param chosenQuiz The quiz to be taken
+     * @param currentUser The currently authenticated user
+     * @throws IllegalStateException If the user or quiz is null
+     * @throws RuntimeException If unexpected errors occur during setup
+     * @throws SQLException If database initialization fails
+     */
+
     public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException, RuntimeException, SQLException {
         if (currentUser == null) {
             throw new IllegalStateException("No user was authenticated");
@@ -75,8 +109,16 @@ public class QuizController {
         calculateCurrentAttempt();
     }
 
+    /**
+     * Initializes the quiz-taking screen’s UI components and event handlers.
+     * <p>
+     * Sets the quiz title with {@link #setQuizNameField()}, loads quiz questions with
+     * {@link #setupQuestions()}, configures the question list view with
+     * {@link #setupQuizListView()}, and sets up the return button with
+     * {@link #setupReturnButton()}. Called automatically by JavaFX when the FXML is loaded.
+     * </p>
+     */
 
-    // Intialisation for assets
     @FXML
     public void initialize() {
         setQuizNameField();
@@ -85,13 +127,29 @@ public class QuizController {
         setupReturnButton();
     }
 
-    // Set the quiz name
+    /**
+     * Sets the quiz title in the UI.
+     * <p>
+     * Updates {@link #quizTitle} with the name of {@link #currentQuiz}.
+     * </p>
+     */
+
     private void setQuizNameField(){
         String quizName = currentQuiz.getName();
         quizTitle.setText(quizName);
     }
 
-    //A function that places each question into a list to use later
+    /**
+     * Loads quiz questions and their answer options from the database.
+     * <p>
+     * Retrieves questions for {@link #currentQuiz} using {@link #quizQuestionDAO}, populates
+     * {@link #quizQuestions}, and fetches answer options for each question using
+     * {@link #answerOptionDAO}, storing them in {@link #answerOptions}. Displays an error
+     * alert if loading fails.
+     * </p>
+     * @throws SQLException If database operations fail
+     */
+
     private void setupQuestions(){
         try {
             quizQuestions = quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
@@ -113,7 +171,17 @@ public class QuizController {
         }
     }
 
-    // Set up the ListView to display questions with a toggle indicating answered state
+    /**
+     * Configures the list view to display quiz questions with answered state indicators.
+     * <p>
+     * Sets up {@link #questionListView} with a custom {@link ListCell} containing a select
+     * button and a toggle indicating whether the question has been answered. Updates the
+     * display with {@link #displayQuestion(int)} when a question is selected, and shows
+     * correct/incorrect styling with {@link #checkAnswer(ListCell, HBox)} if the quiz is
+     * completed.
+     * </p>
+     */
+
     private void setupQuizListView() {
         questionListView.setCellFactory(listView -> new ListCell<QuizQuestion>() {
             private final Button selectQuestion = new Button();
@@ -164,6 +232,7 @@ public class QuizController {
             }
         });
 
+
         questionListView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             if (newItem != null) {
                 int index = questionListView.getItems().indexOf(newItem);
@@ -174,6 +243,17 @@ public class QuizController {
             }
         });
     }
+
+    /**
+     * Styles a question in the list view based on the user’s answer correctness.
+     * <p>
+     * Updates the {@link HBox} container’s styling to indicate whether the user’s answer
+     * for the question (identified by index) is correct or incorrect, based on
+     * {@link #questionAnswers} and {@link #answerOptions}. Used after quiz completion.
+     * </p>
+     * @param cell The list cell representing the question
+     * @param container The container holding the question UI elements
+     */
 
     private void checkAnswer(ListCell<QuizQuestion> cell, HBox container) {
         int questionIndex = cell.getIndex() + 1;
@@ -207,7 +287,18 @@ public class QuizController {
     }
 
 
-    // Display the questions on the buttons, and sets up the event handler for the answer buttons
+    /**
+     * Displays a specific quiz question and its answer options in the UI.
+     * <p>
+     * Updates {@link #quizQuestionLabel} with the question text and sets the text of answer
+     * buttons ({@link #answerA}, {@link #answerB}, {@link #answerC}, {@link #answerD})
+     * with the options from {@link #answerOptions}. Configures button actions to register
+     * answers with {@link #registerAnswer(int, String)} unless the quiz is completed, in
+     * which case it shows the results with correct/incorrect styling.
+     * </p>
+     * @param questionNumber The number of the question to display
+     */
+
     private void displayQuestion(int questionNumber) {
         if (questionNumber < 1 || questionNumber > quizQuestions.size()) {
             Utils.showErrorAlert("Invalid question number: " + questionNumber);
@@ -293,7 +384,18 @@ public class QuizController {
         }
     }
 
-    //register the answers to map
+    /**
+     * Registers the user’s answer for a specific question.
+     * <p>
+     * Stores the selected answer option in {@link #questionAnswers}, updates the styling of
+     * answer buttons ({@link #answerA}, {@link #answerB}, {@link #answerC}, {@link #answerD})
+     * to highlight the selection, and refreshes {@link #questionListView} to reflect the
+     * answered state.
+     * </p>
+     * @param questionNumber The number of the question being answered
+     * @param answerOption The selected answer option (e.g., "A", "B", "C", "D")
+     */
+
     private void registerAnswer(int questionNumber, String answerOption){
         questionAnswers.put(questionNumber, answerOption);
 
@@ -319,7 +421,16 @@ public class QuizController {
         questionListView.refresh();
     }
 
-    //Submit Answers
+    /**
+     * Submits the user’s answers for the quiz.
+     * <p>
+     * Marks the quiz as completed by setting {@link #quizCompleted} to true, saves the
+     * answers to the database using {@link #saveAnswers(int, int, Map, UserAnswerDAO)},
+     * and refreshes {@link #questionListView} to show the results. Displays an error alert
+     * if submission fails.
+     * </p>
+     */
+
     private void submitAnswers() {
         int messageId = currentQuiz.getMessageId();
         quizCompleted = true;
@@ -332,7 +443,19 @@ public class QuizController {
         }
     }
 
-    //Save answers function
+    /**
+     * Saves the user’s answers to the database.
+     * <p>
+     * Creates a {@link UserAnswer} record for each question answer in the provided map and
+     * saves it to the database using the specified {@link UserAnswerDAO}. Logs any database
+     * errors but continues processing remaining answers.
+     * </p>
+     * @param messageId The ID of the quiz’s associated message
+     * @param attempt The attempt number for this quiz
+     * @param answers The map of question numbers to selected answer options
+     * @param dao The data access object for user answers
+     */
+
     public void saveAnswers(int messageId, int attempt, Map<Integer, String> answers, UserAnswerDAO dao) {
         for (Map.Entry<Integer, String> entry : answers.entrySet()) {
             int questionNumber = entry.getKey();
@@ -348,7 +471,15 @@ public class QuizController {
         }
     }
 
-    //Return to chat
+    /**
+     * Configures the return button to navigate back to the chat screen.
+     * <p>
+     * Sets up {@link #returnButton} to trigger navigation to the chat screen for
+     * {@link #currentUser} using {@link SceneManager}. Displays an error alert if navigation
+     * fails.
+     * </p>
+     */
+
     private void setupReturnButton() {
         returnButton.setOnAction(actionEvent -> {
             try {
@@ -359,7 +490,17 @@ public class QuizController {
         });
     }
 
-    //Calculates the current attempt number quiz
+    /**
+     * Calculates the current attempt number for the quiz.
+     * <p>
+     * Retrieves past attempts for the first question of {@link #currentQuiz} using
+     * {@link #userAnswerDAO}, determines the highest attempt number, and sets
+     * {@link #currentAttempt} to the next number. Displays an error alert and returns -1 if
+     * calculation fails.
+     * </p>
+     * @return The current attempt number, or -1 if calculation fails
+     */
+
     private int calculateCurrentAttempt(){
         try {
             //Question number is 1, as all quizzes will have an answer for question 1, even if the answer is null
@@ -376,7 +517,15 @@ public class QuizController {
         }
     }
 
-            // Retrieve a specific Quiz record
+            /**
+             * Retrieves the current quiz from the database.
+             * <p>
+             * Fetches the quiz details for {@link #currentQuiz}’s message ID using {@link #quizDAO}.
+             * Displays an error alert and returns null if retrieval fails.
+             * </p>
+             * @return The {@link Quiz} object, or null if retrieval fails
+             */
+
             public Quiz getQuiz() {
                 try {
                     return quizDAO.getQuiz(currentQuiz.getMessageId());
@@ -386,7 +535,15 @@ public class QuizController {
                 }
             }
 
-            // Retrieve Quiz Question records for a specific Quiz
+            /**
+             * Retrieves all questions for the current quiz from the database.
+             * <p>
+             * Fetches all questions for {@link #currentQuiz}’s message ID using
+             * {@link #quizQuestionDAO}. Displays an error alert and returns null if retrieval fails.
+             * </p>
+             * @return A list of {@link QuizQuestion} objects, or null if retrieval fails
+             */
+
             public List<QuizQuestion> getQuizQuestions() {
                 try {
                     return quizQuestionDAO.getAllQuizQuestions(currentQuiz.getMessageId());
@@ -396,7 +553,16 @@ public class QuizController {
                 }
             }
 
-            // Retrieve a specific Quiz Question record
+            /**
+             * Retrieves a specific quiz question from the database.
+             * <p>
+             * Fetches the question for the given number in {@link #currentQuiz} using
+             * {@link #quizQuestionDAO}. Displays an error alert and returns null if retrieval fails.
+             * </p>
+             * @param questionNumber The number of the question to retrieve
+             * @return The {@link QuizQuestion} object, or null if retrieval fails
+             */
+
             public QuizQuestion getQuizQuestion(int questionNumber) {
                 try {
                     return quizQuestionDAO.getQuizQuestion(currentQuiz.getMessageId(), questionNumber);
@@ -406,7 +572,16 @@ public class QuizController {
                 }
             }
 
-            // Retrieve Answer Option records for a specific Question
+            /**
+             * Retrieves all answer options for a specific quiz question from the database.
+             * <p>
+             * Fetches the answer options for the given question number in {@link #currentQuiz} using
+             * {@link #answerOptionDAO}. Displays an error alert and returns null if retrieval fails.
+             * </p>
+             * @param questionNumber The number of the question
+             * @return A list of {@link AnswerOption} objects, or null if retrieval fails
+             */
+
             public List<AnswerOption> getQuestionAnswerOptions(int questionNumber) {
                 try {
                     return answerOptionDAO.getAllQuestionAnswerOptions(currentQuiz.getMessageId(), questionNumber);
@@ -416,7 +591,18 @@ public class QuizController {
                 }
             }
 
-            // Retrieve a specific Answer Option record
+            /**
+             * Retrieves a specific answer option for a quiz question from the database.
+             * <p>
+             * Fetches the answer option for the given question number and option letter in
+             * {@link #currentQuiz} using {@link #answerOptionDAO}. Displays an error alert and
+             * returns null if retrieval fails.
+             * </p>
+             * @param questionNumber The number of the question
+             * @param option The option letter (e.g., "A", "B", "C", "D")
+             * @return The {@link AnswerOption} object, or null if retrieval fails
+             */
+
             public AnswerOption getQuestionAnswerOption(int questionNumber, String option) {
                 try {
                     return answerOptionDAO.getQuestionAnswerOption(currentQuiz.getMessageId(), questionNumber, option);
@@ -426,7 +612,20 @@ public class QuizController {
                 }
             }
 
-            // Create a new User Answer record using UI user input
+            /**
+             * Creates a new user answer record based on UI input.
+             * <p>
+             * Validates the question number and answer option, creates a {@link UserAnswer} object
+             * with the current attempt number from {@link #calculateCurrentAttempt()}, and saves it
+             * to the database using {@link #userAnswerDAO}. Displays an error alert and returns null
+             * if creation fails.
+             * </p>
+             * @param questionNumber The number of the question being answered
+             * @param option The selected answer option (e.g., "A", "B", "C", "D")
+             * @return The created {@link UserAnswer} object, or null if creation fails
+             * @throws IllegalArgumentException If the question number or answer option is invalid
+             */
+
             public UserAnswer createNewUserAnswer(int questionNumber, String option) {
                 try {
                     if (questionNumber < 1) {
@@ -449,7 +648,18 @@ public class QuizController {
                 }
             }
 
-            // Retrieve a specific User Answer record
+            /**
+             * Retrieves a specific user answer for a quiz question from the database.
+             * <p>
+             * Fetches the user answer for the given attempt and question number in
+             * {@link #currentQuiz} using {@link #userAnswerDAO}. Displays an error alert and returns
+             * null if retrieval fails.
+             * </p>
+             * @param attempt The attempt number
+             * @param questionNumber The number of the question
+             * @return The {@link UserAnswer} object, or null if retrieval fails
+             */
+
             public UserAnswer getQuestionUserAnswer(int attempt, int questionNumber) {
                 try {
                     return userAnswerDAO.getUserQuestionAnswer(currentQuiz.getMessageId(), attempt, questionNumber);
@@ -459,7 +669,16 @@ public class QuizController {
                 }
             }
 
-            // Retrieve User Answer records for a specific Quiz
+            /**
+             * Retrieves all user answers for a specific quiz attempt from the database.
+             * <p>
+             * Fetches all user answers for the given attempt in {@link #currentQuiz} using
+             * {@link #userAnswerDAO}. Displays an error alert and returns null if retrieval fails.
+             * </p>
+             * @param attempt The attempt number
+             * @return A list of {@link UserAnswer} objects, or null if retrieval fails
+             */
+
             public List<UserAnswer> getQuizUserAnswers(int attempt) {
                 try {
                     return userAnswerDAO.getAllUserQuizAnswers(currentQuiz.getMessageId(), attempt);
