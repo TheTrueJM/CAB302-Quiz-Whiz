@@ -51,6 +51,7 @@ public class SceneManager {
      * Gets the singleton instance of {@code SceneManager}.
      *
      * @return The singleton instance.
+     * @throws SQLException if a database connection error occurs.
      */
     public static SceneManager getInstance() throws SQLException {
         if (instance == null) {
@@ -61,7 +62,7 @@ public class SceneManager {
 
     /**
      * Initializes the SceneManager with the primary stage.
-     * This method must be called at least once before application startup.
+     * This method must be called once before application startup.
      *
      * @param stage The primary {@link Stage} of the application.
      */

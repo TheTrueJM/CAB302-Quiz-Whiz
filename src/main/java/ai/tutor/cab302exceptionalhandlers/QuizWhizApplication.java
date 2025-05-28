@@ -21,8 +21,8 @@ public class QuizWhizApplication extends Application {
     /**
      * Initializes the main application loop, called by the JavaFX framework when the application starts.
      * <p>
-     * A {@link SceneManager} instance retrieved and provided the
-     * application stage to manage the application scenes.
+     * A {@link SceneManager} instance is retrieved and given
+     * the application stage to manage the application scenes.
      * <p>
      * The first page navigated to at startup is the Sign Up authentication page.
      *
