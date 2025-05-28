@@ -71,7 +71,7 @@ public abstract class AuthController {
         this.db = db;
         this.userDAO = new UserDAO(db);
     }
-  
+
 
     /*
      * =======================
