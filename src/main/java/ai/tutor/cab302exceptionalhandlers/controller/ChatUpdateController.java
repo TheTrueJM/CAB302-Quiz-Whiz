@@ -109,7 +109,6 @@ public class ChatUpdateController extends ChatSetupController {
         }
     }
 
-
     /*
      * =====================
      *    CRUD Operations

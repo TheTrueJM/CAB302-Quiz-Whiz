@@ -27,9 +27,7 @@
                     <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" styleClass="return-button" text="Back to Chat">
                         <graphic>
                             <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
                                     <Image url="@images/return.png" />
-                                </image>
                             </ImageView>
                         </graphic>
                     </Button>
@@ -41,7 +39,7 @@
                         </HBox.margin>
                     </Label>
                     <Region HBox.hgrow="ALWAYS" />
-                    <ComboBox prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes" HBox.hgrow="NEVER">
+                    <ComboBox fx:id="attemptsDropdown" prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes" HBox.hgrow="NEVER">
                         <HBox.margin>
                             <Insets right="10.0" />
                         </HBox.margin>
@@ -62,79 +60,29 @@
         </VBox>
     </left>
 
-    <!-- Center Region (Chat Area) -->
+    <!-- Center Region (Quiz answer options) -->
     <center>
         <VBox spacing="10" styleClass="quiz-area" VBox.vgrow="ALWAYS">
-            <Label fx:id="quizQuestionLabel" styleClass="quiz-question-label" text="Placeholder" wrapText="true">
-                <padding>
-                    <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
-                </padding>
-            </Label>
-            <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" prefWidth="670.0" spacing="10" styleClass="quiz-question-container">
-                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
-                            <VBox fx:id="quizAnswers" alignment="CENTER" fillWidth="false" spacing="10" styleClass="quiz-answers">
+                 <Label fx:id="quizQuestionLabel" styleClass="quiz-question-label" text="Placeholder">
+            <padding>
+               <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+            </padding></Label>
+                <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="345.0" prefHeight="345.0" prefWidth="670.0" spacing="10" styleClass="quiz-question-container">
+                    <!-- Options Section -->
+                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" prefHeight="335.0" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
+                            <VBox fx:id="quizAnswersVBox" alignment="CENTER" fillWidth="false" styleClass="quiz-answers" VBox.vgrow="ALWAYS">
                                 <Label styleClass="quiz-instruction" text="Please select one of the options">
-                                    <VBox.margin>
-                                        <Insets top="7.0" />
-                                    </VBox.margin>
-                                </Label>
-                                <VBox alignment="CENTER_LEFT" prefHeight="200.0">
-                                        <HBox alignment="CENTER_LEFT">
-                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="A" />
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Pane>
-                                                <Button fx:id="answerA" prefHeight="42.0" styleClass="option-button" text="Placeholder">
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Button>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT">
-                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="B" />
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Pane>
-                                                <Button fx:id="answerB" prefHeight="42.0" styleClass="option-button" text="Placeholder">
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Button>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT">
-                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="C" />
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Pane>
-                                                <Button fx:id="answerC" prefHeight="42.0" styleClass="option-button" text="Placeholder">
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Button>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT">
-                                                <Pane prefHeight="42.0" prefWidth="42.0" styleClass="answer-label-pane">
-                                                        <Label layoutX="14.0" layoutY="6.0" styleClass="answer-label" text="D" />
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Pane>
-                                                <Button fx:id="answerD" prefHeight="42.0" styleClass="option-button" text="Placeholder">
-                                                    <HBox.margin>
-                                                        <Insets bottom="16.0" />
-                                                    </HBox.margin>
-                                                </Button>
-                                        </HBox>
-                                </VBox>
-                                <padding>
-                                    <Insets bottom="10.0" left="15.0" right="15.0" top="5.0" />
-                                </padding>
+                           <VBox.margin>
+                              <Insets left="8.0" top="7.0" />
+                           </VBox.margin>
+                        </Label>
+                  <VBox fx:id="childAnswerVBox" alignment="CENTER_LEFT" spacing="15" styleClass="option-container">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="5.0" />
+                     </VBox.margin></VBox>
+                        <padding>
+                           <Insets bottom="10.0" top="5.0" />
+                        </padding>
                             </VBox>
                     </ScrollPane>
                 <VBox.margin>
