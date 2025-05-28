@@ -10,7 +10,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -22,6 +21,7 @@ public class QuizController {
     @FXML private Label quizTitle;
     @FXML private Button submitQuizButton;
     @FXML private VBox childAnswerVBox;
+    @FXML private ComboBox attemptsDropdown;
 
     private SQLiteConnection db;
     private Quiz currentQuiz;
@@ -80,6 +80,7 @@ public class QuizController {
         setupQuizListView();
         setupReturnButton();
         setupSubmitButton();
+        setupAttemptsDropdown();
         displayQuestion(1);
     }
 
@@ -357,6 +358,77 @@ public class QuizController {
                     Utils.showErrorAlert("Error Returning To Chat: " + e);
                 }
             });
+        }
+
+        private void setupAttemptsDropdown() {
+            if (attemptsDropdown != null) {
+                attemptsDropdown.getItems().clear();
+                List<Integer> attempts = getAllAttempts();
+
+                if (attempts.isEmpty()) {
+                    attemptsDropdown.getItems().add("Attempt " + currentAttempt);
+                } else {
+                    for (Integer attempt : attempts) {
+                        attemptsDropdown.getItems().add("Attempt " + attempt);
+                    }
+                }
+                // Select the current attempt
+                attemptsDropdown.getSelectionModel().select("Attempt " + currentAttempt);
+
+                // Add listener for selection changes
+                attemptsDropdown.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        int selectedAttempt = Integer.parseInt(((String) newValue).replace("Attempt ", ""));
+                        if (selectedAttempt != currentAttempt) {
+                            currentAttempt = selectedAttempt;
+                            // Optionally: Load answers for this attempt and update UI
+                            loadAttemptAnswers(selectedAttempt);
+                        }
+                        if (currentAttempt == attemptsDropdown.getItems().size() && !quizCompleted){
+                            // Re-enable submit button for current attempt
+                            submitQuizButton.setDisable(false);
+                        }
+                    }
+                });
+            }
+        }
+
+    private void loadAttemptAnswers(int attempt) {
+        try {
+            questionAnswers.clear(); // Clear current answers
+            List<UserAnswer> userAnswers = userAnswerDAO.getAllUserQuizAnswers(currentQuiz.getMessageId(), attempt);
+            for (UserAnswer answer : userAnswers) {
+                questionAnswers.put(answer.getQuestionNumber(), answer.getAnswerOption());
+            }
+            quizCompleted = !userAnswers.isEmpty(); // Set quizCompleted based on whether answers exist
+            questionListView.refresh();
+            displayQuestion(1); // Display first question
+        } catch (SQLException e) {
+            Utils.showErrorAlert("Failed to load answers for attempt " + attempt + ": " + e.getMessage());
+        }
+    }
+
+        private List<Integer> getAllAttempts() {
+            List<Integer> attempts = new ArrayList<>();
+            try {
+                List<UserAnswer> pastQuizzes = userAnswerDAO.getAllUserQuizAttempts(currentQuiz.getMessageId());
+                Set<Integer> pastAttemptNumbers = new HashSet<>();
+                // Loop through past attempts and add to set to get unique attempts only
+                for (UserAnswer answer : pastQuizzes) {
+                    pastAttemptNumbers.add(answer.getAttempt());
+                }
+                // Convert to list and sort
+                attempts.addAll(pastAttemptNumbers);
+                Collections.sort(attempts);
+                // Add the current attempt if not already present
+                if (!attempts.contains(currentAttempt)) {
+                    attempts.add(currentAttempt);
+                }
+                return attempts;
+            } catch (SQLException e) {
+                Utils.showErrorAlert("Failed to retrieve quiz attempts for User");
+                return null;
+            }
         }
 
         //Calculates the current attempt number quiz

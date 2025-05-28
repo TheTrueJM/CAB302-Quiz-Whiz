@@ -41,7 +41,7 @@
                         </HBox.margin>
                     </Label>
                     <Region HBox.hgrow="ALWAYS" />
-                    <ComboBox prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes" HBox.hgrow="NEVER">
+                    <ComboBox fx:id="attemptsDropdown" prefHeight="34.0" prefWidth="155.0" promptText="Previous Quizzes" styleClass="previous-quizzes" HBox.hgrow="NEVER">
                         <HBox.margin>
                             <Insets right="10.0" />
                         </HBox.margin>
