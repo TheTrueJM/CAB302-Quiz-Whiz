@@ -38,10 +38,14 @@ public class UserSettingsController {
     @FXML private Label quizzesTakenLabel;
     @FXML private Label averageScoreLabel;
 
-    public UserSettingsController(SQLiteConnection connection, User user) throws SQLException {
+    public UserSettingsController(SQLiteConnection connection, User authenticatedUser) throws IllegalStateException, RuntimeException, SQLException {
+        if (authenticatedUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
+
         db = connection;
         userDAO = new UserDAO(db);
-        currentUser = user;
+        currentUser = authenticatedUser;
     }
 
 
@@ -58,10 +62,6 @@ public class UserSettingsController {
         usernameField.setText(currentUser.getUsername());
     }
 
-    private Stage getStage() {
-        return (Stage) saveButton.getScene().getWindow();
-    }
-
 
     /*
      * =========================================================================
@@ -70,7 +70,7 @@ public class UserSettingsController {
      */
 
     @FXML
-    private void onBack() throws IOException, RuntimeException, SQLException {
+    private void onBack() throws Exception {
        SceneManager.getInstance().navigateToChat(currentUser);
     }
 
@@ -79,7 +79,7 @@ public class UserSettingsController {
             backButton.setOnAction(actionEvent -> {
                 try {
                     onBack();
-                } catch (IOException | SQLException e) {
+                } catch (Exception e) {
                     Utils.showErrorAlert("Failed to load chat page " + e.getMessage());
                 }
             });
@@ -87,7 +87,7 @@ public class UserSettingsController {
     }
 
     @FXML
-    private void onLogout() throws IOException, RuntimeException, SQLException {
+    private void onLogout() throws Exception {
         Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout?");
         if (result.isPresent()) {
             ButtonType buttonClicked = result.get();
@@ -102,7 +102,7 @@ public class UserSettingsController {
         logoutButton.setOnAction(actionEvent -> {
             try {
                 onLogout();
-            } catch (IOException | SQLException e) {
+            } catch (Exception e) {
                 Utils.showErrorAlert("Failed to logout " + e.getMessage());
             }
         });
@@ -151,7 +151,7 @@ public class UserSettingsController {
     }
 
     @FXML
-    private void onTerminate() throws IOException, RuntimeException, SQLException {
+    private void onTerminate() throws Exception {
         Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to delete of your account?");
         if (result.isPresent()) {
             ButtonType buttonClicked = result.get();
@@ -171,7 +171,7 @@ public class UserSettingsController {
         terminateUserButton.setOnAction(actionEvent -> {
             try {
                 onTerminate();
-            } catch (IOException | SQLException e) {
+            } catch (Exception e) {
                 Utils.showErrorAlert("Failed to terminate account  " + e.getMessage());
             }
         });

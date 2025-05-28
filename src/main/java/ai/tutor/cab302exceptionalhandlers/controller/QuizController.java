@@ -51,33 +51,30 @@ public class QuizController {
     private boolean quizCompleted;
     private int currentAttempt;
 
-    public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException {
+    public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException, RuntimeException, SQLException {
+        if (currentUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
         if (chosenQuiz == null) {
             throw new IllegalStateException("No quiz was chosen");
         }
 
-        try {
-            this.db = db;
-            this.currentQuiz = chosenQuiz;
-            this.userDAO = new UserDAO(db);
-            this.chatDAO = new ChatDAO(db);
-            this.messageDAO = new MessageDAO(db);
-            this.quizDAO = new QuizDAO(db);
-            this.quizQuestionDAO = new QuizQuestionDAO(db);
-            this.answerOptionDAO = new AnswerOptionDAO(db);
-            this.userAnswerDAO = new UserAnswerDAO(db);
-            this.currentUser = currentUser;
-            quizCompleted = false;
-        } catch (SQLException | RuntimeException e) {
-            Utils.showErrorAlert("SQL database connection error: " + e.getMessage());
-        }
+        this.db = db;
+        this.currentQuiz = chosenQuiz;
+        this.userDAO = new UserDAO(db);
+        this.chatDAO = new ChatDAO(db);
+        this.messageDAO = new MessageDAO(db);
+        this.quizDAO = new QuizDAO(db);
+        this.quizQuestionDAO = new QuizQuestionDAO(db);
+        this.answerOptionDAO = new AnswerOptionDAO(db);
+        this.userAnswerDAO = new UserAnswerDAO(db);
+        this.currentUser = currentUser;
+
+        quizCompleted = false;
         //Calculate the attempt number
         calculateCurrentAttempt();
     }
 
-    private Stage getStage() {
-        return (Stage) quizTitle.getScene().getWindow();
-    }
 
     // Intialisation for assets
     @FXML
