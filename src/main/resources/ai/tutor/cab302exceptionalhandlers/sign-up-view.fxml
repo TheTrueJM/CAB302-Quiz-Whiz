@@ -1,39 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-
-<VBox alignment="TOP_CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml" style="-fx-background-color: #CBD6FF;">
+<VBox alignment="TOP_CENTER" maxHeight="540.0" prefHeight="540.0" prefWidth="960.0" spacing="10.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<stylesheets>
+    <URL value="@AuthStyles.css" />
+</stylesheets>
     <!--The Header -->
-    <HBox alignment="TOP_CENTER" spacing="10" style="-fx-background-color: #336699; -fx-padding: 10;">
-        <Label style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="Welcome to Quiz Whiz" textAlignment="CENTER" alignment="TOP_CENTER" />
+    <HBox alignment="TOP_CENTER" style="-fx-background-color: #336699; -fx-padding: 10;">
+        <Label alignment="TOP_CENTER" style="-fx-text-fill: white; -fx-font-size: 26; -fx-font-weight: bold;" text="Welcome to Quiz Whiz" textAlignment="CENTER" />
     </HBox>
+   <VBox alignment="CENTER" maxHeight="468.0" maxWidth="500.0" prefHeight="468.0" prefWidth="500.0" style="-fx-background-color: #CBD6FF; -fx-background-radius: 32; -fx-border-radius: 32;">
+      <children>
+         <VBox alignment="CENTER_LEFT" maxWidth="300.0" prefHeight="52.0" prefWidth="600.0">
+            <children>
+               <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="Username">
+                  <VBox.margin>
+                     <Insets top="6.0" />
+                  </VBox.margin>
+               </Label>
+            
+                  <!-- The Fields for Sign up page-->
+                <TextField fx:id="usernameField" maxWidth="400.0" onKeyReleased="#onFieldChanged" prefWidth="400.0" promptText="Username..." style="-fx-font-size: 16; -fx-border-radius: 8; -fx-background-radius: 8;" />
+            </children>
+         </VBox>
+         <Label fx:id="usernameFeedback" prefHeight="20.0" prefWidth="297.0" style="-fx-text-fill: red; -fx-font-size: 16; -fx-font-style: italic;" />
+         <VBox alignment="CENTER_LEFT" maxWidth="300.0" prefHeight="200.0" prefWidth="100.0">
+            <children>
+               <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="Password">
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
+               </Label>
+                <PasswordField fx:id="passwordField" onKeyReleased="#onFieldChanged" prefHeight="35.0" prefWidth="467.0" promptText="Password..." style="-fx-font-size: 16; -fx-background-radius: 8; -fx-border-radius: 8;" />
+            </children>
+         </VBox>
+         <Label fx:id="passwordFeedback" prefHeight="20.0" prefWidth="297.0" style="-fx-text-fill: red; -fx-font-size: 16; -fx-font-style: italic;" />
+         <VBox alignment="CENTER_LEFT" maxWidth="300.0" prefHeight="200.0" prefWidth="100.0">
+            <children>
+               <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="Confirm Password">
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
+               </Label>
+                <PasswordField fx:id="confirmPasswordField" onKeyReleased="#onFieldChanged" promptText="Confirm Password..." style="-fx-font-size: 16; -fx-background-radius: 8; -fx-border-radius: 8;">
+                  <VBox.margin>
+                     <Insets bottom="20.0" />
+                  </VBox.margin>
+               </PasswordField>
+            </children>
+         </VBox>
+          <Button fx:id="submitButton" disable="true" onAction="#onSubmit" prefHeight="39.0" prefWidth="125.0" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-font-size: 19;" styleClass="toggle-auth-submit" text="Sign Up">
+            <VBox.margin>
+               <Insets bottom="10.0" />
+            </VBox.margin>
+         </Button>
+         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <children>
+               <Label style="-fx-text-fill: black; -fx-font-size: 16; -fx-font-style: italic;" text="Don’t have an Account?">
+                  <HBox.margin>
+                     <Insets right="6.0" />
+                  </HBox.margin>
+               </Label>
+                <Button onAction="#switchLayout" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-opacity: 0.9; -fx-font-size: 14;" styleClass="switch-login" text="Login" />
+            </children>
+         </HBox>
+      
+      
+          <ImageView fitHeight="82.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                  <Image url="@images/logo-blue.png" />
+              </image>
+            <VBox.margin>
+               <Insets top="5.0" />
+            </VBox.margin>
+          </ImageView>
+      </children>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <padding>
+         <Insets bottom="10.0" top="10.0" />
+      </padding>
+      <VBox.margin>
+         <Insets />
+      </VBox.margin>
+   </VBox>
 
 
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" />
     </padding>
 
-<!-- The Fields for Sign up page-->
-    <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged"/>
-    <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
-    <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
-    <Button fx:id="signUpButton" text="Sign Up" onAction="#onSignUp" disable="true" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold;"/>
-    <Button text="Switch to Login" onAction="#switchToLogin" style="-fx-text-fill: white; -fx-background-color: #336699; -fx-font-weight: bold;"/>
-</VBox>
 
-<!--
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ai.tutor.cab302exceptionalhandlers.controller.AuthController"
-            prefHeight="200.0" prefWidth="300.0">
-    <center>
-        <TextField fx:id="usernameField" promptText="Username..." onKeyReleased="#onFieldChanged"/>
-        <TextField fx:id="passwordField" promptText="Password..." onKeyReleased="#onFieldChanged"/>
-        <TextField fx:id="confirmPasswordField" promptText="Confirm Password..." onKeyReleased="#onFieldChanged"/>
-        <Button fx:id="signupButton" onAction="#onSignUp" HBox.hgrow="ALWAYS"/>
-    </center>
-</BorderPane>
--->
+
+</VBox>

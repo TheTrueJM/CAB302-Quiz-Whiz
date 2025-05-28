@@ -21,6 +21,11 @@
     <spotless.version>2.44.4</spotless.version>
     <javadoc.version>3.11.2</javadoc.version>
     <password4j.version>1.8.2</password4j.version>
+    <monacle.version>21.0.2</monacle.version>
+    <slf4j.version>2.0.12</slf4j.version>
+    <ollama4j.version>1.0.100</ollama4j.version>
+    <gson.version>2.13.1</gson.version>
+    <mdfx.version>0.5.6</mdfx.version>
   </properties>
 
   <dependencies>
@@ -32,6 +37,11 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-web</artifactId>
       <version>${javafx.version}</version>
     </dependency>
     <dependency>
@@ -49,6 +59,12 @@
       <groupId>org.testfx</groupId>
       <artifactId>testfx-junit5</artifactId>
       <version>${testfx.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testfx</groupId>
+      <artifactId>openjfx-monocle</artifactId>
+      <version>${monacle.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -71,12 +87,27 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.12</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.12</version>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.ollama4j</groupId>
+        <artifactId>ollama4j</artifactId>
+        <version>${ollama4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>one.jpro.platform</groupId>
+        <artifactId>jpro-mdfx</artifactId>
+        <version>${mdfx.version}</version>
     </dependency>
   </dependencies>
 
@@ -119,6 +150,13 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
+          <systemPropertyVariables>
+            <glass.platform>Monocle</glass.platform>
+            <monocle.platform>Headless</monocle.platform>
+            <prism.order>sw</prism.order>
+            <java.awt.headless>true</java.awt.headless>
+          </systemPropertyVariables>
+          <rerunFailingTestsCount>3</rerunFailingTestsCount>
         </configuration>
       </plugin>
       <plugin>

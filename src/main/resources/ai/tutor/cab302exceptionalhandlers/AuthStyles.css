@@ -1,0 +1,5 @@
+.toggle-auth-submit:hover, .switch-signup:hover, .switch-login:hover {
+    -fx-opacity: 0.8;
+    -fx-transition: opacity 0.2s ease-in-out;
+    -fx-cursor: hand;
+}

@@ -1,9 +1,12 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.QuizWhizApplication;
+import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
 import ai.tutor.cab302exceptionalhandlers.model.User;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -11,25 +14,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class SignUpController {
-    private final AuthController authController;
-
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField passwordField;
+public class SignUpController extends AuthController {
     @FXML
     private TextField confirmPasswordField;
-    @FXML
-    private Button signUpButton;
 
-    private boolean usernameEmpty = true;
-    private boolean passwordEmpty = true;
     private boolean passwordCEmpty = true;
 
 
     public SignUpController(SQLiteConnection db) throws RuntimeException, SQLException {
-        this.authController = new AuthController(db);
+        super(db);
     }
 
 
@@ -38,10 +31,6 @@ public class SignUpController {
      *    FXML UI Controllers
      * =========================
      */
-
-    private Stage getStage() {
-        return (Stage) signUpButton.getScene().getWindow();
-    }
 
     @FXML
     protected void onFieldChanged(KeyEvent e) {
@@ -64,34 +53,64 @@ public class SignUpController {
         submitButtonToggle();
     }
 
-    private void submitButtonToggle() {
-        signUpButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
+    protected void submitButtonToggle() {
+        submitButton.setDisable(usernameEmpty || passwordEmpty || passwordCEmpty);
     }
 
     @FXML
-    protected void onSignUp() throws IOException, SQLException {
+    protected void onSubmit() throws IOException, RuntimeException, SQLException {
+        resetErrorFeedback();
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
         try {
             if (!password.equals(confirmPassword)) {
-                throw new IllegalArgumentException("Passwords do not match");
+                throw new SecurityException("Passwords do not match");
             }
 
-            User newUser = authController.signUp(username, password);
+            User newUser = authenticateUser(username, password);
 
             // Open Chat Page
-            authController.authenticate(newUser, getStage());
-        } catch (Exception e) {
-            // TODO: Display possible Sign Up error messages to FXML
-            System.err.println("User Sign Up Failed: " + e.getMessage() + e.getClass());
+            loadChat(newUser);
+
+        } catch (IllegalArgumentException e) {
+            errorFeedback(usernameFeedback, e.getMessage());
+        } catch (SecurityException e) {
+            errorFeedback(passwordFeedback, e.getMessage());
         }
     }
 
     // Open Login Page
     @FXML
-    protected void switchToLogin() throws IOException, SQLException {
-        authController.switchLayout("login", getStage());
+    protected void switchLayout() throws IOException, RuntimeException, SQLException {
+        Utils.loadView("login", new LoginController(db), getStage());
+    }
+
+
+    /*
+     * =====================
+     *    CRUD Operations
+     * =====================
+     */
+
+    public User authenticateUser(String username, String password) throws IllegalArgumentException, SecurityException, SQLException {
+        if (!User.validUsername(username)) {
+            throw new IllegalArgumentException("Username is invalid");
+        }
+        if (!User.validPassword(password)) {
+            throw new SecurityException("Password is invalid");
+        }
+
+        User existingUser = userDAO.getUser(username);
+        if (existingUser != null) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
+        String hashedPassword = User.hashPassword(password);
+        User newUser = new User(username, hashedPassword);
+        userDAO.createUser(newUser);
+
+        return newUser;
     }
 }

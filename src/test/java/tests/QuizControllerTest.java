@@ -2,9 +2,7 @@ package tests;
 
 import ai.tutor.cab302exceptionalhandlers.controller.QuizController;
 import ai.tutor.cab302exceptionalhandlers.model.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -52,7 +50,8 @@ public class QuizControllerTest {
 
 
     @BeforeEach
-    public void setUp() throws SQLException, IllegalStateException {
+    public void setUp(TestInfo testInfo) throws SQLException, IllegalStateException {
+        System.out.println("Running test: " + testInfo.getDisplayName());
         db = new SQLiteConnection(true);
         connection = db.getInstance();
 
@@ -77,7 +76,7 @@ public class QuizControllerTest {
             answerOptionDAO.createAnswerOption(answerOption);
         }
 
-        quizController = new QuizController(db, quiz);
+        quizController = new QuizController(db, quiz, user);
     }
 
 
