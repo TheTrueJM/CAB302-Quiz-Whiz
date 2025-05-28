@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import java.sql.SQLException;
 
 public class ChatCreateController extends ChatSetupController {
-    public ChatCreateController(SQLiteConnection db, User currentUser) throws RuntimeException, SQLException {
+    public ChatCreateController(SQLiteConnection db, User currentUser) throws IllegalStateException, RuntimeException, SQLException {
         super(db, currentUser);
     }
 

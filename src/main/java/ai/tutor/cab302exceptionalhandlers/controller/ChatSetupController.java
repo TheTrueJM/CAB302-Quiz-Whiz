@@ -32,9 +32,13 @@ public abstract class ChatSetupController {
     protected final ChatDAO chatDAO;
     protected final MessageDAO messageDAO;
 
-    public ChatSetupController(SQLiteConnection db, User currentUser) throws RuntimeException, SQLException {
+    public ChatSetupController(SQLiteConnection db, User authenticatedUser) throws IllegalStateException, RuntimeException, SQLException {
+        if (authenticatedUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
+
         this.db = db;
-        this.currentUser = currentUser;
+        this.currentUser = authenticatedUser;
 
         this.userDAO = new UserDAO(db);
         this.chatDAO = new ChatDAO(db);
@@ -84,7 +88,7 @@ public abstract class ChatSetupController {
     }
 
 
-    protected void chatReturn() throws IOException, RuntimeException, SQLException {
+    protected void chatReturn() throws Exception {
         SceneManager.getInstance().navigateToChat(currentUser);
     }
 }
