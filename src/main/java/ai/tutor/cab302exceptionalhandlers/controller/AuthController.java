@@ -66,11 +66,12 @@ public abstract class AuthController {
      * @throws RuntimeException If unexpected errors occur during setup
      */
 
+
     public AuthController(SQLiteConnection db) throws SQLException, RuntimeException {
         this.db = db;
         this.userDAO = new UserDAO(db);
     }
-
+  
 
     /*
      * =======================
@@ -166,13 +167,13 @@ public abstract class AuthController {
      * Uses {@link SceneManager} to load the chat interface for the specified user.
      * </p>
      * @param user The authenticated {@link User} to load the chat for
-     * @throws IOException If loading the chat screen fails
+     * @throws IllegalStateException If the user is not specified
+     * @throws RuntimeException If database connection fails
      * @throws SQLException If database operations fail
-     * @throws RuntimeException If unexpected errors occur
+     * @throws IOException If loading the chat screen fails
      */
 
-
-    public void loadChat(User user) throws Exception {
+    public void loadChat(User user) throws IllegalStateException, RuntimeException, SQLException, IOException {
         SceneManager.getInstance().navigateToChat(user);
     }
 

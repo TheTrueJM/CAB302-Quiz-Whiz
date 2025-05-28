@@ -126,6 +126,7 @@ public class SignUpController extends AuthController {
      * if successful. Displays error feedback for invalid inputs or mismatches.
      * </p>
      */
+  
     @Override
     @FXML
     protected void onSubmit() {
