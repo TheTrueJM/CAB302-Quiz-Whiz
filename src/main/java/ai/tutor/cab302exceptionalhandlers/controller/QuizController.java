@@ -242,14 +242,7 @@ public class QuizController {
         Label optionLabel = new Label();
         optionLabel.getStyleClass().setAll(("option-label"));
 
-        // Adds (A,B,C..) labels for none True/False questions
-        if (options.size() != 2) {
-            optionLabel.setText(option.getOption().toUpperCase());
-        } else {
-            // Set explicit Labels for True/False options
-            String optLabel = optionIndex == 0 ? "A" : "B";
-            optionLabel.setText(optLabel);
-        }
+        optionLabel.setText(option.getOption());
         HBox labelContainer = new HBox(optionLabel);
         labelContainer.setAlignment(Pos.CENTER);
         labelContainer.getStyleClass().setAll(("label-container"));
