@@ -27,9 +27,7 @@
                     <Button fx:id="returnButton" layoutX="25.0" layoutY="10.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="191.0" styleClass="return-button" text="Back to Chat">
                         <graphic>
                             <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
                                     <Image url="@images/return.png" />
-                                </image>
                             </ImageView>
                         </graphic>
                     </Button>
@@ -64,21 +62,21 @@
 
     <!-- Center Region (Quiz answer options) -->
     <center>
-        <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
-                 <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type?">
+        <VBox spacing="10" styleClass="quiz-area" VBox.vgrow="ALWAYS">
+                 <Label fx:id="quizQuestionLabel" styleClass="quiz-question-label" text="Placeholder">
             <padding>
                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
             </padding></Label>
-                <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="345.0" prefHeight="345.0" prefWidth="670.0" spacing="10" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;">
-                    <!-- Chat Section -->
-                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" prefHeight="335.0" prefWidth="334.0" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
-                            <VBox fx:id="quizAnswersVBox" alignment="CENTER" fillWidth="false" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14; -fx-padding: 10;" VBox.vgrow="ALWAYS">
-                                <Label style="-fx-background-color: #CBD6FF; -fx-font-size: 16;" text="Please select one of the options">
+                <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="345.0" prefHeight="345.0" prefWidth="670.0" spacing="10" styleClass="quiz-question-container">
+                    <!-- Options Section -->
+                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" prefHeight="335.0" prefWidth="334.0" styleClass="quiz-scroll-pane" VBox.vgrow="ALWAYS">
+                            <VBox fx:id="quizAnswersVBox" alignment="CENTER" fillWidth="false" styleClass="quiz-answers" VBox.vgrow="ALWAYS">
+                                <Label styleClass="quiz-instruction" text="Please select one of the options">
                            <VBox.margin>
                               <Insets left="8.0" top="7.0" />
                            </VBox.margin>
                         </Label>
-                  <VBox fx:id="childAnswerVBox" alignment="CENTER_LEFT" spacing="15">
+                  <VBox fx:id="childAnswerVBox" alignment="CENTER_LEFT" spacing="15" styleClass="option-container">
                      <VBox.margin>
                         <Insets bottom="10.0" top="5.0" />
                      </VBox.margin></VBox>

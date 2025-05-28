@@ -16,7 +16,6 @@ import java.util.*;
 public class QuizController {
     @FXML private Button returnButton;
     @FXML private ListView questionListView;
-    @FXML private VBox quizAnswersVBox;
     @FXML private Label quizQuestionLabel;
     @FXML private Label quizTitle;
     @FXML private Button submitQuizButton;
@@ -44,8 +43,6 @@ public class QuizController {
     private int currentAttempt;
 
     // Dynamic loading
-    // NOTE: maps a list of answer option pairs to a messageID for ui layout purposes
-    private Map<Integer, List<AnswerOption[]>> answerOptionPairs = new HashMap<>();
     private List<HBox> dynamicHBoxCollection = new ArrayList<>(); // Save reference so they can be removed
 
     public QuizController(SQLiteConnection db, Quiz chosenQuiz, User currentUser) throws IllegalStateException, RuntimeException, SQLException {
@@ -68,7 +65,6 @@ public class QuizController {
         this.currentUser = currentUser;
 
         quizCompleted = false;
-        //Calculate the attempt number
         calculateCurrentAttempt();
     }
 
@@ -90,7 +86,6 @@ public class QuizController {
                 Utils.showWarningAlert("Make sure to answer all questions before submitting.");
                 return;
             }
-
             submitAnswers();
             displayQuestion(1);
         });

@@ -23,6 +23,7 @@
 
 .quiz-scroll-pane {
     -fx-background-color: white;
+    -fx-background: white;
     -fx-background-insets: 0px;
 }
 
@@ -55,7 +56,7 @@
 
 .quiz-instruction {
     -fx-background-color: -fx-background-light;
-    -fx-font-size: 16px;
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
 }
 
