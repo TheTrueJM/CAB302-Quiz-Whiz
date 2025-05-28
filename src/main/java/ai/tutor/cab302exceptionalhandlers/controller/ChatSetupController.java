@@ -2,24 +2,20 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import java.io.File;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
-import javafx.stage.FileChooser;
-
-import java.util.List;
 
 public abstract class ChatSetupController {
     @FXML protected ComboBox<String> responseAttitude;
     @FXML protected ComboBox<String> educationLevel;
     @FXML protected ComboBox<String> quizDifficulty;
-    @FXML protected Slider responseLength;
+    @FXML protected Slider quizLength;
     @FXML protected Button downloadButton;
     @FXML protected TextField chatNameInput;
     @FXML protected TextField chatTopic;
@@ -36,20 +32,18 @@ public abstract class ChatSetupController {
     protected final ChatDAO chatDAO;
     protected final MessageDAO messageDAO;
 
+    public ChatSetupController(SQLiteConnection db, User authenticatedUser) throws IllegalStateException, RuntimeException, SQLException {
+        if (authenticatedUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
 
-    public ChatSetupController(SQLiteConnection db, User currentUser) throws RuntimeException, SQLException {
         this.db = db;
-        this.currentUser = currentUser;
+        this.currentUser = authenticatedUser;
 
         this.userDAO = new UserDAO(db);
         this.chatDAO = new ChatDAO(db);
         this.messageDAO = new MessageDAO(db);
     }
-
-    protected Stage getStage() {
-        return (Stage) settingsTitle.getScene().getWindow();
-    }
-
 
     /*
      * =======================
@@ -94,7 +88,7 @@ public abstract class ChatSetupController {
     }
 
 
-    protected void chatReturn() throws IOException, RuntimeException, SQLException  {
-        Utils.loadView("chat", new ChatController(db, currentUser), getStage());
+    protected void chatReturn() throws Exception {
+        SceneManager.getInstance().navigateToChat(currentUser);
     }
 }

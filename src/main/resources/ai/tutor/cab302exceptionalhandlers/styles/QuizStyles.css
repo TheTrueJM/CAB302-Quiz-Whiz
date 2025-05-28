@@ -1,0 +1,196 @@
+/* Sidebar */
+.quiz-selector-container {
+    -fx-background-color: -fx-sidebar-color;
+    -fx-padding: 5px 4px 5px 0px;
+}
+
+.quiz-list {
+    -fx-background-color: -fx-sidebar-color;
+    -fx-padding: 10px;
+}
+
+/* Quiz Area */
+.quiz-area {
+    -fx-padding: 20px;
+    -fx-background-color: white;
+}
+
+.quiz-question-container {
+    -fx-background-color: white;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.quiz-scroll-pane {
+    -fx-background-color: white;
+    -fx-background-insets: 0px;
+}
+
+.quiz-answers {
+    -fx-background-color: -fx-background-light;
+    -fx-border-radius: 14px;
+    -fx-background-radius: 14px;
+    -fx-padding: 5px 15px 10px 15px;
+}
+
+/* Labels and Text Fields */
+.quiz-title {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0px;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
+    -fx-padding: 0px;
+}
+
+.quiz-question-label {
+    -fx-background-color: #98E4CF;
+    -fx-font-size: 16px;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-padding: 8px 15px 8px 15px;
+}
+
+.quiz-instruction {
+    -fx-background-color: -fx-background-light;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.answer-label-pane {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-background-radius: 3px 0px 0px 3px;
+    -fx-border-radius: 3px 0px 0px 3px;
+}
+
+.answer-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Buttons */
+.submit-quiz-button {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
+.option-button {
+    -fx-padding: 10px;
+    -fx-background-color: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 2px 10px 10px 2px;
+    -fx-background-radius: 2px 10px 10px 2px;
+    -fx-border-color: black;
+}
+
+.option-button-toggled {
+    -fx-padding: 10px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 2px 10px 10px 2px;
+    -fx-background-radius: 2px 10px 10px 2px;
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+    -fx-border-color: black;
+}
+
+.select-question {
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+}
+
+.toggle-answered {
+    -fx-background-color: #D73234;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 0px;
+    -fx-alignment: center;
+    -fx-pref-width: 25px;
+    -fx-pref-height: 25px;
+}
+
+.toggle-answered:selected {
+    -fx-background-color: #6CDF8B;
+}
+
+.toggle-answered:selected::before {
+    -fx-translate-x: 3.5px;
+}
+
+/* ComboBox */
+.previous-quizzes {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+/* Questions and Answers */
+.question-container {
+    -fx-padding: 5px;
+    -fx-background-color: -fx-background-light;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.correct-question {
+    -fx-background-color: #c8f7c5;
+    -fx-text-fill: #2e7d32;
+    -fx-font-size: 14px;
+    -fx-padding: 5px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.incorrect-question {
+    -fx-background-color: #ffcdd2;
+    -fx-text-fill: #c62828;
+    -fx-font-size: 14px;
+    -fx-padding: 5px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.correct-answer {
+    -fx-background-color: #c8f7c5;
+    -fx-text-fill: #2e7d32;
+}
+
+.incorrect-answer {
+    -fx-background-color: #ffcdd2;
+    -fx-text-fill: #c62828;
+}
+
+.question-cell {
+    -fx-padding: 8px 0px 8px 0px;
+}
+
+/* Slider */
+.form-slider .thumb {
+    -fx-background-color: black;
+}
+
+.form-slider .track {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* Hover Effects */
+.submit-quiz-button:hover, .select-question:hover, .question-container:hover,
+.correct-answer:hover, .incorrect-answer:hover, .option-button:hover {
+    -fx-opacity: 0.8;
+    -fx-transition: opacity 0.2s ease-in-out;
+    -fx-cursor: hand;
+}
+
+.option-button:hover {
+    -fx-border-radius: 0px 13px 13px 0px;
+    -fx-background-radius: 0px 13px 13px 0px;
+}

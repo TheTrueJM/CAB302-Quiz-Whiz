@@ -2,21 +2,12 @@ package ai.tutor.cab302exceptionalhandlers.controller;
 
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import javafx.fxml.FXML;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 public class ChatCreateController extends ChatSetupController {
-    public ChatCreateController(SQLiteConnection db, User currentUser) throws RuntimeException, SQLException {
+    public ChatCreateController(SQLiteConnection db, User currentUser) throws IllegalStateException, RuntimeException, SQLException {
         super(db, currentUser);
     }
 
@@ -37,7 +28,7 @@ public class ChatCreateController extends ChatSetupController {
     protected void setupConfirmChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), (int)quizLength.getValue(), educationLevel.getValue(), chatTopic.getText());
                 chatReturn();
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Creating Chat: " + e);
@@ -53,7 +44,7 @@ public class ChatCreateController extends ChatSetupController {
      */
 
     // Create a new Chat record using UI user input
-    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
+    public Chat createNewChat(String name, String responseAttitude, String quizDifficulty, int quizLength, String educationLevel, String studyArea) throws IllegalArgumentException, SQLException {
         if (Utils.validateNullOrEmpty(name)) {
             throw new IllegalArgumentException("Chat name cannot be empty");
         }
@@ -68,7 +59,7 @@ public class ChatCreateController extends ChatSetupController {
         if (Utils.validateNullOrEmpty(studyArea)) { studyArea = null; }
 
         // Create and Add Chat to database
-        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, educationLevel, studyArea);
+        Chat newChat = new Chat(currentUser.getId(), name, responseAttitude, quizDifficulty, quizLength, educationLevel, studyArea);
         chatDAO.createChat(newChat);
 
         return newChat;

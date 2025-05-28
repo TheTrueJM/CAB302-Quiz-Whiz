@@ -1,59 +1,67 @@
 package ai.tutor.cab302exceptionalhandlers.controller;
 
+import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import ai.tutor.cab302exceptionalhandlers.Utils.Utils;
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
 public class UserSettingsController {
-    private UserDAO userDAO;
     private SQLiteConnection db;
+    private UserDAO userDAO;
     private User currentUser;
 
-    @FXML private Button saveButton;
-    @FXML private Button logoutButton;
+    private boolean usernameChanged = false;
+    private boolean passwordChanged = false;
+
     @FXML private Button backButton;
-    @FXML private Button deleteUserButton;
+    @FXML private Button logoutButton;
+    @FXML private Button saveButton;
+    @FXML private Button terminateUserButton;
+
     @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
+    @FXML private PasswordField currentPasswordField;
     @FXML private PasswordField newPasswordField;
-    @FXML private TextField studyArea;
-    @FXML private ComboBox educationLevelCombo;
+    @FXML private PasswordField confirmPasswordField;
+
     @FXML private Label usernameFeedback;
-    @FXML private Label passwordFeedback;
+    @FXML private Label currentPasswordFeedback;
     @FXML private Label newPasswordFeedback;
 
     // User stats widgets
     @FXML private Label quizzesTakenLabel;
     @FXML private Label averageScoreLabel;
 
-    private boolean usernameChanged;
-    private boolean passwordChanged;
+    public UserSettingsController(SQLiteConnection connection, User authenticatedUser) throws IllegalStateException, RuntimeException, SQLException {
+        if (authenticatedUser == null) {
+            throw new IllegalStateException("No user was authenticated");
+        }
 
-    public UserSettingsController(SQLiteConnection connection, User user) throws SQLException {
         db = connection;
-        currentUser = user;
         userDAO = new UserDAO(db);
-        this.usernameChanged = false;
-        this.passwordChanged = false;
+        currentUser = authenticatedUser;
     }
 
-    private Stage getStage() {
-        return (Stage) saveButton.getScene().getWindow();
-    }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
+        setupUsernameField();
         setupBackButton();
-        setupDeleteButton();
         setupLogoutButton();
         setupSaveButton();
-        setupUsernameField();
+        setupTerminateButton();
     }
+
+    private void setupUsernameField() {
+        usernameField.setText(currentUser.getUsername());
+    }
+
 
     /*
      * =========================================================================
@@ -61,121 +69,139 @@ public class UserSettingsController {
      * =========================================================================
      */
 
-    private void setupUsernameField(){
-        usernameField.setText(currentUser.getUsername());
+    @FXML
+    private void onBack() throws Exception {
+       SceneManager.getInstance().navigateToChat(currentUser);
     }
 
-
-    private void setupSaveButton(){
-        saveButton.setOnAction(actionEvent -> {
-            usernameFeedback.setText(null);
-            passwordFeedback.setText(null);
-            newPasswordFeedback.setText(null);
-
-            String currentPasswordText = passwordField.getText();
-            String newPasswordText = newPasswordField.getText();
-            String usernameText = usernameField.getText();
-
-            usernameChanged = false;
-            passwordChanged = false;
-
-            handleUsernameInput(usernameText);
-            handlePasswordInput(newPasswordText, currentPasswordText);
-
-            String successMessage = null;
-
-            if (usernameChanged && passwordChanged) {
-                successMessage = "Username & Password updated";
-            } else if (usernameChanged) {
-                successMessage = "Username updated";
-            } else if (passwordChanged) {
-                successMessage = "Password updated";
-            }
-
-            if (successMessage != null) {
-                Utils.showInfoAlert(successMessage);
-                passwordField.setText(null);
-                newPasswordField.setText(null);
-            }
-        });
-    }
-
-    private void setupDeleteButton(){
-        deleteUserButton.setOnAction(actionEvent -> {
-            try {
-                Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout of your account?");
-                if (result.isPresent()) {
-                    ButtonType buttonClicked = result.get();
-                    if (buttonClicked == ButtonType.OK) {
-                        userDAO.deleteUser(currentUser);
-                    }
+    @FXML
+    private void setupBackButton() {
+            backButton.setOnAction(actionEvent -> {
+                try {
+                    onBack();
+                } catch (Exception e) {
+                    Utils.showErrorAlert("Failed to load chat page " + e.getMessage());
                 }
-            } catch (SQLException e) {
-                Utils.showErrorAlert("Failed to logout");
-            }
+            });
 
-            try {
-                Utils.loadView("login", new LoginController(db), getStage());
-            } catch (Exception e ) {
-                Utils.showErrorAlert("Error Logging Out");
-            }
-        });
     }
 
-    private void setupLogoutButton(){
+    @FXML
+    private void onLogout() throws Exception {
+        Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout?");
+        if (result.isPresent()) {
+            ButtonType buttonClicked = result.get();
+            if (buttonClicked == ButtonType.OK) {
+                SceneManager.getInstance().navigateToAuth(AuthType.LOGIN);
+            }
+        }
+    }
+
+    @FXML
+    private void setupLogoutButton() {
         logoutButton.setOnAction(actionEvent -> {
-            Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to logout?");
-            if (result.isPresent()) {
-                ButtonType buttonClicked = result.get();
-                if (buttonClicked == ButtonType.OK) {
-                    try {
-                        Utils.loadView("login", new LoginController(db), getStage());
-                    } catch (Exception e ) {
-                        Utils.showErrorAlert("Error Logging Out");
-                    }
+            try {
+                onLogout();
+            } catch (Exception e) {
+                Utils.showErrorAlert("Failed to logout " + e.getMessage());
+            }
+        });
+
+    }
+
+    @FXML
+    private void onSave() {
+        usernameFeedback.setText("");
+        currentPasswordFeedback.setText("");
+        newPasswordFeedback.setText("");
+
+        String username = usernameField.getText();
+        String currentPassword = currentPasswordField.getText();
+        String newPassword = newPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
+        usernameChanged = passwordChanged = false;
+
+        handleUsernameUpdate(username);
+        handlePasswordUpdate(currentPassword, newPassword, confirmPassword);
+
+        String feedbackMessage;
+        if (usernameChanged && passwordChanged) {
+            feedbackMessage = "Username & Password updated";
+        } else if (usernameChanged) {
+            feedbackMessage = "Username updated";
+        } else if (passwordChanged) {
+            feedbackMessage = "Password updated";
+        } else {
+            feedbackMessage = "No details updated";
+        }
+
+        Utils.showInfoAlert(feedbackMessage);
+        currentPasswordField.setText("");
+        newPasswordField.setText("");
+        confirmPasswordField.setText("");
+    }
+
+    @FXML
+    private void setupSaveButton() {
+        saveButton.setOnAction(actionEvent -> {
+            onSave();
+        });
+
+    }
+
+    @FXML
+    private void onTerminate() throws Exception {
+        Optional<ButtonType> result = Utils.showConfirmAlert("Are you sure you want to delete of your account?");
+        if (result.isPresent()) {
+            ButtonType buttonClicked = result.get();
+            if (buttonClicked == ButtonType.OK) {;
+                try {
+                    userDAO.deleteUser(currentUser);
+                    SceneManager.getInstance().navigateToAuth(AuthType.SIGNUP);
+                } catch (SQLException e) {
+                    Utils.showErrorAlert("Failed to delete account: " + e.getMessage());
                 }
             }
-        });
+        }
     }
 
-    private void setupBackButton(){
-        backButton.setOnAction(actionEvent -> {
+    @FXML
+    private void setupTerminateButton() {
+        terminateUserButton.setOnAction(actionEvent -> {
             try {
-                Utils.loadView("chat", new ChatController(db, currentUser), getStage());
-            } catch (Exception e ) {
-                Utils.showErrorAlert("Error Returning To Chat");
+                onTerminate();
+            } catch (Exception e) {
+                Utils.showErrorAlert("Failed to terminate account  " + e.getMessage());
             }
         });
+
     }
 
-    private void handlePasswordInput(String newPassword, String currentPasswordText) {
-        try {
-            updatePassword(newPassword, currentPasswordText);
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("null or empty")) {
-                newPasswordFeedback.setText("Enter new password");
-            } else if (e.getMessage().contains("invalid")) {
-                passwordFeedback.setText("Invalid password, try again");
-            }
-        } catch (SecurityException e) {
-            passwordFeedback.setText("Incorrect password");
-        }
-        catch (SQLException e) {
-            Utils.showErrorAlert("Failed to change password");
-        }
-    }
-
-    private void handleUsernameInput(String username) {
+    private void handleUsernameUpdate(String username) {
         try {
             updateUsername(username);
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("already taken")) {
-                usernameFeedback.setText("Username already taken");
-            } else if (e.getMessage().contains("invalid")) {
-                usernameFeedback.setText("Invalid username, try again");
+            usernameChanged = true;
+        } catch (Exception e) {
+            usernameFeedback.setText(e.getMessage());
+        }
+    }
+
+    private void handlePasswordUpdate(String currentPassword, String newPassword, String confirmPassword) {
+        if (!currentPassword.isEmpty() || !newPassword.isEmpty() || !confirmPassword.isEmpty()) {
+            try {
+                if (!newPassword.equals(confirmPassword)) {
+                    throw new IllegalArgumentException("Passwords do not match");
+                }
+
+                updatePassword(currentPassword, newPassword);
+                passwordChanged = true;
+
+            } catch (IllegalArgumentException e) {
+                newPasswordFeedback.setText(e.getMessage());
+            } catch (Exception e) {
+                currentPasswordFeedback.setText(e.getMessage());
             }
-        } catch (SQLException e) {
-            Utils.showErrorAlert("Failed to change username");
         }
     }
 
@@ -187,38 +213,28 @@ public class UserSettingsController {
      */
 
     public void updateUsername(String newUsername) throws IllegalArgumentException, SQLException {
-        if (!User.validUsername(newUsername)){
-            throw new IllegalArgumentException("Username is invalid");
-        }
-
         if (!currentUser.getUsername().equals(newUsername)) {
             User existingUser = userDAO.getUser(newUsername);
             if (existingUser != null) {
                 throw new IllegalArgumentException("Username is already taken");
             }
+
             currentUser.setUsername(newUsername);
             userDAO.updateUser(currentUser);
             usernameChanged = true;
         }
     }
 
-    public void updatePassword(String newPassword, String currentPassword) throws IllegalArgumentException, SecurityException, SQLException {
-        if (!Utils.validateNullOrEmpty(newPassword) || !Utils.validateNullOrEmpty(currentPassword)) {
-            if (!Utils.validateNullOrEmpty(currentPassword) && Utils.validateNullOrEmpty(newPassword) ) {
-                throw new IllegalArgumentException("New password is null or empty");
-            }
-
-            if (!User.validPassword(currentPassword)) {
-                throw new IllegalArgumentException("Password is invalid");
-            }
-
-            if (!currentUser.verifyPassword(currentPassword)){
-                throw new SecurityException("Incorrect Password");
-            }
-            String newPasswordHash = User.hashPassword(newPassword);
-            currentUser.setPasswordHash(newPasswordHash);
-            userDAO.updateUser(currentUser);
-            passwordChanged = true;
+    public void updatePassword(String currentPassword, String newPassword) throws IllegalArgumentException, SecurityException, SQLException {
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        } else if (!currentUser.verifyPassword(currentPassword)) {
+            throw new SecurityException("Incorrect Password");
         }
+
+        String newPasswordHash = User.hashPassword(newPassword);
+        currentUser.setPasswordHash(newPasswordHash);
+        userDAO.updateUser(currentUser);
+        passwordChanged = true;
     }
 }

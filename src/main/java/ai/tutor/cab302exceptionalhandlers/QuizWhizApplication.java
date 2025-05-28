@@ -1,40 +1,52 @@
 package ai.tutor.cab302exceptionalhandlers;
 
-import ai.tutor.cab302exceptionalhandlers.controller.AuthController;
-import ai.tutor.cab302exceptionalhandlers.controller.SignUpController;
-import ai.tutor.cab302exceptionalhandlers.model.Message;
-import ai.tutor.cab302exceptionalhandlers.model.SQLiteConnection;
+import ai.tutor.cab302exceptionalhandlers.factories.ControllerFactory;
+import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.types.AuthType;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
+/**
+ * Main application class for Quiz Whiz.
+ * <p>
+ * By default, the resolution for the application is set to 1280x720.
+ *
+ * @author Joshua M.
+ */
 public class QuizWhizApplication extends Application {
     public static final String TITLE = "Quiz Whiz";
-    public static final int WIDTH = 960;
-    public static final int HEIGHT = 540;
+    public static final int WIDTH = 1280;
+    public static final int HEIGHT = 720;
 
+    /**
+     * Initializes the main application loop, called by the JavaFX framework when the application starts.
+     * <p>
+     * A {@link SceneManager} instance is retrieved and given
+     * the application stage to manage the application scenes.
+     * <p>
+     * The first page navigated to at startup is the Sign Up authentication page.
+     *
+     * @param stage The primary stage for this application, onto which the application scene can be set.
+     */
     @Override
-    public void start(Stage stage) throws IOException, SQLException {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                QuizWhizApplication.class.getResource("sign-up-view.fxml")
-        );
+    public void start(Stage stage) {
+        try {
+            stage.setTitle(TITLE);
+            stage.setWidth(WIDTH);
+            stage.setHeight(HEIGHT);
 
-        // In-Memory for developing
-        SQLiteConnection db = new SQLiteConnection();
-        SignUpController controller = new SignUpController(db);
-        fxmlLoader.setController(controller);
+            SceneManager sceneManager = SceneManager.getInstance();
+            sceneManager.applicationInitialize(stage);
+            sceneManager.navigateToAuth(AuthType.SIGNUP);
 
-        Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
-        stage.setTitle(TITLE);
-        stage.setScene(scene);
-        stage.show();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to start application: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }

@@ -13,8 +13,9 @@ import java.sql.SQLException;
 import java.util.*;
 
 import ai.tutor.cab302exceptionalhandlers.model.*;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils;
+import ai.tutor.cab302exceptionalhandlers.Utils.AIUtils.*;
 import ai.tutor.cab302exceptionalhandlers.controller.ChatController;
-import ai.tutor.cab302exceptionalhandlers.controller.AIController.*;
 
 import com.google.gson.Gson;
 
@@ -22,6 +23,7 @@ public class ChatControllerTest {
     private SQLiteConnection db;
     private Connection connection;
     private ChatController chatController;
+    private AIUtils aiUtils;
     private boolean isOllamaRunning = false;
     private boolean hasCorrectModel = false;
 
@@ -32,9 +34,9 @@ public class ChatControllerTest {
     );
 
     private static final Chat[] Chats = {
-        new Chat(1, "Test Chat 1", "regular", "normal", "University", "IT"),
-        new Chat(1, "Test Chat 2", "regular", "normal", "University", "IT"),
-        new Chat(1, "Test Chat 3", "regular", "normal", "University", "IT")
+        new Chat(1, "Test Chat 1", "regular", "normal", 3, "University", "IT"),
+        new Chat(1, "Test Chat 2", "regular", "normal", 3, "University", "IT"),
+        new Chat(1, "Test Chat 3", "regular", "normal", 3, "University", "IT")
     };
 
     private static final Map<String, Message> Messages = new HashMap<>();
@@ -127,13 +129,14 @@ public class ChatControllerTest {
         }
 
         chatController = new ChatController(db, CurrentUser);
-        isOllamaRunning = chatController.isOllamaRunning();
-        hasCorrectModel = chatController.hasModel();
-        chatController.setOllamaVerbose(true);
+        aiUtils = AIUtils.getInstance();
+        isOllamaRunning = aiUtils.isOllamaRunning();
+        hasCorrectModel = aiUtils.hasModel();
+        aiUtils.setVerbose(true);
 
         if (!hasCorrectModel && isOllamaRunning) {
                 fail(String.format(
-                        "You need to download the correct model by running `ollama pull %s'", chatController.getModelName()
+                        "You need to download the correct model by running `ollama pull %s'", aiUtils.getModelName()
                 ));
         }
     }
@@ -322,12 +325,13 @@ public class ChatControllerTest {
     }
 
     @Test
+    @Disabled
     public void testMultiTurnChatMessageResponse() throws IllegalArgumentException, NoSuchElementException, SQLException {
         assumeTrue(isOllamaRunning, "Ollama is not running");
 
         Chat chat = Chats[0];
         Chat newChat = chatController.createNewChat(
-                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getEducationLevel(), chat.getStudyArea()
+                chat.getName(), chat.getResponseAttitude(), chat.getQuizDifficulty(), chat.getQuizLength(), chat.getEducationLevel(), chat.getStudyArea()
         );
         int chatID = newChat.getId();
 

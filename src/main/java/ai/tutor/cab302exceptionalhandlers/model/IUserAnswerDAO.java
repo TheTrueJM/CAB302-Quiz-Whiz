@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface IUserAnswerDAO {
+
     public void createUserAnswer(UserAnswer userAnswer) throws SQLException;
 
     public UserAnswer getUserQuestionAnswer(int messageId, int attempt, int questionNumber) throws SQLException;

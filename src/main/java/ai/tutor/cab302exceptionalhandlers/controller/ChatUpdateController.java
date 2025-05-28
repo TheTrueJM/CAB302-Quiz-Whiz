@@ -19,7 +19,7 @@ public class ChatUpdateController extends ChatSetupController {
     private final Chat currentChat;
 
 
-    public ChatUpdateController(SQLiteConnection db, User currentUser, Chat currentChat) throws RuntimeException, SQLException {
+    public ChatUpdateController(SQLiteConnection db, User currentUser, Chat currentChat) throws IllegalStateException, RuntimeException, SQLException {
         super(db, currentUser);
         this.currentChat = currentChat;
     }
@@ -42,7 +42,7 @@ public class ChatUpdateController extends ChatSetupController {
     protected void setupConfirmChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
-                updateChatDetails(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), educationLevel.getValue(), chatTopic.getText());
+                updateChatDetails(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), (int)quizLength.getValue(), educationLevel.getValue(), chatTopic.getText());
                 chatReturn();
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Updating Chat: " + e);
@@ -55,6 +55,7 @@ public class ChatUpdateController extends ChatSetupController {
         chatNameInput.setText(currentChat.getName());
         responseAttitude.setValue(currentChat.getResponseAttitude());
         quizDifficulty.setValue(currentChat.getQuizDifficulty());
+        quizLength.setValue(currentChat.getQuizLength());
         educationLevel.setValue(currentChat.getEducationLevel());
         chatTopic.setText(currentChat.getStudyArea());
         startChatButton.setText("Update Chat");
@@ -115,7 +116,7 @@ public class ChatUpdateController extends ChatSetupController {
      * =====================
      */
 
-    public void updateChatDetails(String name, String responseAttitude, String quizDifficulty, String educationLevel, String studyArea) throws IllegalArgumentException, NoSuchElementException, SQLException {
+    public void updateChatDetails(String name, String responseAttitude, String quizDifficulty, int quizLength, String educationLevel, String studyArea) throws IllegalArgumentException, NoSuchElementException, SQLException {
         if (Utils.validateNullOrEmpty(name)) {
             throw new IllegalArgumentException("Chat name attitude cannot be empty");
         }
@@ -133,6 +134,7 @@ public class ChatUpdateController extends ChatSetupController {
         currentChat.setName(name);
         currentChat.setResponseAttitude(responseAttitude);
         currentChat.setQuizDifficulty(quizDifficulty);
+        currentChat.setQuizLength(quizLength);
         currentChat.setEducationLevel(educationLevel);
         currentChat.setStudyArea(studyArea);
         chatDAO.updateChat(currentChat);
