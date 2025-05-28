@@ -62,25 +62,26 @@
         </VBox>
     </left>
 
-    <!-- Center Region (Chat Area) -->
+    <!-- Center Region (Quiz answer options) -->
     <center>
         <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: white;" VBox.vgrow="ALWAYS">
                  <Label fx:id="quizQuestionLabel" style="-fx-background-color: #98E4CF; -fx-font-size: 16; -fx-background-radius: 20; -fx-border-radius: 20;" text="In python, which of these is NOT a variable type?">
             <padding>
                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
             </padding></Label>
-                <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="302.0" prefHeight="302.0" prefWidth="670.0" spacing="10" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <children>
+                <VBox fx:id="quizQuestion" alignment="BOTTOM_CENTER" fillWidth="false" maxHeight="345.0" prefHeight="345.0" prefWidth="670.0" spacing="10" style="-fx-background-color: white; -fx-border-radius: 5; -fx-background-radius: 5;">
                     <!-- Chat Section -->
-                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
-                        <content>
-
-                            <VBox fx:id="quizAnswersVBox" alignment="CENTER" fillWidth="false" spacing="10" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14;">
+                    <ScrollPane fx:id="quizScrollPane" fitToWidth="true" prefHeight="335.0" prefWidth="334.0" style="-fx-background-color: white; -fx-background-insets: 0; -fx-background: white;" VBox.vgrow="ALWAYS">
+                            <VBox fx:id="quizAnswersVBox" alignment="CENTER" fillWidth="false" style="-fx-background-color: #CBD6FF; -fx-border-radius: 14; -fx-background-radius: 14; -fx-padding: 10;" VBox.vgrow="ALWAYS">
                                 <Label style="-fx-background-color: #CBD6FF; -fx-font-size: 16;" text="Please select one of the options">
                            <VBox.margin>
-                              <Insets top="7.0" />
+                              <Insets left="8.0" top="7.0" />
                            </VBox.margin>
                         </Label>
+                  <VBox fx:id="childAnswerVBox" alignment="CENTER_LEFT" spacing="15">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="5.0" />
+                     </VBox.margin></VBox>
                         <padding>
                            <Insets bottom="10.0" top="5.0" />
                         </padding>
