@@ -21,9 +21,8 @@ public class QuizWhizApplication extends Application {
     /**
      * Initializes the main application loop, called by the JavaFX framework when the application starts.
      * <p>
-     * A new instance of {@link SQLiteConnection} is created for database access, and the
-     * application controllers are initialized. In addition, a {@link SceneManager} instance
-     * is created to manage the application scenes.
+     * A {@link SceneManager} instance retrieved and provided the
+     * application stage to manage the application scenes.
      * <p>
      * The first page navigated to at startup is the Sign Up authentication page.
      *
@@ -32,13 +31,14 @@ public class QuizWhizApplication extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            SQLiteConnection db = new SQLiteConnection();
-            ControllerFactory controllerFactory = new ControllerFactory(db);
-            SceneManager sceneManager = SceneManager.getInstance();
-            sceneManager.initialize(stage, controllerFactory);
-
             stage.setTitle(TITLE);
+            stage.setWidth(WIDTH);
+            stage.setHeight(HEIGHT);
+
+            SceneManager sceneManager = SceneManager.getInstance();
+            sceneManager.applicationInitialize(stage);
             sceneManager.navigateToAuth(AuthType.SIGNUP);
+
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
