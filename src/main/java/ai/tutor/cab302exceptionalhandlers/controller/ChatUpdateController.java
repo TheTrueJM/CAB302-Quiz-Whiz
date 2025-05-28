@@ -19,7 +19,7 @@ public class ChatUpdateController extends ChatSetupController {
     private final Chat currentChat;
 
 
-    public ChatUpdateController(SQLiteConnection db, User currentUser, Chat currentChat) throws RuntimeException, SQLException {
+    public ChatUpdateController(SQLiteConnection db, User currentUser, Chat currentChat) throws IllegalStateException, RuntimeException, SQLException {
         super(db, currentUser);
         this.currentChat = currentChat;
     }
