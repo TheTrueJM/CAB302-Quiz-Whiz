@@ -811,14 +811,14 @@ public class ChatController {
      * Configures the buttons to create a new chat.
      * <p>
      * Sets up {@link #addNewChat} and {@link #addNewChatMain} to trigger
-     * {@link #loadChatSetup()} for chat creation.
+     * {@link #loadChatSetup} for chat creation.
      * </p>
      */
 
     private void setupCreateChatButton() {
         addNewChat.setOnAction(actionEvent -> {
             try {
-                loadChatSetup();
+                loadChatSetup(ChatSetupType.CREATE);
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
@@ -826,7 +826,7 @@ public class ChatController {
 
         addNewChatMain.setOnAction(actionEvent -> {
             try {
-                loadChatSetup();
+                loadChatSetup(ChatSetupType.CREATE);
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setup: " + e);
             }
@@ -836,7 +836,7 @@ public class ChatController {
     /**
      * Configures the chat settings button to load chat setup.
      * <p>
-     * Sets up {@link #chatSettingsButton} to trigger {@link #loadChatSetup()} for
+     * Sets up {@link #chatSettingsButton} to trigger {@link #loadChatSetup} for
      * the selected chat, with validation for chat selection.
      * </p>
      */
@@ -845,7 +845,7 @@ public class ChatController {
         chatSettingsButton.setOnAction(event -> {
             try {
                 if (getSelectedChat() == null) { throw new IllegalStateException("No chat selected"); }
-                loadChatSetup();
+                loadChatSetup(ChatSetupType.UPDATE);
             } catch (Exception e ) {
                 Utils.showErrorAlert("Error Loading Chat Setting: " + e);
             }
@@ -865,16 +865,16 @@ public class ChatController {
     }
 
     /**
-     * Loads the chat setup screen based on the selected chat.
+     * Loads the chat setup screen based on the given {@link ChatSetupType}.
      * <p>
-     * Navigates to {@link ChatSetupType#CREATE} if no chat is selected, or
-     * {@link ChatSetupType#UPDATE} if a chat is selected, using {@link SceneManager}.
+     * Navigates to {@link ChatSetupType#CREATE} or {@link ChatSetupType#UPDATE}
+     * using {@link SceneManager}, depending on the {@link ChatSetupType} given.
      * </p>
+     * @param setupType the type of chat setup to load
      * @throws Exception If navigation fails
      */
 
-    private void loadChatSetup() throws Exception {
-        ChatSetupType setupType = getSelectedChat() == null ? ChatSetupType.CREATE : ChatSetupType.UPDATE;
+    private void loadChatSetup(ChatSetupType setupType) throws Exception {
         SceneManager.getInstance().navigateToChatSetup(currentUser, setupType, getSelectedChat());
     }
 
