@@ -80,6 +80,17 @@ public class ChatUpdateController extends ChatSetupController {
         configureChatSettings();
     }
 
+    /**
+     * Retrieves the current chat being updated.
+     * <p>
+     * Overrides the abstract {@link ChatSetupController#getCurrentChat()} method to provide
+     * the chat context for the update mode. Returns the {@code currentChat} field, which is
+     * set by the subclass when initializing the update interface.
+     * </p>
+     * @return The current {@link Chat} object being updated, or null if not set
+     * @see ChatSetupController#getCurrentChat()
+     */
+
     @Override
     protected Chat getCurrentChat() {
         return currentChat; // Return the current chat in Update mode
@@ -133,16 +144,17 @@ public class ChatUpdateController extends ChatSetupController {
 
 
     /**
-     * Downloads the current chat’s messages as a text file.
+     * Initiates the download of chat messages for the current chat as a text file.
      * <p>
-     * Retrieves messages for {@link #currentChat} using {@link ChatSetupController#messageDAO},
-     * formats them into a string (indicating sender and quiz status), and saves them to a
-     * user-selected file via a {@link FileChooser}. Displays appropriate alerts for success,
-     * empty chats, or errors.
+     * Checks if a chat is selected using {@link #getCurrentChat()}, retrieves all messages for the
+     * chat using {@link MessageDAO}, formats them into a text file, and prompts the user to save
+     * it using a {@link FileChooser}. Displays alerts for no chat selected, no messages, or
+     * successful/failed operations. Subclasses are responsible for providing the chat context.
      * </p>
-     * @throws SQLException If retrieving messages from the database fails
-     * @throws IOException If saving the file fails
+     * @throws SQLException If database operations fail while retrieving messages
+     * @throws IOException If file writing operations fail
      */
+
     @Override
     @FXML
     protected void downloadChat() {
