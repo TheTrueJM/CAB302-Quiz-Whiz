@@ -33,7 +33,7 @@
             <Label fx:id="settingsTitle" alignment="CENTER" prefHeight="53.0" prefWidth="294.0" styleClass="setup-header" text="Chat Setup" />
             <Region prefHeight="100.0" prefWidth="128.0" />
 
-            <Button fx:id="downloadButton" alignment="CENTER_RIGHT" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" styleClass="download-button">
+            <Button fx:id="downloadButton" alignment="CENTER_RIGHT" onAction="#downloadChat" maxHeight="20.0" maxWidth="20.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="64.0" styleClass="download-button">
                <graphic>
                   <ImageView fitHeight="34.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true" styleClass="download-button">
                      <image>
