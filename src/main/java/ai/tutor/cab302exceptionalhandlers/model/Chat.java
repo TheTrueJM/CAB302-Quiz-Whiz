@@ -1,5 +1,13 @@
 package ai.tutor.cab302exceptionalhandlers.model;
 
+/**
+ * Represents a chat belonging to a user.
+ * <p>
+ *
+ * @author Joshua M.
+ * @see ai.tutor.cab302exceptionalhandlers.model.User
+ * @see ai.tutor.cab302exceptionalhandlers.model.ChatDAO
+ */
 public class Chat {
     public static final int MIN_QUIZ_LENGTH = 1;
     public static final int MAX_QUIZ_LENGTH = 10;
@@ -14,7 +22,18 @@ public class Chat {
     private String studyArea;
 
 
-
+    /**
+     * Constructs a Chat object.
+     *
+     * @param userId The user id that this chat belongs to, must be greater than 0
+     * @param name The name of the chat, must be 1-50 characters
+     * @param responseAttitude The response attitude for this chat's AI, must be 1-25 characters
+     * @param quizDifficulty The difficulty for this chat's Quizzes, must be 1-25 characters
+     * @param quizLength The difficulty for this chat's Quizzes, must be between {@value MIN_QUIZ_LENGTH}-{@value MAX_QUIZ_LENGTH}
+     * @param educationLevel The education level for this chat, must be 50 characters or less
+     * @param studyArea The study area for this chat, must be 50 characters or less
+     * @throws IllegalArgumentException if any of the parameters are invalid
+     */
     public Chat(int userId, String name, String responseAttitude, String quizDifficulty, int quizLength, String educationLevel, String studyArea) throws IllegalArgumentException {
         if (userId < 1) { throw new IllegalArgumentException("Invalid User Id: Must be greater than 1"); }
         this.userId = userId;
