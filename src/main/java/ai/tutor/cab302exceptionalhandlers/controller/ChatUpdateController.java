@@ -37,17 +37,23 @@ public class ChatUpdateController extends ChatSetupController {
         configureChatSettings();
     }
 
+    @Override
+    protected Chat getCurrentChat() {
+        return currentChat; // Return the current chat in Update mode
+    }
 
-    // Move other methods related to chat-setup-view.fxml
+
+    @Override
     protected void setupConfirmChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
                 updateChatDetails(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), (int)quizLength.getValue(), educationLevel.getValue(), chatTopic.getText());
                 chatReturn();
-            } catch (Exception e ) {
+            } catch (Exception e) {
                 Utils.showErrorAlert("Error Updating Chat: " + e);
             }
         });
+        downloadButton.setDisable(false); // Enable download in Update mode
     }
 
     private void configureChatSettings() {
@@ -59,12 +65,15 @@ public class ChatUpdateController extends ChatSetupController {
         educationLevel.setValue(currentChat.getEducationLevel());
         chatTopic.setText(currentChat.getStudyArea());
         startChatButton.setText("Update Chat");
+        downloadButton.setDisable(false);
     }
 
 
     // Saves a copy of the currently selected chat as a TXT file to directory of your choosing
+    @Override
     @FXML
     protected void downloadChat() {
+        Utils.showInfoAlert("IN IN IN");
         try {
             // Get messages for the current chat
             List<Message> messages = messageDAO.getAllChatMessages(currentChat.getId());
