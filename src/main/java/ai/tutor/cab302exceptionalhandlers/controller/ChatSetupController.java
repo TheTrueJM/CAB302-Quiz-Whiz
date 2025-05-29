@@ -147,7 +147,18 @@ public abstract class ChatSetupController {
         });
     }
 
-    // TODO: JAVADOCS HERE
+    /**
+     * Initiates the download of chat messages for the current chat as a text file.
+     * <p>
+     * Checks if a chat is selected using {@link #getCurrentChat()}, retrieves all messages for the
+     * chat using {@link MessageDAO}, formats them into a text file, and prompts the user to save
+     * it using a {@link FileChooser}. Displays alerts for no chat selected, no messages, or
+     * successful/failed operations. Subclasses are responsible for providing the chat context.
+     * </p>
+     * @throws SQLException If database operations fail while retrieving messages
+     * @throws IOException If file writing operations fail
+     */
+
     @FXML
     protected void downloadChat() {
         try {
@@ -210,9 +221,30 @@ public abstract class ChatSetupController {
      */
     protected abstract Chat getCurrentChat();
 
+    /**
+     * Navigates back to the chat screen for the current user.
+     * <p>
+     * Uses {@link SceneManager} to transition to the chat interface, passing the current user.
+     * Any exceptions during navigation are propagated to the caller.
+     * </p>
+     * @throws Exception If navigation or scene management fails
+     * @see SceneManager#navigateToChat(User)
+     */
+
     protected void chatReturn() throws Exception {
         SceneManager.getInstance().navigateToChat(currentUser);
     }
+
+    /**
+     * Displays a dialog alert with the specified type, title, and message.
+     * <p>
+     * Creates and shows a JavaFX {@link Alert} dialog with the given parameters. The alert
+     * is modal and waits for user interaction before proceeding.
+     * </p>
+     * @param type The type of alert (e.g., INFORMATION, ERROR)
+     * @param title The title of the alert dialog
+     * @param message The content message to display
+     */
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
