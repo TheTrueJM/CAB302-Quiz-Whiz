@@ -151,8 +151,6 @@ public class ChatUpdateController extends ChatSetupController {
      * it using a {@link FileChooser}. Displays alerts for no chat selected, no messages, or
      * successful/failed operations. Subclasses are responsible for providing the chat context.
      * </p>
-     * @throws SQLException If database operations fail while retrieving messages
-     * @throws IOException If file writing operations fail
      */
 
     @Override

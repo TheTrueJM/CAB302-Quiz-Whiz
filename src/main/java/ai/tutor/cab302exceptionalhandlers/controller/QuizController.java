@@ -478,10 +478,9 @@ public class QuizController {
      * @param attempt The attempt number
      * @param answers The map of question numbers to answers
      * @param dao The UserAnswerDAO for database operations
-     * @throws SQLException If database operations fail
      */
 
-    public void saveAnswers(int messageId, int attempt, Map<Integer, String > answers, UserAnswerDAO dao){
+    public void saveAnswers(int messageId, int attempt, Map<Integer, String > answers, UserAnswerDAO dao) {
         for (Map.Entry<Integer, String> entry : answers.entrySet()) {
             int questionNumber = entry.getKey();
             String answerOption = entry.getValue();
