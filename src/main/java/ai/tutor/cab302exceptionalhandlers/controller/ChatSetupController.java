@@ -6,10 +6,14 @@ import ai.tutor.cab302exceptionalhandlers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public abstract class ChatSetupController {
     @FXML protected ComboBox<String> responseAttitude;
@@ -23,7 +27,6 @@ public abstract class ChatSetupController {
     @FXML protected Button exitButton;
     @FXML protected Pane backgroundOverlay;
     @FXML protected Label settingsTitle;
-
 
     protected final SQLiteConnection db;
     protected final User currentUser;
@@ -81,14 +84,80 @@ public abstract class ChatSetupController {
         });
     }
 
-
+    // TODO: JAVADOCS HERE
     @FXML
     protected void downloadChat() {
-        Utils.showErrorAlert("Cannot download messages for chat that doesn't exist");
+        try {
+            // Check if a chat is available (subclasses should set this context)
+            if (getCurrentChat() == null) {
+                showAlert(Alert.AlertType.INFORMATION, "No Chat Selected", "Cannot download messages for a chat that doesn't exist.");
+                return;
+            }
+
+            // Get messages for the current chat
+            List<Message> messages = messageDAO.getAllChatMessages(getCurrentChat().getId());
+
+            if (messages.isEmpty()) {
+                showAlert(Alert.AlertType.INFORMATION, "No Messages", "This chat has no messages to download.");
+                return;
+            }
+
+            // Create file content
+            StringBuilder fileContent = new StringBuilder();
+            fileContent.append("Chat: ").append(getCurrentChat().getName()).append("\n\n");
+            for (Message message : messages) {
+                String sender = message.getFromUser() ? "User" : "AI";
+                fileContent.append(sender)
+                        .append(": ")
+                        .append(message.getContent())
+                        .append(" [Quiz: ")
+                        .append(message.getIsQuiz() ? "Yes" : "No")
+                        .append("]\n");
+            }
+
+            // Open file chooser
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Chat Messages");
+            fileChooser.setInitialFileName("chat_" + getCurrentChat().getName().replaceAll("[^a-zA-Z0-9]", "_") + "_messages.txt");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+            File file = fileChooser.showSaveDialog(downloadButton.getScene().getWindow());
+
+            if (file != null) {
+                // Write to file
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write(fileContent.toString());
+                }
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Chat messages downloaded successfully!");
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to retrieve messages: " + e.getMessage());
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "File Error", "Failed to save file: " + e.getMessage());
+        }
     }
 
+    /**
+     * Abstract method to get the current chat context.
+     * <p>
+     * Subclasses must implement this method to provide the chat being edited or viewed,
+     * or return null if no chat is selected (e.g., in Create mode).
+     * </p>
+     * @return The current {@link Chat} object, or null if no chat is selected
+     */
+    protected abstract Chat getCurrentChat();
 
     protected void chatReturn() throws Exception {
         SceneManager.getInstance().navigateToChat(currentUser);
     }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+
 }
