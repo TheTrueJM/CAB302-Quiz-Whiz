@@ -23,17 +23,23 @@ public class ChatCreateController extends ChatSetupController {
         super.initialize();
     }
 
+    @Override
+    protected Chat getCurrentChat() {
+        return null; // No chat exists in Create mode
+    }
 
-    // Move other methods related to chat-setup-view.fxml
+
+    @Override
     protected void setupConfirmChatButton() {
         startChatButton.setOnAction(actionEvent -> {
             try {
                 createNewChat(chatNameInput.getText(), responseAttitude.getValue(), quizDifficulty.getValue(), (int)quizLength.getValue(), educationLevel.getValue(), chatTopic.getText());
                 chatReturn();
-            } catch (Exception e ) {
+            } catch (Exception e) {
                 Utils.showErrorAlert("Error Creating Chat: " + e);
             }
         });
+        downloadButton.setDisable(true); // Disable download in Create mode
     }
 
 
