@@ -272,13 +272,15 @@ public class QuizController {
         container.getStyleClass().clear();
         container.getStyleClass().add("question-container");
 
+        List<String> correctOptions = new ArrayList<>();
         if (userAnswer != null && options != null) {
-            AnswerOption correct = options.stream()
-                    .filter(AnswerOption::getIsAnswer)
-                    .findFirst()
-                    .orElse(null);
-            if (correct != null) {
-                if (userAnswer.equalsIgnoreCase(correct.getOption())) {
+            for (AnswerOption option : options) {
+                if (option.getIsAnswer()) {
+                    correctOptions.add(option.getOption());
+                }
+            }
+            if (!correctOptions.isEmpty()) {
+                if (correctOptions.contains(userAnswer)) {
                     container.getStyleClass().setAll("correct-question");
                 } else {
                     container.getStyleClass().setAll("incorrect-question");
